@@ -1,8 +1,10 @@
+;; Default tabs and spacing
 (setq-default indent-tabs-mode nil)
 (setq-default tab-width 4)
 (setq tab-stop-list '(4 8 12 16 20 24 28 32 36 40 44 48 52 56 60 64 68 72 76 80))
 (setq-default py-indent-offset 4)
 
+;; Some display settings fro line numbers and the menubar
 (global-linum-mode 1)
 (setq line-number-mode t)
 (setq column-number-mode t)
@@ -10,6 +12,11 @@
 (global-visual-line-mode t)
 (menu-bar-mode -1)
 
+;; Don't display the 'Welcome to GNU Emacs' buffer on startup
+(setq inhibit-startup-message t)
+
+;; I like backups because I don't use version control for everything
+;; Put everything in a saves directory so backups are scattered out everywhere
 (setq backup-directory-alist `(("." . "~/.saves")))
 (setq backup-by-copying t)
 (setq delete-old-versions t
@@ -17,10 +24,12 @@
   kept-old-versions 2
   version-control t)
 
+;; For the GUI use this font and line spacing
 (set-face-attribute 'default nil
                     :family "Envy Code R" :height 130 :weight 'normal)
 (setq-default line-height 1.2)
 
+;; Set up package repos
 (require 'package)
 (add-to-list 'package-archives 
     '("marmalade" . "http://marmalade-repo.org/packages/"))
@@ -28,19 +37,46 @@
     '("melpa" . "http://melpa.milkbox.net/packages/") t)
 (package-initialize)
 
+;; When using a shell, exec path to set path properly
 (when (memq window-system '(mac ns))
     (exec-path-from-shell-initialize))
 
+;; Set a nice color theme
 (require 'color-theme)
 (color-theme-initialize)
 (color-theme-sanityinc-tomorrow-night)
 
+;; Pretty mode redisplays some keywords as symbols
 (require 'pretty-mode)
 (global-pretty-mode 1)
 
+;; moinmoin for some wiki editing
 (require 'moinmoin-mode)
 (setq auto-mode-alist (cons '("\\.moin" . moinmoin-mode) auto-mode-alist))
 
+;; rcirc setup that is working
+;; Change user info
+(setq rcirc-default-nick "azumafuji")
+(setq rcirc-default-user-name "azumafuji")
+(setq rcirc-default-full-name "Dean Sellis")
+(eval-after-load 'rcirc '(require 'rcirc-notify))
+(add-hook 'rcirc-mode-hook (lambda ()
+                              (flyspell-mode 1)
+                              (rcirc-track-minor-mode 1)))
+
+(setq rcirc-server-alist
+      '(("irc.freenode.net" :channels ("#lillycoi" "#angularjs" "#python" "#django"))))
+
+(setq rcirc-authinfo (with-temp-buffer
+                        (insert-file-contents-literally "~/.rcirc-authinfo")
+                        (read (current-buffer))))
+
+;; Example .rcirc-authinfo contents
+;; (("freenode" nickserv "us3rname" "passw0rd"))
+
+(global-set-key "\C-cI" 'irc)
+
+;; ORG MODE
 (require 'org-install)
 (add-to-list 'auto-mode-alist '("\\.org\\'" . org-mode))
 (global-set-key "\C-cl" 'org-store-link)

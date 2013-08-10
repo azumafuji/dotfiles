@@ -1,0 +1,11 @@
+network: {
+    host : 127.0.0.1
+    }
+path : {
+    logs : /usr/local/var/log/elasticsearch,
+    data : /usr/local/var/data/elasticsearch,
+    plugins: /usr/local/var/lib/elasticsearch/plugins
+    }
+cluster : {
+    name : findingstuff
+}

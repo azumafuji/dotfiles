@@ -1,16 +1,23 @@
+;;; .emacs --- Config for Emacs
+;;; Commentary:
+;; My Emacs file for working with Python, Clojure, Org, and various other bits
+
+
+;;; Code:
 ;; Default tabs and spacing
 (setq-default indent-tabs-mode nil)
 (setq-default tab-width 4)
 (setq tab-stop-list '(4 8 12 16 20 24 28 32 36 40 44 48 52 56 60 64 68 72 76 80))
 (setq-default py-indent-offset 4)
 
-;; Some display settings fro line numbers and the menubar
+;; Some display settings for line numbers and the menubar
 (global-linum-mode 1)
 (setq line-number-mode t)
 (setq column-number-mode t)
-(setq linum-format "%4d ")
+(setq linum-format "%5d ")
 (global-visual-line-mode t)
 (menu-bar-mode -1)
+(tool-bar-mode -1)
 
 ;; Don't display the 'Welcome to GNU Emacs' buffer on startup
 (setq inhibit-startup-message t)
@@ -31,10 +38,10 @@
 
 ;; Set up package repos
 (require 'package)
-(add-to-list 'package-archives 
-    '("marmalade" . "http://marmalade-repo.org/packages/"))
-(add-to-list 'package-archives
-    '("melpa" . "http://melpa.milkbox.net/packages/") t)
+(setq package-archives '(("gnu" . "http://elpa.gnu.org/packages/")
+                         ("marmalade" . "http://marmalade-repo.org/packages/")
+                         ("melpa" . "http://melpa.milkbox.net/packages/")
+                         ("org" . "http://orgmode.org/elpa/")))
 (package-initialize)
 
 ;; When using a shell, exec path to set path properly
@@ -42,39 +49,49 @@
     (exec-path-from-shell-initialize))
 
 ;; Set a nice color theme
-(require 'color-theme)
-(color-theme-initialize)
-(color-theme-sanityinc-tomorrow-night)
+(load-theme 'sanityinc-tomorrow-night t)
 
 ;; Pretty mode redisplays some keywords as symbols
 (require 'pretty-mode)
 (global-pretty-mode 1)
 
+;; shell switcher
+(require 'shell-switcher)
+(setq shell-switcher-mode t)
+
 ;; moinmoin for some wiki editing
 (require 'moinmoin-mode)
 (setq auto-mode-alist (cons '("\\.moin" . moinmoin-mode) auto-mode-alist))
 
-;; rcirc setup that is working
-;; Change user info
-(setq rcirc-default-nick "azumafuji")
-(setq rcirc-default-user-name "azumafuji")
-(setq rcirc-default-full-name "Dean Sellis")
-(eval-after-load 'rcirc '(require 'rcirc-notify))
-(add-hook 'rcirc-mode-hook (lambda ()
-                              (flyspell-mode 1)
-                              (rcirc-track-minor-mode 1)))
+;; keymaping for emacsserver
+(add-hook 'server-switch-hook
+            (lambda ()
+              (when (current-local-map)
+                (use-local-map (copy-keymap (current-local-map))))
+                    (when server-buffer-clients
+                      (local-set-key (kbd "C-x k") 'server-edit))))
 
-(setq rcirc-server-alist
-      '(("irc.freenode.net" :channels ("#lillycoi" "#angularjs" "#python" "#django"))))
+;; paredit config
+(autoload 'enable-paredit-mode "paredit" "Turn on pseudo-structural editing of Lisp code." t)
+(add-hook 'emacs-lisp-mode-hook       #'enable-paredit-mode)
+(add-hook 'eval-expression-minibuffer-setup-hook #'enable-paredit-mode)
+(add-hook 'ielm-mode-hook             #'enable-paredit-mode)
+(add-hook 'lisp-mode-hook             #'enable-paredit-mode)
+(add-hook 'lisp-interaction-mode-hook #'enable-paredit-mode)
+(add-hook 'scheme-mode-hook           #'enable-paredit-mode)
+(add-hook 'clojure-mode-hook          #'enable-paredit-mode)
 
-(setq rcirc-authinfo (with-temp-buffer
-                        (insert-file-contents-literally "~/.rcirc-authinfo")
-                        (read (current-buffer))))
+(require 'eldoc) ; if not already loaded
+    (eldoc-add-command
+     'paredit-backward-delete
+     'paredit-close-round)
 
-;; Example .rcirc-authinfo contents
-;; (("freenode" nickserv "us3rname" "passw0rd"))
+(add-hook 'emacs-lisp-mode-hook 'turn-on-eldoc-mode)
+(add-hook 'lisp-interaction-mode-hook 'turn-on-eldoc-mode)
+(add-hook 'ielm-mode-hook 'turn-on-eldoc-mode)
+(add-hook 'clojure-mode-hook 'turn-on-eldoc-mode)
 
-(global-set-key "\C-cI" 'irc)
+
 
 ;; ORG MODE
 (require 'org-install)
@@ -84,6 +101,13 @@
 (global-set-key "\C-cb" 'org-iswitchb)
 (global-set-key "\C-cr" 'org-remember)
 (global-set-key "\C-cc" 'org-capture)
+
+(setq org-default-notes-file "~/.notes")
+
+;; reveal.js support for org mode
+;;(require 'ox-reveal)
+(setq org-reveal-root "file:///Users/dean/Dev/Projects/reveal.js")
+
 
 (require 'yasnippet) ;; not yasnippet-bundle
 (setq yas-trigger-key "<backtab>")
@@ -111,26 +135,7 @@
      (require 'pymacs)
      (pymacs-load "ropemacs" "rope-")))
 
-(when (load "flymake" t) 
-     (defun flymake-pyflakes-init () 
-       (let* ((temp-file (flymake-init-create-temp-buffer-copy 
-                          'flymake-create-temp-inplace)) 
-      (local-file (file-relative-name 
-               temp-file 
-               (file-name-directory buffer-file-name)))) 
-         (list "pyflakes" (list local-file))))
-
-     (add-to-list 'flymake-allowed-file-name-masks 
-          '("\\.py\\'" flymake-pyflakes-init)))
-
-(add-hook 'find-file-hook 'flymake-find-file-hook)
-
-(defun my-flymake-show-help ()
-  (when (get-char-property (point) 'flymake-overlay)
-   (let ((help (get-char-property (point) 'help-echo)))
-    (if help (message "%s" help)))))
-
-(add-hook 'post-command-hook 'my-flymake-show-help)
+(add-hook 'after-init-hook #'global-flycheck-mode)
 
 (ac-ropemacs-initialize)
 (add-hook 'python-mode-hook
@@ -142,10 +147,12 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(safe-local-variable-values (quote ((virtualenv-default-directory . "~/Dev/OCINProjects/piiconsumer") (virtualenv-workon . "ocin-accounts") (virtualenv-default-directory . "~/Dev/OCINProjects/follow") (virtualenv-workon . "ocin-follow")))))
+ '(org-agenda-files (quote ("~/.notes")))
+ )
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  )
+;;; .emacs ends here

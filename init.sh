@@ -40,6 +40,7 @@ brew install source-highlight
 brew install the_silver_searcher
 brew install zeromq
 
+sudo cp ~/src/dotfiles/paths /etc/paths
 
 mkdir ~/.ec2
 

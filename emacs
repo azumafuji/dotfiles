@@ -128,8 +128,7 @@
 (global-set-key "\C-cr" 'org-remember)
 (global-set-key "\C-cc" 'org-capture)
 
-(setq org-default-notes-file "~/.notes")
-
+(setq org-default-notes-file "~/Documents/org/notes")
 
 (require 'yasnippet) ;; not yasnippet-bundle
 (setq yas-trigger-key "<backtab>")

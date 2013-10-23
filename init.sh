@@ -43,7 +43,6 @@ ln -s ~/src/dotfiles/bashrc ~/.bashrc
 ln -s ~/src/dotfiles/profile ~/.profile
 ln -s ~/src/dotfiles/bash_profile ~/.bash_profile
 
-
 mkdir ~/.git
 
 ln -s ~/src/dotfiles/gitconfig ~/.gitconfig
@@ -62,8 +61,8 @@ ln -s ~/src/dotfiles/pydistutils.cfg ~/.pydistutils.cfg
 
 ln -s ~/src/dotfiles/source-highlight ~/.source-highlight
 
-mkdir ~/src/ipython
-mkdir ~/.notes
+mkdir ~/Documents/iPython
+mkdir ~/Document/org
 mkdir -p ~/.emacs.d/snippets
 
 ln -s ~/src/dotfiles/emacs ~/.emacs
@@ -80,4 +79,11 @@ git clone git@github.com:pinard/Pymacs.git ~/src/Pymacs
 cd ~/src/Pymacs
 make
 sudo python setup.py install
+
+ipython profile create
+rm ~/.ipython/profile_default/ipython_config.py
+rm ~/.ipython/profile_default/ipython_notebook_config.py
+ln -s ~/src/dotfiles/ipython_config.py ~/.ipython/profile_default/ipython_config.py
+ln -s ~/src/dotfiles/ipython_notebook_config.py ~/.ipython/profile_default/ipython_notebook_config.py
+
 

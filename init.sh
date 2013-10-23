@@ -11,18 +11,16 @@ brew cask install caffeine
 brew cask install cord
 brew cask install firefox
 brew cask install google-chrome
-brew cask install intellij-community
 brew cask install itunes-volume-control
 brew cask install jumpcut
 brew cask install light-table
-brew cask install p4merge
 brew cask install pycharm
 brew cask install screenhero
 brew cask install size-up
 brew cask install sourcetree
 brew cask install super-duper
 brew cask install vagrant
-brew cask install virtualbox
+
 
 brew install emacs --cocoa --with-gnutls
 brew install git
@@ -30,6 +28,7 @@ brew install graphviz --with-freetype --with-bindings --with-app
 brew install hub
 brew install leiningen
 brew install memcached
+brew install libmemcached
 brew install nginx-full --with-spdy --with-lua-module --with-webdav
 brew install postgresql 
 brew install pypy

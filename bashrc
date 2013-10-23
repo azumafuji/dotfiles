@@ -31,14 +31,10 @@ alias startmongo='mongod run --rest --config ~/.mongodb/mongod.conf'
 alias startes='elasticsearch -f -D es.config=/Users/dean/.elasticsearch/elasticsearch.yml'
 alias connectencota='ssh -i ~/.ssh/PraxisProduction.pem ubuntu@encota.praxismi.com'
 alias em='editmoin --trivial-change'
-alias usecontext='. /Users/dean/Dev/ConTeXt/tex/setuptex'
 alias serveit='python -m SimpleHTTPServer 8080'
 alias timestamp='date "+%Y%m%dT%H%M%S"'
-alias tnote='/Applications/terminal-notifier.app/Contents/MacOS/terminal-notifier -title "iTerm2" -message '
-alias brewupgrade='brew upgrade; brew cleanup; tnote "homebrew upgraded."'
 alias ppp='proxypypi -p 8333 -d $PROXY_PYPI_DIR -P $PROXY_PYPI_DIR/proxypypi.pid -l $PROXY_PYPI_DIR/proxypypi.log -o $PROXY_PYPI_DIR/proxypypi.console'
 
-export PATH=~/.cabal/bin:/usr/local/share/npm/bin:$PATH
 
 if [ -f .local.env ]; then
   source .local.env

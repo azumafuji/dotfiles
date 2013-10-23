@@ -7,6 +7,7 @@ brew tap phinze/homebrew-cask
 
 brew install brew-cask
 
+brew cask install bit-torrent-sync
 brew cask install caffeine
 brew cask install cord
 brew cask install firefox
@@ -39,9 +40,8 @@ brew install source-highlight
 brew install the_silver_searcher
 brew install zeromq
 
-ln -s ~/src/dotfiles/bashrc ~/.bashrc
-ln -s ~/src/dotfiles/profile ~/.profile
-ln -s ~/src/dotfiles/bash_profile ~/.bash_profile
+
+mkdir ~/.ec2
 
 mkdir ~/.git
 
@@ -49,20 +49,18 @@ ln -s ~/src/dotfiles/gitconfig ~/.gitconfig
 ln -s ~/src/dotfiles/gitignore_global ~/.gitignore_global
 
 git clone git@github.com:milkbikis/powerline-shell.git ~/src/powerline-shell
-ln -s src/powerline-shell/powerline-shell.py ~/.powerline-shell.py
+cd  ~/src/powerline-shell
+./install.py
+cd
+ln -s ~/src/powerline-shell/powerline-shell.py ~/.powerline-shell.py
 
 mkdir ~/.lein
 ln -s ~/src/dotfiles/profiles.clj ~/.lein/profiles.clj
 
-mkdir ~/.pip
-ln -s ~/src/dotfiles/pip.conf ~/.pip/pip.conf
-
-ln -s ~/src/dotfiles/pydistutils.cfg ~/.pydistutils.cfg
-
 ln -s ~/src/dotfiles/source-highlight ~/.source-highlight
 
 mkdir ~/Documents/iPython
-mkdir ~/Document/org
+mkdir ~/Documents/org
 mkdir -p ~/.emacs.d/snippets
 
 ln -s ~/src/dotfiles/emacs ~/.emacs
@@ -86,4 +84,16 @@ rm ~/.ipython/profile_default/ipython_notebook_config.py
 ln -s ~/src/dotfiles/ipython_config.py ~/.ipython/profile_default/ipython_config.py
 ln -s ~/src/dotfiles/ipython_notebook_config.py ~/.ipython/profile_default/ipython_notebook_config.py
 
+mkdir ~/src/pypicache
 
+mkdir ~/.pip
+ln -s ~/src/dotfiles/pip.conf ~/.pip/pip.conf
+ln -s ~/src/dotfiles/pydistutils.cfg ~/.pydistutils.cfg
+
+ln -s ~/src/dotfiles/bashrc ~/.bashrc
+ln -s ~/src/dotfiles/profile ~/.profile
+ln -s ~/src/dotfiles/bash_profile ~/.bash_profile
+
+git clone git@github.com:chriskempson/tomorrow-theme.git ~/src/tomorrow-theme
+
+java -version

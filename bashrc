@@ -1,4 +1,4 @@
-export EDITOR=mate
+export EDITOR=emacs
 export TERM=xterm-256color
 export GREP_OPTIONS='--color=auto' GREP_COLOR='1;32'
 export CLICOLOR=1 
@@ -9,8 +9,7 @@ export JAVA_HOME=$(/usr/libexec/java_home)
 export EC2_PRIVATE_KEY="$(/bin/ls "$HOME"/.ec2/pk-*.pem | /usr/bin/head -1)"
 export EC2_CERT="$(/bin/ls "$HOME"/.ec2/cert-*.pem | /usr/bin/head -1)"
 export EC2_HOME="/usr/local/Library/LinkedKegs/ec2-api-tools/jars"
-export PROXY_PYPI_DIR="$HOME/Dev/pypicache"
-
+export PROXY_PYPI_DIR="$HOME/src/pypicache"
 
 ulimit -n 4096 
 
@@ -18,7 +17,7 @@ export DJANGO_COLORS="light"
 
 function _update_ps1()
 {
-   export PS1="$(~/.powerline-shell.py $?)"
+   export PS1="$(~/.powerline-shell.py --mode flat $?)"
 }
 
 export PROMPT_COMMAND="_update_ps1"
@@ -45,8 +44,3 @@ if [ -f .local.env ]; then
   source .local.env
 fi
 
-
-
-PATH=$PATH:$HOME/.rvm/bin # Add RVM to PATH for scripting
-
-[[ -s "$HOME/.rvm/scripts/rvm" ]] && source "$HOME/.rvm/scripts/rvm" # Load RVM into a shell session *as a function*

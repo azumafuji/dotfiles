@@ -1,3 +1,4 @@
+clj = clojure.lang
 java = java.lang 
 moc = cpp.lang
 cpp = cpp.lang

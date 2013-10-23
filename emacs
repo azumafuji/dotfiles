@@ -1,4 +1,4 @@
-;;; .emacs --- Config for Emacs
+;; .emacs --- Config for Emacs
 ;;; Commentary:
 ;; My Emacs file for working with Python, Clojure, Org, and various other bits
 
@@ -33,16 +33,44 @@
 
 ;; For the GUI use this font and line spacing
 (set-face-attribute 'default nil
-                    :family "Envy Code R" :height 130 :weight 'normal)
+                    :family "Menlo" :height 130 :weight 'normal)
 (setq-default line-height 1.2)
 
 ;; Set up package repos
 (require 'package)
-(setq package-archives '(("gnu" . "http://elpa.gnu.org/packages/")
+(setq package-archives '(
+                         ("gnu" . "http://elpa.gnu.org/packages/")
                          ("marmalade" . "http://marmalade-repo.org/packages/")
                          ("melpa" . "http://melpa.milkbox.net/packages/")
                          ("org" . "http://orgmode.org/elpa/")))
 (package-initialize)
+
+(setq package-list '(auto-complete
+                     ac-nrepl
+                     cider
+                     color-theme
+                     color-theme-sanityinc-tomorrow
+                     clojure-mode
+                     exec-path-from-shell
+                     flycheck
+                     helm
+                     lua-mode
+                     magit
+                     moinmoin-mode
+                     org-plus-contrib
+                     paredit
+                     pretty-mode
+                     pymacs
+                     virtualenv
+                     yasnippet
+                     ))
+
+(when (not package-archive-contents)
+  (package-refresh-contents))
+
+(dolist (package package-list)
+  (when (not (package-installed-p package))
+    (package-install package)))
 
 ;; When using a shell, exec path to set path properly
 (when (memq window-system '(mac ns))
@@ -54,10 +82,6 @@
 ;; Pretty mode redisplays some keywords as symbols
 (require 'pretty-mode)
 (global-pretty-mode 1)
-
-;; shell switcher
-(require 'shell-switcher)
-(setq shell-switcher-mode t)
 
 ;; moinmoin for some wiki editing
 (require 'moinmoin-mode)
@@ -71,6 +95,8 @@
                     (when server-buffer-clients
                       (local-set-key (kbd "C-x k") 'server-edit))))
 
+(require 'cider)
+
 ;; paredit config
 (autoload 'enable-paredit-mode "paredit" "Turn on pseudo-structural editing of Lisp code." t)
 (add-hook 'emacs-lisp-mode-hook       #'enable-paredit-mode)
@@ -80,6 +106,7 @@
 (add-hook 'lisp-interaction-mode-hook #'enable-paredit-mode)
 (add-hook 'scheme-mode-hook           #'enable-paredit-mode)
 (add-hook 'clojure-mode-hook          #'enable-paredit-mode)
+(add-hook 'cider-mode-hook            #'enable-paredit-mode)
 
 (require 'eldoc) ; if not already loaded
     (eldoc-add-command
@@ -90,8 +117,7 @@
 (add-hook 'lisp-interaction-mode-hook 'turn-on-eldoc-mode)
 (add-hook 'ielm-mode-hook 'turn-on-eldoc-mode)
 (add-hook 'clojure-mode-hook 'turn-on-eldoc-mode)
-
-
+(add-hook 'cider-mode-hook 'turn-on-eldoc-mode)
 
 ;; ORG MODE
 (require 'org-install)
@@ -103,10 +129,6 @@
 (global-set-key "\C-cc" 'org-capture)
 
 (setq org-default-notes-file "~/.notes")
-
-;; reveal.js support for org mode
-;;(require 'ox-reveal)
-(setq org-reveal-root "file:///Users/dean/Dev/Projects/reveal.js")
 
 
 (require 'yasnippet) ;; not yasnippet-bundle
@@ -122,8 +144,24 @@
 (ac-config-default)
 (add-to-list 'ac-dictionary-directories "~/.emacs.d/ac-dict")
 
-(require 'virtualenv)
+;; Lua config
+(autoload 'lua-mode "lua-mode" "Lua editing mode." t)
+    (add-to-list 'auto-mode-alist '("\\.lua$" . lua-mode))
+    (add-to-list 'interpreter-mode-alist '("lua" . lua-mode))
 
+;; Clojure config
+(setq nrepl-hide-special-buffers t)
+
+(require 'ac-nrepl)
+(add-hook 'cider-repl-mode-hook 'ac-nrepl-setup)
+
+(eval-after-load "auto-complete"
+  '(add-to-list 'ac-modes 'cider-repl-mode))
+
+
+
+;; Python Config
+(require 'virtualenv)
 (autoload 'pymacs-apply "pymacs")
 (autoload 'pymacs-call "pymacs")
 (autoload 'pymacs-eval "pymacs" nil t)

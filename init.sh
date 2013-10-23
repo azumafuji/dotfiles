@@ -42,6 +42,7 @@ brew install zeromq
 
 sudo cp ~/src/dotfiles/paths /etc/paths
 
+mkdir ~/src/pypicache
 mkdir ~/.ec2
 
 mkdir ~/.git
@@ -84,8 +85,6 @@ rm ~/.ipython/profile_default/ipython_config.py
 rm ~/.ipython/profile_default/ipython_notebook_config.py
 ln -s ~/src/dotfiles/ipython_config.py ~/.ipython/profile_default/ipython_config.py
 ln -s ~/src/dotfiles/ipython_notebook_config.py ~/.ipython/profile_default/ipython_notebook_config.py
-
-mkdir ~/src/pypicache
 
 mkdir ~/.pip
 ln -s ~/src/dotfiles/pip.conf ~/.pip/pip.conf

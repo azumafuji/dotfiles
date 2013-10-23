@@ -39,6 +39,11 @@ brew install source-highlight
 brew install the_silver_searcher
 brew install zeromq
 
+ln -s ~/src/dotfiles/bashrc ~/.bashrc
+ln -s ~/src/dotfiles/profile ~/.profile
+ln -s ~/src/dotfiles/bash_profile ~/.bash_profile
+
+
 mkdir ~/.git
 
 ln -s ~/src/dotfiles/gitconfig ~/.gitconfig
@@ -61,7 +66,7 @@ mkdir ~/src/ipython
 mkdir ~/.notes
 mkdir -p ~/.emacs.d/snippets
 
-
+ln -s ~/src/dotfiles/emacs ~/.emacs
 
 sudo easy_install pip 
 sudo pip install virtualenv virtualenvwrapper

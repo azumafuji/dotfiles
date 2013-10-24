@@ -97,3 +97,9 @@ ln -s ~/src/dotfiles/bash_profile ~/.bash_profile
 git clone git@github.com:chriskempson/tomorrow-theme.git ~/src/tomorrow-theme
 
 java -version
+
+git clone git@github.com:azumafuji/editmoin.git ~/src/editmoin
+
+
+sh ~/src/osx.sh
+

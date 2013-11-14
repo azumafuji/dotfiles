@@ -11,6 +11,9 @@ export EC2_CERT="$(/bin/ls "$HOME"/.ec2/cert-*.pem | /usr/bin/head -1)"
 export EC2_HOME="/usr/local/Library/LinkedKegs/ec2-api-tools/jars"
 export PROXY_PYPI_DIR="$HOME/src/pypicache"
 
+export VAGRANT_DEFAULT_PROVIDER="vmware_fusion"
+
+
 ulimit -n 4096 
 
 export DJANGO_COLORS="light"

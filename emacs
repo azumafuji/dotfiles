@@ -76,6 +76,12 @@
 (when (memq window-system '(mac ns))
     (exec-path-from-shell-initialize))
 
+;; Make sure we have recent files avaialble
+(require 'recentf)
+(recentf-mode 1)
+(setq recentf-max-menu-items 25)
+(global-set-key "\C-x\ \C-r" 'helm-recentf)
+
 ;; Set a nice color theme
 (load-theme 'sanityinc-tomorrow-night t)
 
@@ -129,6 +135,10 @@
 (global-set-key "\C-cc" 'org-capture)
 
 (setq org-default-notes-file "~/Documents/org/notes")
+
+(require 'ox-md)
+(require 'ox-odt)
+(require 'ox-reveal)
 
 (require 'yasnippet) ;; not yasnippet-bundle
 (setq yas-trigger-key "<backtab>")

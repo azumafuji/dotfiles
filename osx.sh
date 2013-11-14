@@ -1,6 +1,9 @@
-			 #!/usr/bin/env bash
+#!/usr/bin/env bash
 
 # ~/.osx — http://mths.be/osx
+
+# TODO: Hide timemachine and volume icons, add date to menubar
+# TODO: Automatically set terminal theme com.apple.terminal ...
 
 # Ask for the administrator password upfront
 sudo -v
@@ -13,10 +16,10 @@ while true; do sudo -n true; sleep 60; kill -0 "$$" || exit; done 2>/dev/null &
 ###############################################################################
 
 # Set computer name (as done via System Preferences → Sharing)
-sudo scutil --set ComputerName "paz"
-sudo scutil --set HostName "paz"
-sudo scutil --set LocalHostName "paz"
-sudo defaults write /Library/Preferences/SystemConfiguration/com.apple.smb.server NetBIOSName -string "paz"
+sudo scutil --set ComputerName "motoko"
+sudo scutil --set HostName "motoko"
+sudo scutil --set LocalHostName "motoko"
+sudo defaults write /Library/Preferences/SystemConfiguration/com.apple.smb.server NetBIOSName -string "motoko"
 
 # Set standby delay to 24 hours (default is 1 hour)
 # sudo pmset -a standbydelay 86400

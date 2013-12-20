@@ -1,7 +1,7 @@
+;; -*- mode: Lisp; fill-column: 75; comment-column: 50; -*-
 ;; .emacs --- Config for Emacs
 ;;; Commentary:
 ;; My Emacs file for working with Python, Clojure, Org, and various other bits
-
 
 ;;; Code:
 ;; Default tabs and spacing
@@ -11,11 +11,11 @@
 (setq-default py-indent-offset 4)
 
 ;; Some display settings for line numbers and the menubar
-(global-linum-mode 1)
+;;(global-linum-mode 1)
 (setq line-number-mode t)
 (setq column-number-mode t)
-(setq linum-format "%5d ")
-(global-visual-line-mode t)
+;; (setq linum-format "%5d ")
+;; (global-visual-line-mode t)
 (menu-bar-mode -1)
 (tool-bar-mode -1)
 
@@ -47,20 +47,27 @@
 
 (setq package-list '(auto-complete
                      ac-nrepl
+                     ag
+                     auctex
                      cider
                      color-theme
                      color-theme-sanityinc-tomorrow
                      clojure-mode
                      exec-path-from-shell
                      flycheck
+                     fold-this
                      helm
                      lua-mode
                      magit
                      moinmoin-mode
                      org-plus-contrib
+                     org-pomodoro
+                     org-present
+                     ox-reveal
                      paredit
                      pretty-mode
                      pymacs
+                     shell-switcher
                      virtualenv
                      yasnippet
                      ))
@@ -76,6 +83,19 @@
 (when (memq window-system '(mac ns))
     (exec-path-from-shell-initialize))
 
+;; cd to my home directory on startup 
+(cd "~")
+
+;; Shell switcher mode for easier access to shells
+(require 'shell-switcher)
+(setq shell-switcher-mode t)
+(define-key shell-switcher-mode-map (kbd "C-'")
+            'shell-switcher-switch-buffer)
+(define-key shell-switcher-mode-map (kbd "C-x 4 '")
+            'shell-switcher-switch-buffer-other-window)
+(define-key shell-switcher-mode-map (kbd "C-M-'")
+            'shell-switcher-new-shell)
+
 ;; Make sure we have recent files avaialble
 (require 'recentf)
 (recentf-mode 1)
@@ -89,6 +109,11 @@
 (require 'pretty-mode)
 (global-pretty-mode 1)
 
+;; Fold-it setup
+;; (global-set-key (kbd "C-c C-f") 'fold-this-all)
+(global-set-key (kbd "C-c C-f") 'fold-this)
+(global-set-key (kbd "C-c M-f") 'fold-this-unfold-all)
+
 ;; moinmoin for some wiki editing
 (require 'moinmoin-mode)
 (setq auto-mode-alist (cons '("\\.moin" . moinmoin-mode) auto-mode-alist))
@@ -100,6 +125,7 @@
                 (use-local-map (copy-keymap (current-local-map))))
                     (when server-buffer-clients
                       (local-set-key (kbd "C-x k") 'server-edit))))
+
 
 (require 'cider)
 
@@ -139,6 +165,12 @@
 (require 'ox-md)
 (require 'ox-odt)
 (require 'ox-reveal)
+(require 'ox-koma-letter)
+(require 'ox-beamer)
+
+;; AucTeX
+
+
 
 (require 'yasnippet) ;; not yasnippet-bundle
 (setq yas-trigger-key "<backtab>")
@@ -182,19 +214,34 @@
      (require 'pymacs)
      (pymacs-load "ropemacs" "rope-")))
 
-(add-hook 'after-init-hook #'global-flycheck-mode)
 
 (ac-ropemacs-initialize)
 (add-hook 'python-mode-hook
     (lambda ()
     (add-to-list 'ac-sources 'ac-source-ropemacs)))
 
+(add-hook 'after-init-hook #'global-flycheck-mode)
+(require 'flycheck)
+(flycheck-define-checker javascript-jslint-reporter
+  "A JavaScript syntax and style checker based on JSLint Reporter."
+  :command ("~/.emacs.d/jslint-reporter/jslint-reporter" "--jshint" source)
+  :error-patterns
+  ((error line-start (1+ nonl) ":" line ":" column ":" (message) line-end))
+  :modes (js-mode js2-mode js3-mode json-mode))
+
+(add-hook 'js-mode-hook (lambda ()
+                          (flycheck-select-checker 'javascript-jslint-reporter)
+                          (flycheck-mode)))
+(add-hook 'json-mode-hook (lambda ()
+                          (flycheck-select-checker 'javascript-jslint-reporter)
+                          (flycheck-mode)))
+
+
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(org-agenda-files (quote ("~/.notes")))
  )
 (custom-set-faces
  ;; custom-set-faces was added by Custom.

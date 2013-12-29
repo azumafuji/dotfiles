@@ -160,7 +160,7 @@
 (global-set-key "\C-cr" 'org-remember)
 (global-set-key "\C-cc" 'org-capture)
 
-(setq org-default-notes-file "~/Documents/org/notes")
+(setq org-default-notes-file "~/Documents/org/notes.org")
 
 (require 'ox-md)
 (require 'ox-odt)
@@ -179,7 +179,7 @@
 (require 'helm-config)
 (helm-mode 1)
 
-(add-to-list 'load-path "~/.emacs.d")    ; This may not be appeared if you have already added.
+(add-to-list 'load-path "~/.emacs.d/lisp")  
 
 (require 'auto-complete-config)
 (ac-config-default)
@@ -242,7 +242,7 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- )
+ '(org-agenda-files (quote ("~/Documents/org/notes.org"))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.

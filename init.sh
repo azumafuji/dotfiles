@@ -1,13 +1,12 @@
+#!/bin/bash
 
-
-ruby -e "$(curl -fsSL https://raw.github.com/mxcl/homebrew/go)"
+ruby -e "$(curl -fsSL https://raw.github.com/Homebrew/homebrew/go/install)"
 
 brew tap marcqualie/nginx
 brew tap phinze/homebrew-cask
 
 brew install brew-cask
 
-brew cask install bit-torrent-sync
 brew cask install caffeine
 brew cask install cord
 brew cask install firefox
@@ -15,11 +14,8 @@ brew cask install google-chrome
 brew cask install itunes-volume-control
 brew cask install jumpcut
 brew cask install light-table
-brew cask install pycharm
 brew cask install screenhero
-brew cask install size-up
 brew cask install sourcetree
-brew cask install super-duper
 brew cask install vagrant
 
 
@@ -67,6 +63,10 @@ mkdir -p ~/.emacs.d/snippets
 
 ln -s ~/src/dotfiles/emacs ~/.emacs
 
+cd /tmp
+curl -O https://bitbucket.org/pypa/setuptools/raw/bootstrap/ez_setup.py
+sudo python ez_setup.py
+
 sudo easy_install pip 
 sudo pip install virtualenv virtualenvwrapper
 sudo pip install rope ropemacs
@@ -100,6 +100,5 @@ java -version
 
 git clone git@github.com:azumafuji/editmoin.git ~/src/editmoin
 
-
-sh ~/src/osx.sh
+sh ~/src/dotfiles/osx.sh
 

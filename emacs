@@ -33,7 +33,7 @@
 
 ;; For the GUI use this font and line spacing
 (set-face-attribute 'default nil
-                    :family "Menlo" :height 130 :weight 'normal)
+                    :family "PragmataPro for Powerline" :height 130 :weight 'normal)
 (setq-default line-height 1.2)
 
 ;; Set up package repos
@@ -46,7 +46,6 @@
 (package-initialize)
 
 (setq package-list '(auto-complete
-                     ac-nrepl
                      ag
                      auctex
                      cider
@@ -55,21 +54,22 @@
                      clojure-mode
                      exec-path-from-shell
                      flycheck
-                     fold-this
                      helm
+                     json-mode
+                     json-snatcher
                      lua-mode
                      magit
-                     moinmoin-mode
+                     markdown-mode
                      org-plus-contrib
-                     org-pomodoro
                      org-present
                      ox-reveal
                      paredit
                      pretty-mode
                      pymacs
+                     rainbow-delimiters
+                     restclient
                      shell-switcher
                      virtualenv
-                     yasnippet
                      ))
 
 (when (not package-archive-contents)
@@ -85,6 +85,9 @@
 
 ;; cd to my home directory on startup 
 (cd "~")
+
+;; local lisp configs
+(add-to-list 'load-path "~/.emacs.d/lisp")  
 
 ;; Shell switcher mode for easier access to shells
 (require 'shell-switcher)
@@ -109,16 +112,12 @@
 (require 'pretty-mode)
 (global-pretty-mode 1)
 
-;; Fold-it setup
-;; (global-set-key (kbd "C-c C-f") 'fold-this-all)
-(global-set-key (kbd "C-c C-f") 'fold-this)
-(global-set-key (kbd "C-c M-f") 'fold-this-unfold-all)
+;; settings for emacsserver
 
-;; moinmoin for some wiki editing
-(require 'moinmoin-mode)
-(setq auto-mode-alist (cons '("\\.moin" . moinmoin-mode) auto-mode-alist))
 
-;; keymaping for emacsserver
+(add-hook 'server-switch-hook
+          (exec-path-from-shell-initialize))
+
 (add-hook 'server-switch-hook
             (lambda ()
               (when (current-local-map)
@@ -126,7 +125,7 @@
                     (when server-buffer-clients
                       (local-set-key (kbd "C-x k") 'server-edit))))
 
-
+;; Clojure editing
 (require 'cider)
 
 ;; paredit config
@@ -157,8 +156,14 @@
 (global-set-key "\C-cl" 'org-store-link)
 (global-set-key "\C-ca" 'org-agenda)
 (global-set-key "\C-cb" 'org-iswitchb)
-(global-set-key "\C-cr" 'org-remember)
 (global-set-key "\C-cc" 'org-capture)
+
+(org-babel-do-load-languages
+ 'org-babel-load-languages
+ '((ditaa . t)
+   (dot . t)
+   (plantuml . t)))
+
 
 (setq org-default-notes-file "~/Documents/org/notes.org")
 
@@ -167,38 +172,34 @@
 (require 'ox-reveal)
 (require 'ox-koma-letter)
 (require 'ox-beamer)
-
-;; AucTeX
-
+(require 'ox-latex)
 
 
-(require 'yasnippet) ;; not yasnippet-bundle
-(setq yas-trigger-key "<backtab>")
-(yas-global-mode 1)
-
+;; Utils
 (require 'helm-config)
 (helm-mode 1)
-
-(add-to-list 'load-path "~/.emacs.d/lisp")  
 
 (require 'auto-complete-config)
 (ac-config-default)
 (add-to-list 'ac-dictionary-directories "~/.emacs.d/ac-dict")
 
+
+;; Javascript
+(require 'json-mode)
+(require 'json-snatcher)
+
+(defun js-mode-bindings ()
+  "Sets a hotkey for using the json-snatcher plugin"
+  (when (string-match  "\\.json$" (buffer-name))
+    (local-set-key (kbd "C-c C-g") 'jsons-print-path)))
+(add-hook 'js-mode-hook 'js-mode-bindings)
+(add-hook 'json-mode-hook 'js-mode-bindings)
+
+
 ;; Lua config
 (autoload 'lua-mode "lua-mode" "Lua editing mode." t)
     (add-to-list 'auto-mode-alist '("\\.lua$" . lua-mode))
     (add-to-list 'interpreter-mode-alist '("lua" . lua-mode))
-
-;; Clojure config
-(setq nrepl-hide-special-buffers t)
-
-(require 'ac-nrepl)
-(add-hook 'cider-repl-mode-hook 'ac-nrepl-setup)
-
-(eval-after-load "auto-complete"
-  '(add-to-list 'ac-modes 'cider-repl-mode))
-
 
 
 ;; Python Config
@@ -237,6 +238,8 @@
                           (flycheck-mode)))
 
 
+
+
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -250,3 +253,4 @@
  ;; If there is more than one, they won't work right.
  )
 ;;; .emacs ends here
+(put 'narrow-to-region 'disabled nil)

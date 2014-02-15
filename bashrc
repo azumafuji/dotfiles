@@ -13,7 +13,6 @@ export PROXY_PYPI_DIR="$HOME/src/pypicache"
 
 export VAGRANT_DEFAULT_PROVIDER="vmware_fusion"
 
-
 ulimit -n 4096 
 
 export DJANGO_COLORS="light"
@@ -38,6 +37,7 @@ alias serveit='python -m SimpleHTTPServer 8080'
 alias timestamp='date "+%Y%m%dT%H%M%S"'
 alias ppp='proxypypi -p 8333 -d $PROXY_PYPI_DIR -P $PROXY_PYPI_DIR/proxypypi.pid -l $PROXY_PYPI_DIR/proxypypi.log -o $PROXY_PYPI_DIR/proxypypi.console'
 
+eval "$(rbenv init -)"
 
 if [ -f .local.env ]; then
   source .local.env

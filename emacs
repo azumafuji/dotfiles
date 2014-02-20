@@ -158,14 +158,30 @@
 (global-set-key "\C-cb" 'org-iswitchb)
 (global-set-key "\C-cc" 'org-capture)
 
+(setq org-default-notes-file "~/Documents/org/notes.org")
+
+(setq org-agenda-files '("~/Documents/org/projects/"))
+
+(setq org-archive-location '("~/Documents/org/archives/%s_archive.org::* ") )
+
+(setq org-refile-targets (quote ((nil :maxlevel . 5)
+                                 (org-agenda-files :maxlevel . 5))))
+
+(setq org-refile-use-outline-path 'file)
+
+(setq org-outline-path-complete-in-steps nil)
+
+(setq org-refile-allow-creating-parent-nodes 'confirm)
+
+
 (org-babel-do-load-languages
  'org-babel-load-languages
  '((ditaa . t)
    (dot . t)
-   (plantuml . t)))
+   (plantuml . t)
+   (latex . t)
+   (python . t)))
 
-
-(setq org-default-notes-file "~/Documents/org/notes.org")
 
 (require 'ox-md)
 (require 'ox-odt)
@@ -245,7 +261,7 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(org-agenda-files (quote ("~/Documents/org/notes.org"))))
+)
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.

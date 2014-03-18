@@ -33,8 +33,10 @@
 
 ;; For the GUI use this font and line spacing
 (set-face-attribute 'default nil
-                    :family "PragmataPro for Powerline" :height 130 :weight 'normal)
+                    :family "PragmataPro for Powerline" :height 160 :weight 'normal)
 (setq-default line-height 1.2)
+
+(setq ns-use-srgb-colorspace t)
 
 ;; Set up package repos
 (require 'package)
@@ -111,6 +113,9 @@
 ;; Pretty mode redisplays some keywords as symbols
 (require 'pretty-mode)
 (global-pretty-mode 1)
+
+;; Setup Visual line mode
+(add-hook 'text-mode-hook 'turn-on-visual-line-mode)
 
 ;; settings for emacsserver
 
@@ -195,6 +200,8 @@
              "* TODO %?\n  %i\n  %a")
         ("j" "Journal" entry (file+datetree "~/Documents/org/journal.org")
              "* %?\nEntered on %U\n  %i\n  %a")))
+
+
 
 
 ;; Utils

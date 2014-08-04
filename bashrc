@@ -1,4 +1,6 @@
-export EDITOR=emacs
+#!/bin/bash
+# -*- mode: sh-mode -*-
+export EDITOR=emacsclient
 export TERM=xterm-256color
 export GREP_OPTIONS='--color=auto' GREP_COLOR='1;32'
 export CLICOLOR=1 
@@ -24,19 +26,16 @@ function _update_ps1()
 
 export PROMPT_COMMAND="_update_ps1"
 
-source /usr/local/bin/virtualenvwrapper.sh
-
 alias rcp='rsync -aP'
 alias cleanpyc='find . -name '*.pyc' -exec rm {} \;'
 
-alias startmongo='mongod run --rest --config ~/.mongodb/mongod.conf'
-alias startes='elasticsearch -f -D es.config=/Users/dean/.elasticsearch/elasticsearch.yml'
 alias connectencota='ssh -i ~/.ssh/PraxisProduction.pem ubuntu@encota.praxismi.com'
-alias em='editmoin --trivial-change'
 alias serveit='python -m SimpleHTTPServer 8080'
 alias timestamp='date "+%Y%m%dT%H%M%S"'
 alias ppp='proxypypi -p 8333 -d $PROXY_PYPI_DIR -P $PROXY_PYPI_DIR/proxypypi.pid -l $PROXY_PYPI_DIR/proxypypi.log -o $PROXY_PYPI_DIR/proxypypi.console'
+alias updaterepos='find . -maxdepth 1 -type d -print -execdir git --git-dir={}/.git --work-tree=$PWD/{} pull origin master \;'
 
+source /usr/local/bin/virtualenvwrapper.sh
 eval "$(rbenv init -)"
 
 if [ -f .local.env ]; then

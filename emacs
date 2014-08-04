@@ -4,6 +4,9 @@
 ;; My Emacs file for working with Python, Clojure, Org, and various other bits
 
 ;;; Code:
+;; Update GC Settings
+(setq gc-cons-threshold 20000000)
+
 ;; Default tabs and spacing
 (setq-default indent-tabs-mode nil)
 (setq-default tab-width 4)
@@ -31,11 +34,6 @@
   kept-old-versions 2
   version-control t)
 
-;; For the GUI use this font and line spacing
-(set-face-attribute 'default nil
-                    :family "PragmataPro for Powerline" :height 160 :weight 'normal)
-(setq-default line-height 1.2)
-
 (setq ns-use-srgb-colorspace t)
 
 ;; Set up package repos
@@ -50,13 +48,15 @@
 (setq package-list '(auto-complete
                      ag
                      auctex
-                     cider
+                     ;;cider
                      color-theme
                      color-theme-sanityinc-tomorrow
                      clojure-mode
+                     dockerfile-mode
                      exec-path-from-shell
                      flycheck
                      helm
+                     helm-ag
                      json-mode
                      json-snatcher
                      lua-mode
@@ -65,13 +65,14 @@
                      org-plus-contrib
                      org-present
                      ox-reveal
-                     paredit
                      pretty-mode
                      pymacs
                      rainbow-delimiters
                      restclient
                      shell-switcher
+                     smartparens
                      virtualenv
+                     yasnippet
                      ))
 
 (when (not package-archive-contents)
@@ -82,8 +83,8 @@
     (package-install package)))
 
 ;; When using a shell, exec path to set path properly
-(when (memq window-system '(mac ns))
-    (exec-path-from-shell-initialize))
+;;(when (memq window-system '(mac ns))
+;;    (exec-path-from-shell-initialize))
 
 ;; cd to my home directory on startup 
 (cd "~")
@@ -101,6 +102,12 @@
 (define-key shell-switcher-mode-map (kbd "C-M-'")
             'shell-switcher-new-shell)
 
+;; Setup local snippets
+(setq yas-snippet-dirs
+      '("~/.emacs.d/snippets"))
+
+(yas-global-mode 1)
+
 ;; Make sure we have recent files avaialble
 (require 'recentf)
 (recentf-mode 1)
@@ -108,7 +115,13 @@
 (global-set-key "\C-x\ \C-r" 'helm-recentf)
 
 ;; Set a nice color theme
-(load-theme 'sanityinc-tomorrow-night t)
+(load-theme 'cyberpunk t)
+
+;; For the GUI use this font and line spacing
+(set-face-attribute 'default nil
+                    :family "M+ 1mn" :height 140 :weight 'normal)
+(setq-default line-height 1.2)
+
 
 ;; Pretty mode redisplays some keywords as symbols
 (require 'pretty-mode)
@@ -119,9 +132,8 @@
 
 ;; settings for emacsserver
 
-
-(add-hook 'server-switch-hook
-          (exec-path-from-shell-initialize))
+;;(add-hook 'server-switch-hook
+;;          (exec-path-from-shell-initialize))
 
 (add-hook 'server-switch-hook
             (lambda ()
@@ -133,21 +145,11 @@
 ;; Clojure editing
 (require 'cider)
 
-;; paredit config
-(autoload 'enable-paredit-mode "paredit" "Turn on pseudo-structural editing of Lisp code." t)
-(add-hook 'emacs-lisp-mode-hook       #'enable-paredit-mode)
-(add-hook 'eval-expression-minibuffer-setup-hook #'enable-paredit-mode)
-(add-hook 'ielm-mode-hook             #'enable-paredit-mode)
-(add-hook 'lisp-mode-hook             #'enable-paredit-mode)
-(add-hook 'lisp-interaction-mode-hook #'enable-paredit-mode)
-(add-hook 'scheme-mode-hook           #'enable-paredit-mode)
-(add-hook 'clojure-mode-hook          #'enable-paredit-mode)
-(add-hook 'cider-mode-hook            #'enable-paredit-mode)
+(require 'smartparens-config)
+(smartparens-global-mode t)
+(show-smartparens-global-mode t)
 
 (require 'eldoc) ; if not already loaded
-    (eldoc-add-command
-     'paredit-backward-delete
-     'paredit-close-round)
 
 (add-hook 'emacs-lisp-mode-hook 'turn-on-eldoc-mode)
 (add-hook 'lisp-interaction-mode-hook 'turn-on-eldoc-mode)
@@ -178,7 +180,6 @@
 
 (setq org-refile-allow-creating-parent-nodes 'confirm)
 
-
 (org-babel-do-load-languages
  'org-babel-load-languages
  '((ditaa . t)
@@ -187,6 +188,10 @@
    (latex . t)
    (python . t)))
 
+(defun my-org-confirm-babel-evaluate (lang body)
+  (not (or  (string= lang "ditaa")              ; don't ask for ditaa or dot
+         (string= lang "dot"))))                                    
+(setq org-confirm-babel-evaluate 'my-org-confirm-babel-evaluate)
 
 (require 'ox-md)
 (require 'ox-odt)
@@ -194,15 +199,13 @@
 (require 'ox-koma-letter)
 (require 'ox-beamer)
 (require 'ox-latex)
+(require 'ox-mm)
 
 (setq org-capture-templates
       '(("t" "Todo" entry (file+headline "~/Documents/org/notes.org" "Tasks")
              "* TODO %?\n  %i\n  %a")
         ("j" "Journal" entry (file+datetree "~/Documents/org/journal.org")
              "* %?\nEntered on %U\n  %i\n  %a")))
-
-
-
 
 ;; Utils
 (require 'helm-config)
@@ -211,7 +214,6 @@
 (require 'auto-complete-config)
 (ac-config-default)
 (add-to-list 'ac-dictionary-directories "~/.emacs.d/ac-dict")
-
 
 ;; Javascript
 (require 'json-mode)
@@ -224,12 +226,10 @@
 (add-hook 'js-mode-hook 'js-mode-bindings)
 (add-hook 'json-mode-hook 'js-mode-bindings)
 
-
 ;; Lua config
 (autoload 'lua-mode "lua-mode" "Lua editing mode." t)
     (add-to-list 'auto-mode-alist '("\\.lua$" . lua-mode))
     (add-to-list 'interpreter-mode-alist '("lua" . lua-mode))
-
 
 ;; Python Config
 (require 'virtualenv)
@@ -239,12 +239,13 @@
 (autoload 'pymacs-exec "pymacs" nil t)
 (autoload 'pymacs-load "pymacs" nil t)
 (autoload 'pymacs-autoload "pymacs")
+
 (eval-after-load "pymacs"
   '(progn
      (require 'pymacs)
      (pymacs-load "ropemacs" "rope-")))
 
-
+(setq ropemacs-confirm-saving 'nil)
 (ac-ropemacs-initialize)
 (add-hook 'python-mode-hook
     (lambda ()
@@ -257,7 +258,7 @@
   :command ("~/.emacs.d/jslint-reporter/jslint-reporter" "--jshint" source)
   :error-patterns
   ((error line-start (1+ nonl) ":" line ":" column ":" (message) line-end))
-  :modes (js-mode js2-mode js3-mode json-mode))
+  :modes (js-mode js2-mode js3-mode))
 
 (add-hook 'js-mode-hook (lambda ()
                           (flycheck-select-checker 'javascript-jslint-reporter)
@@ -267,19 +268,17 @@
                           (flycheck-mode)))
 
 
-
-
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
-)
+ '(custom-safe-themes
+   (quote
+    ("024b0033a950d6a40bbbf2b1604075e6c457d40de0b52debe3ae994f88c09a4a" default))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  )
-;;; .emacs ends here
-(put 'narrow-to-region 'disabled nil)

@@ -1,10 +1,9 @@
-{:user {:plugins [[lein-localrepo "0.5.2"]
+{:user {:plugins [[lein-localrepo "RELEASE"]
                   [lein-pprint "1.1.1"]
-                  [lein-ancient "0.5.4"]
-                  [lein-immutant "1.2.0"]
-                  [lein-marginalia "0.7.1"]
-                  [lein-midje "3.1.3"]
-                  [lein-tar "3.0.0"]
-                  [lein-cljsbuild "1.0.2"]
-                  [lein-cucumber "1.0.2"]]
-        :dependencies [[alembic "0.2.0"]]}}
+                  [lein-ancient "RELEASE"]
+                  [lein-tar "RELEASE"]
+                  [lein-cljsbuild "RELEASE"]
+                  [lein-midje "3.1.1"]
+                  [cider/cider-nrepl "0.7.0-SNAPSHOT"]]
+        :dependencies [[alembic "RELEASE"]
+                       [slamhound "RELEASE"]]}}

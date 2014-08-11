@@ -39,39 +39,37 @@
 ;; Set up package repos
 (require 'package)
 (setq package-archives '(
+                         ("elpy" . "http://jorgenschaefer.github.io/packages/")
                          ("gnu" . "http://elpa.gnu.org/packages/")
                          ("marmalade" . "http://marmalade-repo.org/packages/")
-                         ("melpa" . "http://melpa.milkbox.net/packages/")
+                         ("melpa-stable" . "http://melpa-stable.milkbox.net/packages/")
                          ("org" . "http://orgmode.org/elpa/")))
 (package-initialize)
 
 (setq package-list '(auto-complete
                      ag
                      auctex
-                     ;;cider
-                     color-theme
+                     cider
                      color-theme-sanityinc-tomorrow
-                     clojure-mode
-                     dockerfile-mode
+                     cyberpunk-theme
+                     elpy
                      exec-path-from-shell
                      flycheck
                      helm
                      helm-ag
                      json-mode
-                     json-snatcher
                      lua-mode
                      magit
                      markdown-mode
                      org-plus-contrib
-                     org-present
-                     ox-reveal
+                     ;;org-present
+                     ;;ox-reveal
                      pretty-mode
-                     pymacs
                      rainbow-delimiters
-                     restclient
-                     shell-switcher
-                     smartparens
-                     virtualenv
+                     ;;restclient
+                     ;;shell-switcher
+                     ;;smartparens
+                     ;;virtualenv
                      yasnippet
                      ))
 
@@ -82,15 +80,14 @@
   (when (not (package-installed-p package))
     (package-install package)))
 
-;; When using a shell, exec path to set path properly
-;;(when (memq window-system '(mac ns))
-;;    (exec-path-from-shell-initialize))
 
 ;; cd to my home directory on startup 
 (cd "~")
 
 ;; local lisp configs
-(add-to-list 'load-path "~/.emacs.d/lisp")  
+(let ((default-directory "~/.emacs.d/lisp/"))
+  (normal-top-level-add-to-load-path '("."))
+  (normal-top-level-add-subdirs-to-load-path))
 
 ;; Shell switcher mode for easier access to shells
 (require 'shell-switcher)
@@ -199,7 +196,7 @@
 (require 'ox-koma-letter)
 (require 'ox-beamer)
 (require 'ox-latex)
-(require 'ox-mm)
+;; (require 'ox-mm)
 
 (setq org-capture-templates
       '(("t" "Todo" entry (file+headline "~/Documents/org/notes.org" "Tasks")
@@ -232,18 +229,18 @@
     (add-to-list 'interpreter-mode-alist '("lua" . lua-mode))
 
 ;; Python Config
-(require 'virtualenv)
-(autoload 'pymacs-apply "pymacs")
-(autoload 'pymacs-call "pymacs")
-(autoload 'pymacs-eval "pymacs" nil t)
-(autoload 'pymacs-exec "pymacs" nil t)
-(autoload 'pymacs-load "pymacs" nil t)
-(autoload 'pymacs-autoload "pymacs")
+;;(require 'virtualenv)
+;; (autoload 'pymacs-apply "pymacs")
+;; (autoload 'pymacs-call "pymacs")
+;; (autoload 'pymacs-eval "pymacs" nil t)
+;; (autoload 'pymacs-exec "pymacs" nil t)
+;; (autoload 'pymacs-load "pymacs" nil t)
+;; (autoload 'pymacs-autoload "pymacs")
 
-(eval-after-load "pymacs"
-  '(progn
-     (require 'pymacs)
-     (pymacs-load "ropemacs" "rope-")))
+;; (eval-after-load "pymacs"
+;;   '(progn
+;;      (require 'pymacs)
+;;      (pymacs-load "ropemacs" "rope-")))
 
 (setq ropemacs-confirm-saving 'nil)
 (ac-ropemacs-initialize)
@@ -267,18 +264,6 @@
                           (flycheck-select-checker 'javascript-jslint-reporter)
                           (flycheck-mode)))
 
-
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(custom-safe-themes
-   (quote
-    ("024b0033a950d6a40bbbf2b1604075e6c457d40de0b52debe3ae994f88c09a4a" default))))
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- )
+;; When using a shell, exec path to set path properly
+(when (memq window-system '(mac ns))
+    (exec-path-from-shell-initialize))

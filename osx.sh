@@ -16,10 +16,10 @@ while true; do sudo -n true; sleep 60; kill -0 "$$" || exit; done 2>/dev/null &
 ###############################################################################
 
 # Set computer name (as done via System Preferences → Sharing)
-sudo scutil --set ComputerName "hyperion"
-sudo scutil --set HostName "hyperion"
-sudo scutil --set LocalHostName "hyperion"
-sudo defaults write /Library/Preferences/SystemConfiguration/com.apple.smb.server NetBIOSName -string "hyperion"
+sudo scutil --set ComputerName "Inachus"
+sudo scutil --set HostName "Inachus"
+sudo scutil --set LocalHostName "Inachus"
+sudo defaults write /Library/Preferences/SystemConfiguration/com.apple.smb.server NetBIOSName -string "Inachus"
 
 # Set standby delay to 24 hours (default is 1 hour)
 # sudo pmset -a standbydelay 86400
@@ -503,10 +503,10 @@ defaults write com.apple.mail NSUserKeyEquivalents -dict-add "Send" "@\\U21a9"
 defaults write com.apple.terminal StringEncodings -array 4
 
 # Use a modified version of the Pro theme by default in Terminal.app
-open "$HOME/src/tomorrow-theme/OS X Terminal/Tomorrow Night.terminal"
-sleep 1 # Wait a bit to make sure the theme is loaded
-defaults write com.apple.terminal "Default Window Settings" -string "Tomorrow Night"
-defaults write com.apple.terminal "Startup Window Settings" -string "Tomorrow Night"
+#open "$HOME/src/tomorrow-theme/OS X Terminal/Tomorrow Night.terminal"
+#sleep 1 # Wait a bit to make sure the theme is loaded
+#defaults write com.apple.terminal "Default Window Settings" -string "Tomorrow Night"
+#defaults write com.apple.terminal "Startup Window Settings" -string "Tomorrow Night"
 
 # Enable “focus follows mouse” for Terminal.app and all X11 apps
 # i.e. hover over a window and start typing in it without clicking first

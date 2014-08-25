@@ -64,6 +64,7 @@
                      org-plus-contrib
                      ;;org-present
                      ;;ox-reveal
+                     pandoc-mode
                      pretty-mode
                      rainbow-delimiters
                      ;;restclient

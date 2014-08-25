@@ -1,37 +1,47 @@
 #!/bin/bash
 
+java -version
+
+sudo /usr/libexec/locate.updatedb
+
 ruby -e "$(curl -fsSL https://raw.github.com/Homebrew/homebrew/go/install)"
 
-brew tap marcqualie/nginx
-brew tap phinze/homebrew-cask
+#brew tap marcqualie/nginx
+#brew tap phinze/homebrew-cask
 
-brew install brew-cask
+brew install caskroom/cask/brew-cask
 
 brew cask install caffeine
-brew cask install cord
+#brew cask install cord
 brew cask install firefox
 brew cask install google-chrome
 brew cask install itunes-volume-control
 brew cask install jumpcut
-brew cask install light-table
+#brew cask install light-table
 brew cask install screenhero
-brew cask install sourcetree
+#brew cask install sourcetree
 brew cask install vagrant
+brew cask install spectacle
+brew cask install bittorrent-sync
+brew cask install flux
+brew cask install pandoc
+brew cask install hermes
 
-
-brew install emacs --cocoa --with-gnutls
+brew install rbenv
+brew install emacs --cocoa --with-gnutls --HEAD --use-git-head -srgb
 brew install git
-brew install graphviz --with-freetype --with-bindings --with-app
-brew install hub
-brew install leiningen
-brew install memcached
-brew install libmemcached
-brew install nginx-full --with-spdy --with-lua-module --with-webdav
-brew install postgresql 
-brew install pypy
-brew install rabbitmq
-brew install redis
-brew install rethinkdb
+# This needs java!
+brew install graphviz --with-app --with-bindings --with-freetype
+#brew install hub
+#brew install leiningen
+#brew install memcached
+#brew install libmemcached
+#brew install nginx-full --with-spdy --with-lua-module --with-webdav
+#brew install postgresql 
+#brew install pypy
+#brew install rabbitmq
+#brew install redis
+#brew install rethinkdb
 brew install source-highlight
 brew install the_silver_searcher
 brew install zeromq
@@ -58,10 +68,12 @@ ln -s ~/src/dotfiles/profiles.clj ~/.lein/profiles.clj
 ln -s ~/src/dotfiles/source-highlight ~/.source-highlight
 
 mkdir ~/Documents/iPython
+
 mkdir ~/Documents/org
 mkdir -p ~/.emacs.d/snippets
-
+ln -s ~/src/dotfiles/lisp ~/.emacs.d/lisp
 ln -s ~/src/dotfiles/emacs ~/.emacs
+
 
 cd /tmp
 curl -O https://bitbucket.org/pypa/setuptools/raw/bootstrap/ez_setup.py
@@ -75,7 +87,7 @@ sudo pip install readline ipython
 sudo pip install proxypypi
 sudo pip install jinja2 tornado
 
-git clone git@github.com:pinard/Pymacs.git ~/src/Pymacs
+git clone git://github.com/pinard/Pymacs.git ~/src/Pymacs
 cd ~/src/Pymacs
 make
 sudo python setup.py install
@@ -94,11 +106,9 @@ ln -s ~/src/dotfiles/bashrc ~/.bashrc
 ln -s ~/src/dotfiles/profile ~/.profile
 ln -s ~/src/dotfiles/bash_profile ~/.bash_profile
 
-git clone git@github.com:chriskempson/tomorrow-theme.git ~/src/tomorrow-theme
+git clone git://github.com/chriskempson/tomorrow-theme.git ~/src/tomorrow-theme
 
-java -version
+#git clone git://github.com/azumafuji/editmoin.git ~/src/editmoin
 
-git clone git@github.com:azumafuji/editmoin.git ~/src/editmoin
-
-sh ~/src/dotfiles/osx.sh
+#sh ~/src/dotfiles/osx.sh
 

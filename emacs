@@ -1,5 +1,5 @@
 ;; -*- mode: Lisp; fill-column: 75; comment-column: 50; -*-
-;; .emacs --- Config for Emacs
+;;; emacs -- Emacs init file for Dean
 ;;; Commentary:
 ;; My Emacs file for working with Python, Clojure, Org, and various other bits
 
@@ -40,7 +40,7 @@
 (require 'package)
 (setq package-archives '(
                          ("elpy" . "http://jorgenschaefer.github.io/packages/")
-                         ("gnu" . "http://elpa.gnu.org/packages/")
+                         ("gnu" . "https://elpa.gnu.org/packages/")
                          ("marmalade" . "http://marmalade-repo.org/packages/")
                          ("melpa-stable" . "http://melpa-stable.milkbox.net/packages/")
                          ("org" . "http://orgmode.org/elpa/")))
@@ -50,27 +50,29 @@
                      ag
                      auctex
                      cider
-                     color-theme-sanityinc-tomorrow
+                     company
                      cyberpunk-theme
                      elpy
                      exec-path-from-shell
+                     find-file-in-project
                      flycheck
                      helm
                      helm-ag
+                     iy-go-to-char
                      json-mode
+                     json-snatcher
                      lua-mode
                      magit
                      markdown-mode
                      org-plus-contrib
-                     ;;org-present
-                     ;;ox-reveal
                      pandoc-mode
                      pretty-mode
+                     projectile
+                     pyvenv
                      rainbow-delimiters
-                     ;;restclient
-                     ;;shell-switcher
-                     ;;smartparens
-                     ;;virtualenv
+                     shell-switcher
+                     smartparens
+                     yaml-mode
                      yasnippet
                      ))
 
@@ -84,6 +86,10 @@
 
 ;; cd to my home directory on startup 
 (cd "~")
+
+;; When using a shell, exec path to set path properly
+(when (memq window-system '(mac ns))
+    (exec-path-from-shell-initialize))
 
 ;; local lisp configs
 (let ((default-directory "~/.emacs.d/lisp/"))
@@ -120,25 +126,12 @@
                     :family "M+ 1mn" :height 140 :weight 'normal)
 (setq-default line-height 1.2)
 
-
 ;; Pretty mode redisplays some keywords as symbols
 (require 'pretty-mode)
 (global-pretty-mode 1)
 
 ;; Setup Visual line mode
 (add-hook 'text-mode-hook 'turn-on-visual-line-mode)
-
-;; settings for emacsserver
-
-;;(add-hook 'server-switch-hook
-;;          (exec-path-from-shell-initialize))
-
-(add-hook 'server-switch-hook
-            (lambda ()
-              (when (current-local-map)
-                (use-local-map (copy-keymap (current-local-map))))
-                    (when server-buffer-clients
-                      (local-set-key (kbd "C-x k") 'server-edit))))
 
 ;; Clojure editing
 (require 'cider)
@@ -197,13 +190,34 @@
 (require 'ox-koma-letter)
 (require 'ox-beamer)
 (require 'ox-latex)
-;; (require 'ox-mm)
+(require 'ox-mm)
 
 (setq org-capture-templates
       '(("t" "Todo" entry (file+headline "~/Documents/org/notes.org" "Tasks")
              "* TODO %?\n  %i\n  %a")
         ("j" "Journal" entry (file+datetree "~/Documents/org/journal.org")
              "* %?\nEntered on %U\n  %i\n  %a")))
+
+(add-to-list 'org-latex-classes
+        '("memoir"
+          "\\documentclass[10pt,article,oneside]{memoir}"
+          ("\\chapter{%s}" . "\\chapter*{%s}")
+          ("\\section{%s}" . "\\section*{%s}")
+          ("\\subsection{%s}" . "\\subsection*{%s}")       
+          ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
+          ("\\paragraph{%s}" . "\\paragraph*{%s}")
+          ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
+
+(add-to-list 'org-latex-classes
+        '("tufte"
+          "\\documentclass{tufte-handout}"
+          ("\\chapter{%s}" . "\\chapter*{%s}")
+          ("\\section{%s}" . "\\section*{%s}")
+          ("\\subsection{%s}" . "\\subsection*{%s}")       
+          ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
+          ("\\paragraph{%s}" . "\\paragraph*{%s}")
+          ("\\subparagraph{%s}" . "\\subparagraph*{%s}"))
+        )
 
 ;; Utils
 (require 'helm-config)
@@ -229,42 +243,30 @@
     (add-to-list 'auto-mode-alist '("\\.lua$" . lua-mode))
     (add-to-list 'interpreter-mode-alist '("lua" . lua-mode))
 
-;; Python Config
-;;(require 'virtualenv)
-;; (autoload 'pymacs-apply "pymacs")
-;; (autoload 'pymacs-call "pymacs")
-;; (autoload 'pymacs-eval "pymacs" nil t)
-;; (autoload 'pymacs-exec "pymacs" nil t)
-;; (autoload 'pymacs-load "pymacs" nil t)
-;; (autoload 'pymacs-autoload "pymacs")
-
-;; (eval-after-load "pymacs"
-;;   '(progn
-;;      (require 'pymacs)
-;;      (pymacs-load "ropemacs" "rope-")))
-
-(setq ropemacs-confirm-saving 'nil)
-(ac-ropemacs-initialize)
-(add-hook 'python-mode-hook
-    (lambda ()
-    (add-to-list 'ac-sources 'ac-source-ropemacs)))
-
 (add-hook 'after-init-hook #'global-flycheck-mode)
 (require 'flycheck)
-(flycheck-define-checker javascript-jslint-reporter
-  "A JavaScript syntax and style checker based on JSLint Reporter."
-  :command ("~/.emacs.d/jslint-reporter/jslint-reporter" "--jshint" source)
-  :error-patterns
-  ((error line-start (1+ nonl) ":" line ":" column ":" (message) line-end))
-  :modes (js-mode js2-mode js3-mode))
+(add-hook 'js-mode-hook
+          (lambda () (flycheck-mode t)))
 
-(add-hook 'js-mode-hook (lambda ()
-                          (flycheck-select-checker 'javascript-jslint-reporter)
-                          (flycheck-mode)))
-(add-hook 'json-mode-hook (lambda ()
-                          (flycheck-select-checker 'javascript-jslint-reporter)
-                          (flycheck-mode)))
+(add-hook 'json-mode-hook
+          (lambda () (flycheck-mode t)))
 
-;; When using a shell, exec path to set path properly
-(when (memq window-system '(mac ns))
-    (exec-path-from-shell-initialize))
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(moinmoin-anchor-ref-id ((t (:foreground "steelblue1" :underline t :height 1.0))))
+ '(moinmoin-anchor-ref-title ((t (:foreground "steelblue3" :underline t))))
+ '(moinmoin-blockquote-indent ((t (:foreground "darkslategray3"))))
+ '(moinmoin-email ((t (:foreground "steelblue2"))))
+ '(moinmoin-inter-wiki-link ((t (:foreground "steelblue3" :weight bold))))
+ '(moinmoin-url ((t (:foreground "steelblue2" :height 1.0))))
+ '(moinmoin-url-title ((t (:foreground "steelblue3" :underline t))))
+ '(moinmoin-wiki-link ((t (:foreground "steelblue3" :weight bold)))))
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(user-mail-address "dean.sellis@gmail.com"))

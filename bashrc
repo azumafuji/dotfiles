@@ -1,6 +1,6 @@
 #!/bin/bash
 # -*- mode: sh-mode -*-
-export EDITOR=emacsclient
+export EDITOR=emacs
 export TERM=xterm-256color
 export GREP_OPTIONS='--color=auto' GREP_COLOR='1;32'
 export CLICOLOR=1 
@@ -14,17 +14,11 @@ export EC2_HOME="/usr/local/Library/LinkedKegs/ec2-api-tools/jars"
 export PROXY_PYPI_DIR="$HOME/src/pypicache"
 
 export VAGRANT_DEFAULT_PROVIDER="vmware_fusion"
+export DOCKER_HOST="tcp://192.168.252.50:2375"
 
 ulimit -n 4096 
 
 export DJANGO_COLORS="light"
-
-function _update_ps1()
-{
-   export PS1="$(~/.powerline-shell.py --mode flat $?)"
-}
-
-export PROMPT_COMMAND="_update_ps1"
 
 alias rcp='rsync -aP'
 alias cleanpyc='find . -name '*.pyc' -exec rm {} \;'
@@ -42,3 +36,6 @@ if [ -f .local.env ]; then
   source .local.env
 fi
 
+# Run twolfson/sexy-bash-prompt
+. ~/.bash_prompt
+. ~/.bashrc-ddev

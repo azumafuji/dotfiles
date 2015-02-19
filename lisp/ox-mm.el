@@ -32,7 +32,6 @@
 (require 'ox-html)
 
 
-
 ;;; User-Configurable Variables
 
 (defgroup org-export-mm nil
@@ -60,17 +59,16 @@ Otherwise, place it right after it."
   :type 'boolean)
 
 
-
 ;;; Define Back-End
 
 (org-export-define-derived-backend 'mm 'html
   :export-block '("MM" "MOINMOIN")
   :filters-alist '((:filter-parse-tree . org-mm-separate-elements))
   :menu-entry
-  '(?m "Export to MoinMoin"
-       ((?M "To temporary buffer"
+  '(?n "Export to MoinMoin"
+       ((?N "To temporary buffer"
 	    (lambda (a s v b) (org-mm-export-as-markdown a s v)))
-	(?m "To file" (lambda (a s v b) (org-mm-export-to-markdown a s v)))
+	(?n "To file" (lambda (a s v b) (org-mm-export-to-markdown a s v)))
 	(?o "To file and open"
 	    (lambda (a s v b)
 	      (if a (org-mm-export-to-markdown t s v)
@@ -224,7 +222,7 @@ CONTENTS is nil.  INFO is a plist used as a communication
 channel. OK"
   (let* ((lang (org-element-property :language example-block))
          (lst-lang (or (cadr (assq (intern lang) org-latex-listings-langs)) lang)))
-  (concat "\n{{{!highlight " (format "%s" lst-lang) " \n" (replace-regexp-in-string
+  (concat "\n{{{#!highlight " (format "%s" lst-lang) " \n" (replace-regexp-in-string
    "^" "    "
    (org-remove-indentation
     (org-element-property :value example-block))) "\n}}}\n")))
@@ -338,7 +336,7 @@ a communication channel. OK"
 	      (trans "[-] ")
 	      (off "[ ] "))
 	    (let ((tag (org-element-property :tag item)))
-	      (and tag (format "**%s:** "(org-export-data tag info))))
+	      (and tag (format "'''%s:''' "(org-export-data tag info))))
 	    (org-trim (replace-regexp-in-string "^" "    " contents)))))
 
 

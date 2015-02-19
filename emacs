@@ -4,8 +4,11 @@
 ;; My Emacs file for working with Python, Clojure, Org, and various other bits
 
 ;;; Code:
-;; Update GC Settings
-(setq gc-cons-threshold 20000000)
+
+;; Set encoding
+(set-terminal-coding-system 'utf-8)
+(set-keyboard-coding-system 'utf-8)
+(prefer-coding-system 'utf-8)
 
 ;; Default tabs and spacing
 (setq-default indent-tabs-mode nil)
@@ -160,7 +163,7 @@
 
 (setq org-agenda-files '("~/Documents/org/projects/"))
 
-(setq org-archive-location '("~/Documents/org/archives/%s_archive.org::* ") )
+(setq org-archive-location "~/Documents/org/archives/%s_archive.org::")
 
 (setq org-refile-targets (quote ((nil :maxlevel . 5)
                                  (org-agenda-files :maxlevel . 5))))
@@ -200,7 +203,7 @@
 
 (add-to-list 'org-latex-classes
         '("memoir"
-          "\\documentclass[10pt,article,oneside]{memoir}"
+          "\\documentclass[9pt,letterpaper,extrafontsizes,article]{memoir}"
           ("\\chapter{%s}" . "\\chapter*{%s}")
           ("\\section{%s}" . "\\section*{%s}")
           ("\\subsection{%s}" . "\\subsection*{%s}")       
@@ -210,7 +213,7 @@
 
 (add-to-list 'org-latex-classes
         '("tufte"
-          "\\documentclass{tufte-handout}"
+          "\\documentclass[10pt]{tufte-handout}"
           ("\\chapter{%s}" . "\\chapter*{%s}")
           ("\\section{%s}" . "\\section*{%s}")
           ("\\subsection{%s}" . "\\subsection*{%s}")       
@@ -269,4 +272,5 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(org-odt-preferred-output-format "docx")
  '(user-mail-address "dean.sellis@gmail.com"))

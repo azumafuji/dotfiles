@@ -122,7 +122,9 @@
 (global-set-key "\C-x\ \C-r" 'helm-recentf)
 
 ;; Set a nice color theme
-(load-theme 'cyberpunk t)
+(add-to-list 'custom-theme-load-path "~/.emacs.d/lisp/base16-emacs")
+
+(load-theme 'base16-tomorrow-dark t)
 
 ;; For the GUI use this font and line spacing
 (set-face-attribute 'default nil
@@ -221,6 +223,26 @@
           ("\\paragraph{%s}" . "\\paragraph*{%s}")
           ("\\subparagraph{%s}" . "\\subparagraph*{%s}"))
         )
+
+;; Org Present Mode
+
+(autoload 'org-present "org-present" nil t)
+(eval-after-load "org-present"
+  '(progn
+     (add-hook 'org-present-mode-hook
+               (lambda ()
+                 (org-present-big)
+                 (org-display-inline-images)
+                 (org-present-hide-cursor)
+                 (org-present-read-only)))
+     (add-hook 'org-present-mode-quit-hook
+               (lambda ()
+                 (org-present-small)
+                 (org-remove-inline-images)
+                 (org-present-show-cursor)
+                 (org-present-read-write)))))
+
+
 
 ;; Utils
 (require 'helm-config)

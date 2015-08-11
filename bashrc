@@ -23,7 +23,6 @@ export DJANGO_COLORS="light"
 alias rcp='rsync -aP'
 alias cleanpyc='find . -name '*.pyc' -exec rm {} \;'
 
-alias connectencota='ssh -i ~/.ssh/PraxisProduction.pem ubuntu@encota.praxismi.com'
 alias serveit='python -m SimpleHTTPServer 8080'
 alias timestamp='date "+%Y%m%dT%H%M%S"'
 alias ppp='proxypypi -p 8333 -d $PROXY_PYPI_DIR -P $PROXY_PYPI_DIR/proxypypi.pid -l $PROXY_PYPI_DIR/proxypypi.log -o $PROXY_PYPI_DIR/proxypypi.console'
@@ -38,4 +37,9 @@ fi
 
 # Run twolfson/sexy-bash-prompt
 . ~/.bash_prompt
-. ~/.bashrc-ddev
+
+# Configure bash_completion
+if [ -f $(brew --prefix)/etc/bash_completion ]; then
+  . $(brew --prefix)/etc/bash_completion
+fi
+

@@ -252,6 +252,10 @@
 (ac-config-default)
 (add-to-list 'ac-dictionary-directories "~/.emacs.d/ac-dict")
 
+;; Python
+(package-initialize)
+(elpy-enable)
+
 ;; Javascript
 (require 'json-mode)
 (require 'json-snatcher)

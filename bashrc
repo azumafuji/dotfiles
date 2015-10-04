@@ -28,18 +28,29 @@ alias timestamp='date "+%Y%m%dT%H%M%S"'
 alias ppp='proxypypi -p 8333 -d $PROXY_PYPI_DIR -P $PROXY_PYPI_DIR/proxypypi.pid -l $PROXY_PYPI_DIR/proxypypi.log -o $PROXY_PYPI_DIR/proxypypi.console'
 alias updaterepos='find . -maxdepth 1 -type d -print -execdir git --git-dir={}/.git --work-tree=$PWD/{} pull origin master \;'
 
-source /usr/local/bin/virtualenvwrapper.sh
-eval "$(rbenv init -)"
+
+if [ -f /usr/local/bin/virtualenvwrapper.sh ]; then
+  source /usr/local/bin/virtualenvwrapper.sh
+fi
+
+if [ -f ./src/liquidprompt/liquidprompt ]; then
+    source src/liquidprompt/liquidprompt
+fi
 
 if [ -f .local.env ]; then
   source .local.env
 fi
 
 # Run twolfson/sexy-bash-prompt
-. ~/.bash_prompt
+if [ -f .bash_prompt ]; then
+  source .bash_prompt
+fi
 
 # Configure bash_completion
 if [ -f $(brew --prefix)/etc/bash_completion ]; then
   . $(brew --prefix)/etc/bash_completion
 fi
 
+# Configure NVM
+export NVM_DIR=~/.nvm
+source $(brew --prefix nvm)/nvm.sh

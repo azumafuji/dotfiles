@@ -5,6 +5,7 @@
 
 ;;; Code:
 
+
 ;; Set encoding
 (set-terminal-coding-system 'utf-8)
 (set-keyboard-coding-system 'utf-8)
@@ -42,7 +43,6 @@
 ;; Set up package repos
 (require 'package)
 (setq package-archives '(
-                         ("elpy" . "http://jorgenschaefer.github.io/packages/")
                          ("gnu" . "https://elpa.gnu.org/packages/")
                          ("marmalade" . "http://marmalade-repo.org/packages/")
                          ("melpa-stable" . "http://melpa-stable.milkbox.net/packages/")
@@ -50,18 +50,17 @@
 (package-initialize)
 
 (setq package-list '(auto-complete
+                     ac-anaconda
                      ag
+                     anaconda-mode
                      auctex
                      cider
-                     company
                      cyberpunk-theme
-                     elpy
                      exec-path-from-shell
                      find-file-in-project
                      flycheck
                      helm
                      helm-ag
-                     iy-go-to-char
                      json-mode
                      json-snatcher
                      lua-mode
@@ -251,10 +250,12 @@
 (require 'auto-complete-config)
 (ac-config-default)
 (add-to-list 'ac-dictionary-directories "~/.emacs.d/ac-dict")
+(add-hook 'python-mode-hook 'ac-anaconda-setup)
 
 ;; Python
-(package-initialize)
-(elpy-enable)
+(add-hook 'python-mode-hook 'anaconda-mode)
+(add-hook 'python-mode-hook 'eldoc-mode)
+
 
 ;; Javascript
 (require 'json-mode)

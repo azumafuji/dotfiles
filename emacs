@@ -281,6 +281,12 @@
 (add-hook 'json-mode-hook
           (lambda () (flycheck-mode t)))
 
+;; Default Files to open
+(find-file "~/Documents/org/notes.org")
+(find-file "~/Documents/org/journal.org")
+(setq initial-buffer-choice "~/Documents/org/projects/trialreach.org")
+
+
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -299,5 +305,11 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(custom-safe-themes
+   (quote
+    ("274e030e327161ccb5d8c73a6458ba6f5cbdfdd5f05f6ce7e710779d87083eda" default)))
+ '(org-odt-convert-processes
+   (quote
+    (("LibreOffice" "/opt/homebrew-cask/Caskroom/libreoffice/5.0.0/LibreOffice.app/Contents/MacOS/soffice --headless --convert-to %f%x --outdir %d %i"))))
  '(org-odt-preferred-output-format "docx")
  '(user-mail-address "dean.sellis@gmail.com"))

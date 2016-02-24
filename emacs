@@ -1,10 +1,21 @@
 ;; -*- mode: Lisp; fill-column: 75; comment-column: 50; -*-
 ;;; emacs -- Emacs init file for Dean
 ;;; Commentary:
-;; My Emacs file for working with Python, Clojure, Org, and various other bits
+;; EMACS!
 
 ;;; Code:
 
+;; Turn off mouse interface early in startup to avoid momentary display
+(if (fboundp 'tool-bar-mode) (tool-bar-mode -1))
+(if (fboundp 'menu-bar-mode) (menu-bar-mode -1))
+(if (fboundp 'scroll-bar-mode) (scroll-bar-mode -1))
+
+;; Don't display the 'Welcome to GNU Emacs' buffer on startup
+(setq inhibit-startup-message t)
+
+;; Coordinates
+(setq line-number-mode t)
+(setq column-number-mode t)
 
 ;; Set encoding
 (set-terminal-coding-system 'utf-8)
@@ -17,17 +28,8 @@
 (setq tab-stop-list '(4 8 12 16 20 24 28 32 36 40 44 48 52 56 60 64 68 72 76 80))
 (setq-default py-indent-offset 4)
 
-;; Some display settings for line numbers and the menubar
-;;(global-linum-mode 1)
-(setq line-number-mode t)
-(setq column-number-mode t)
-;; (setq linum-format "%5d ")
-;; (global-visual-line-mode t)
-(menu-bar-mode -1)
-(tool-bar-mode -1)
-
-;; Don't display the 'Welcome to GNU Emacs' buffer on startup
-(setq inhibit-startup-message t)
+;; cd to my home directory on startup 
+(cd "~")
 
 ;; I like backups because I don't use version control for everything
 ;; Put everything in a saves directory so backups are scattered out everywhere
@@ -40,7 +42,6 @@
 
 (setq ns-use-srgb-colorspace t)
 
-;; Set up package repos
 (require 'package)
 (setq package-archives '(
                          ("gnu" . "https://elpa.gnu.org/packages/")
@@ -49,18 +50,18 @@
                          ("org" . "http://orgmode.org/elpa/")))
 (package-initialize)
 
-(setq package-list '(auto-complete
-                     ac-anaconda
-                     ag
+(setq package-list '(ag
                      anaconda-mode
                      auctex
                      cider
+					 company
+					 company-anaconda
                      cyberpunk-theme
                      exec-path-from-shell
-                     find-file-in-project
                      flycheck
                      helm
                      helm-ag
+                     helm-projectile
                      json-mode
                      json-snatcher
                      lua-mode
@@ -79,15 +80,11 @@
                      ))
 
 (when (not package-archive-contents)
-  (package-refresh-contents))
+	(package-refresh-contents))
 
 (dolist (package package-list)
   (when (not (package-installed-p package))
     (package-install package)))
-
-
-;; cd to my home directory on startup 
-(cd "~")
 
 ;; When using a shell, exec path to set path properly
 (when (memq window-system '(mac ns))
@@ -97,6 +94,39 @@
 (let ((default-directory "~/.emacs.d/lisp/"))
   (normal-top-level-add-to-load-path '("."))
   (normal-top-level-add-subdirs-to-load-path))
+  
+;; Load Theme
+(load-theme 'cyberpunk t)
+
+;; For the GUI use this font and line spacing
+(set-face-attribute 'default nil
+                    :family "M+ 1mn" :height 140 :weight 'normal)
+(setq-default line-height 1.2)
+
+;; Setup Visual line mode
+(add-hook 'text-mode-hook 'turn-on-visual-line-mode)
+
+;; Utils
+;; Helm
+(require 'helm-config)
+(helm-mode 1)
+(require 'helm-projectile)
+(global-set-key (kbd "M-x") 'helm-M-x)
+
+;; Company Mode
+(add-hook 'after-init-hook 'global-company-mode)
+(eval-after-load "company"
+ '(progn
+   (add-to-list 'company-backends 'company-anaconda)))
+
+;; Projectile Mode
+(projectile-global-mode)
+
+;; Make sure we have recent files avaialble
+(require 'recentf)
+(recentf-mode 1)
+(setq recentf-max-menu-items 25)
+(global-set-key "\C-x\ \C-r" 'helm-recentf)
 
 ;; Shell switcher mode for easier access to shells
 (require 'shell-switcher)
@@ -107,50 +137,6 @@
             'shell-switcher-switch-buffer-other-window)
 (define-key shell-switcher-mode-map (kbd "C-M-'")
             'shell-switcher-new-shell)
-
-;; Setup local snippets
-(setq yas-snippet-dirs
-      '("~/.emacs.d/snippets"))
-
-(yas-global-mode 1)
-
-;; Make sure we have recent files avaialble
-(require 'recentf)
-(recentf-mode 1)
-(setq recentf-max-menu-items 25)
-(global-set-key "\C-x\ \C-r" 'helm-recentf)
-
-;; Set a nice color theme
-(add-to-list 'custom-theme-load-path "~/.emacs.d/lisp/base16-emacs")
-
-(load-theme 'base16-tomorrow-dark t)
-
-;; For the GUI use this font and line spacing
-(set-face-attribute 'default nil
-                    :family "M+ 1mn" :height 140 :weight 'normal)
-(setq-default line-height 1.2)
-
-;; Pretty mode redisplays some keywords as symbols
-(require 'pretty-mode)
-(global-pretty-mode 1)
-
-;; Setup Visual line mode
-(add-hook 'text-mode-hook 'turn-on-visual-line-mode)
-
-;; Clojure editing
-(require 'cider)
-
-(require 'smartparens-config)
-(smartparens-global-mode t)
-(show-smartparens-global-mode t)
-
-(require 'eldoc) ; if not already loaded
-
-(add-hook 'emacs-lisp-mode-hook 'turn-on-eldoc-mode)
-(add-hook 'lisp-interaction-mode-hook 'turn-on-eldoc-mode)
-(add-hook 'ielm-mode-hook 'turn-on-eldoc-mode)
-(add-hook 'clojure-mode-hook 'turn-on-eldoc-mode)
-(add-hook 'cider-mode-hook 'turn-on-eldoc-mode)
 
 ;; ORG MODE
 (require 'org-install)
@@ -241,75 +227,42 @@
                  (org-present-show-cursor)
                  (org-present-read-write)))))
 
-
-
-;; Utils
-(require 'helm-config)
-(helm-mode 1)
-
-(require 'auto-complete-config)
-(ac-config-default)
-(add-to-list 'ac-dictionary-directories "~/.emacs.d/ac-dict")
-(add-hook 'python-mode-hook 'ac-anaconda-setup)
-
 ;; Python
 (add-hook 'python-mode-hook 'anaconda-mode)
 (add-hook 'python-mode-hook 'eldoc-mode)
+(add-hook 'python-mode-hook 'anaconda-eldoc-mode)
+
+;; Clojure editing
+(require 'cider)
+
+(require 'smartparens-config)
+(smartparens-global-mode t)
+(show-smartparens-global-mode t)
+
+;; eldoc
+(require 'eldoc) ; if not already loaded
+
+(add-hook 'emacs-lisp-mode-hook 'turn-on-eldoc-mode)
+(add-hook 'lisp-interaction-mode-hook 'turn-on-eldoc-mode)
+(add-hook 'ielm-mode-hook 'turn-on-eldoc-mode)
+(add-hook 'clojure-mode-hook 'turn-on-eldoc-mode)
+(add-hook 'cider-mode-hook 'turn-on-eldoc-mode)
 
 
-;; Javascript
-(require 'json-mode)
-(require 'json-snatcher)
+;; Tramp
+(require 'tramp)
 
-(defun js-mode-bindings ()
-  "Sets a hotkey for using the json-snatcher plugin"
-  (when (string-match  "\\.json$" (buffer-name))
-    (local-set-key (kbd "C-c C-g") 'jsons-print-path)))
-(add-hook 'js-mode-hook 'js-mode-bindings)
-(add-hook 'json-mode-hook 'js-mode-bindings)
+;; Other Vars
 
-;; Lua config
-(autoload 'lua-mode "lua-mode" "Lua editing mode." t)
-    (add-to-list 'auto-mode-alist '("\\.lua$" . lua-mode))
-    (add-to-list 'interpreter-mode-alist '("lua" . lua-mode))
+(setq org-odt-convert-processes (quote
+    (("LibreOffice" "/opt/homebrew-cask/Caskroom/libreoffice/5.1.0/LibreOffice.app/Contents/MacOS/soffice --headless --convert-to %f%x --outdir %d %i"))))
 
-(add-hook 'after-init-hook #'global-flycheck-mode)
-(require 'flycheck)
-(add-hook 'js-mode-hook
-          (lambda () (flycheck-mode t)))
+(setq org-odt-preferred-output-format "docx")
+(setq user-mail-address "dean.sellis@gmail.com")
 
-(add-hook 'json-mode-hook
-          (lambda () (flycheck-mode t)))
 
 ;; Default Files to open
 (find-file "~/Documents/org/notes.org")
 (find-file "~/Documents/org/journal.org")
-(setq initial-buffer-choice "~/Documents/org/projects/trialreach.org")
+(find-file "~/Documents/org/projects/trialreach.org")
 
-
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(moinmoin-anchor-ref-id ((t (:foreground "steelblue1" :underline t :height 1.0))))
- '(moinmoin-anchor-ref-title ((t (:foreground "steelblue3" :underline t))))
- '(moinmoin-blockquote-indent ((t (:foreground "darkslategray3"))))
- '(moinmoin-email ((t (:foreground "steelblue2"))))
- '(moinmoin-inter-wiki-link ((t (:foreground "steelblue3" :weight bold))))
- '(moinmoin-url ((t (:foreground "steelblue2" :height 1.0))))
- '(moinmoin-url-title ((t (:foreground "steelblue3" :underline t))))
- '(moinmoin-wiki-link ((t (:foreground "steelblue3" :weight bold)))))
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(custom-safe-themes
-   (quote
-    ("274e030e327161ccb5d8c73a6458ba6f5cbdfdd5f05f6ce7e710779d87083eda" default)))
- '(org-odt-convert-processes
-   (quote
-    (("LibreOffice" "/opt/homebrew-cask/Caskroom/libreoffice/5.0.0/LibreOffice.app/Contents/MacOS/soffice --headless --convert-to %f%x --outdir %d %i"))))
- '(org-odt-preferred-output-format "docx")
- '(user-mail-address "dean.sellis@gmail.com"))

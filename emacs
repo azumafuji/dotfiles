@@ -112,6 +112,8 @@
 (helm-mode 1)
 (require 'helm-projectile)
 (global-set-key (kbd "M-x") 'helm-M-x)
+(global-set-key (kbd "C-x C-f") 'helm-find-files)
+(global-set-key (kbd "C-x r b") 'helm-filtered-bookmarks)
 
 ;; Company Mode
 (add-hook 'after-init-hook 'global-company-mode)
@@ -126,7 +128,7 @@
 (require 'recentf)
 (recentf-mode 1)
 (setq recentf-max-menu-items 25)
-(global-set-key "\C-x\ \C-r" 'helm-recentf)
+(global-set-key (kbd "C-x C-r") 'helm-recentf)
 
 ;; Shell switcher mode for easier access to shells
 (require 'shell-switcher)
@@ -137,6 +139,13 @@
             'shell-switcher-switch-buffer-other-window)
 (define-key shell-switcher-mode-map (kbd "C-M-'")
             'shell-switcher-new-shell)
+
+;; restclient
+(require 'restclient)
+
+;; epresent
+(require 'epresent)
+
 
 ;; ORG MODE
 (require 'org-install)
@@ -176,11 +185,10 @@
 
 (require 'ox-md)
 (require 'ox-odt)
-(require 'ox-reveal)
 (require 'ox-koma-letter)
 (require 'ox-beamer)
 (require 'ox-latex)
-(require 'ox-mm)
+
 
 (setq org-capture-templates
       '(("t" "Todo" entry (file+headline "~/Documents/org/notes.org" "Tasks")

@@ -44,32 +44,25 @@
 (require 'package)
 (setq package-archives '(
                          ("gnu" . "https://elpa.gnu.org/packages/")
-                         ("marmalade" . "http://marmalade-repo.org/packages/")
                          ("melpa-stable" . "http://melpa-stable.milkbox.net/packages/")
+                         ("marmalade" . "http://marmalade-repo.org/packages/")
                          ("org" . "http://orgmode.org/elpa/")))
 (package-initialize)
 
-(setq package-list '(auto-complete
-                     ac-anaconda
-                     ag
-                     anaconda-mode
-                     auctex
-                     cider
+(setq package-list '(ag
                      cyberpunk-theme
+                     elpy
                      exec-path-from-shell
-                     find-file-in-project
-                     flycheck
                      helm
                      helm-ag
                      json-mode
                      json-snatcher
-                     lua-mode
                      magit
                      markdown-mode
                      org-plus-contrib
+                     org-tree-slide
                      pandoc-mode
                      pretty-mode
-                     projectile
                      pyvenv
                      rainbow-delimiters
                      shell-switcher
@@ -84,7 +77,6 @@
 (dolist (package package-list)
   (when (not (package-installed-p package))
     (package-install package)))
-
 
 ;; cd to my home directory on startup 
 (cd "~")
@@ -121,13 +113,11 @@
 (global-set-key "\C-x\ \C-r" 'helm-recentf)
 
 ;; Set a nice color theme
-(add-to-list 'custom-theme-load-path "~/.emacs.d/lisp/base16-emacs")
-
-(load-theme 'base16-tomorrow-dark t)
+(load-theme 'cyberpunk t)
 
 ;; For the GUI use this font and line spacing
 (set-face-attribute 'default nil
-                    :family "M+ 1mn" :height 140 :weight 'normal)
+                    :family "mononoki" :height 120 :weight 'normal)
 (setq-default line-height 1.2)
 
 ;; Pretty mode redisplays some keywords as symbols
@@ -136,21 +126,6 @@
 
 ;; Setup Visual line mode
 (add-hook 'text-mode-hook 'turn-on-visual-line-mode)
-
-;; Clojure editing
-(require 'cider)
-
-(require 'smartparens-config)
-(smartparens-global-mode t)
-(show-smartparens-global-mode t)
-
-(require 'eldoc) ; if not already loaded
-
-(add-hook 'emacs-lisp-mode-hook 'turn-on-eldoc-mode)
-(add-hook 'lisp-interaction-mode-hook 'turn-on-eldoc-mode)
-(add-hook 'ielm-mode-hook 'turn-on-eldoc-mode)
-(add-hook 'clojure-mode-hook 'turn-on-eldoc-mode)
-(add-hook 'cider-mode-hook 'turn-on-eldoc-mode)
 
 ;; ORG MODE
 (require 'org-install)
@@ -223,93 +198,37 @@
           ("\\subparagraph{%s}" . "\\subparagraph*{%s}"))
         )
 
-;; Org Present Mode
-
-(autoload 'org-present "org-present" nil t)
-(eval-after-load "org-present"
-  '(progn
-     (add-hook 'org-present-mode-hook
-               (lambda ()
-                 (org-present-big)
-                 (org-display-inline-images)
-                 (org-present-hide-cursor)
-                 (org-present-read-only)))
-     (add-hook 'org-present-mode-quit-hook
-               (lambda ()
-                 (org-present-small)
-                 (org-remove-inline-images)
-                 (org-present-show-cursor)
-                 (org-present-read-write)))))
-
-
-
 ;; Utils
 (require 'helm-config)
+(global-set-key (kbd "M-x") #'helm-M-x)
+(global-set-key (kbd "C-x r b") #'helm-filtered-bookmarks)
+(global-set-key (kbd "C-x C-f") #'helm-find-files)
 (helm-mode 1)
 
-(require 'auto-complete-config)
-(ac-config-default)
-(add-to-list 'ac-dictionary-directories "~/.emacs.d/ac-dict")
-(add-hook 'python-mode-hook 'ac-anaconda-setup)
+(add-hook 'after-init-hook 'global-company-mode)
+
 
 ;; Python
-(add-hook 'python-mode-hook 'anaconda-mode)
-(add-hook 'python-mode-hook 'eldoc-mode)
+(elpy-enable)
 
-
-;; Javascript
-(require 'json-mode)
-(require 'json-snatcher)
-
-(defun js-mode-bindings ()
-  "Sets a hotkey for using the json-snatcher plugin"
-  (when (string-match  "\\.json$" (buffer-name))
-    (local-set-key (kbd "C-c C-g") 'jsons-print-path)))
-(add-hook 'js-mode-hook 'js-mode-bindings)
-(add-hook 'json-mode-hook 'js-mode-bindings)
-
-;; Lua config
-(autoload 'lua-mode "lua-mode" "Lua editing mode." t)
-    (add-to-list 'auto-mode-alist '("\\.lua$" . lua-mode))
-    (add-to-list 'interpreter-mode-alist '("lua" . lua-mode))
-
-(add-hook 'after-init-hook #'global-flycheck-mode)
-(require 'flycheck)
-(add-hook 'js-mode-hook
-          (lambda () (flycheck-mode t)))
-
-(add-hook 'json-mode-hook
-          (lambda () (flycheck-mode t)))
 
 ;; Default Files to open
 (find-file "~/Documents/org/notes.org")
 (find-file "~/Documents/org/journal.org")
-(setq initial-buffer-choice "~/Documents/org/projects/trialreach.org")
+(find-file "~/Documents/org/projects/trialreach.org")
 
 
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(moinmoin-anchor-ref-id ((t (:foreground "steelblue1" :underline t :height 1.0))))
- '(moinmoin-anchor-ref-title ((t (:foreground "steelblue3" :underline t))))
- '(moinmoin-blockquote-indent ((t (:foreground "darkslategray3"))))
- '(moinmoin-email ((t (:foreground "steelblue2"))))
- '(moinmoin-inter-wiki-link ((t (:foreground "steelblue3" :weight bold))))
- '(moinmoin-url ((t (:foreground "steelblue2" :height 1.0))))
- '(moinmoin-url-title ((t (:foreground "steelblue3" :underline t))))
- '(moinmoin-wiki-link ((t (:foreground "steelblue3" :weight bold)))))
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(custom-safe-themes
+ '(package-selected-packages
    (quote
-    ("274e030e327161ccb5d8c73a6458ba6f5cbdfdd5f05f6ce7e710779d87083eda" default)))
- '(org-odt-convert-processes
-   (quote
-    (("LibreOffice" "/opt/homebrew-cask/Caskroom/libreoffice/5.0.0/LibreOffice.app/Contents/MacOS/soffice --headless --convert-to %f%x --outdir %d %i"))))
- '(org-odt-preferred-output-format "docx")
- '(user-mail-address "dean.sellis@gmail.com"))
+    (org-tree-slide yasnippet yaml-mode smartparens shell-switcher rainbow-delimiters pretty-mode pandoc-mode org-plus-contrib markdown-mode magit json-mode helm-ag exec-path-from-shell cyberpunk-theme ag))))
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ )

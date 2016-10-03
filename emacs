@@ -40,6 +40,14 @@
 
 (setq ns-use-srgb-colorspace t)
 
+;; Reopen files with sudo if they are read-only
+(defadvice find-file (after find-file-sudo activate)
+  "Find file as root if necessary."
+  (unless (and buffer-file-name
+               (file-writable-p buffer-file-name))
+    (find-alternate-file (concat "/sudo:root@localhost:" buffer-file-name))))
+
+
 ;; Set up package repos
 (require 'package)
 (setq package-archives '(
@@ -67,6 +75,7 @@
                      rainbow-delimiters
                      shell-switcher
                      smartparens
+                     web-mode
                      yaml-mode
                      yasnippet
                      ))
@@ -117,7 +126,7 @@
 
 ;; For the GUI use this font and line spacing
 (set-face-attribute 'default nil
-                    :family "mononoki" :height 120 :weight 'normal)
+                    :family "M+ 1mn" :height 120 :weight 'normal)
 (setq-default line-height 1.2)
 
 ;; Pretty mode redisplays some keywords as symbols
@@ -207,6 +216,10 @@
 
 (add-hook 'after-init-hook 'global-company-mode)
 
+;;web-mode
+(require 'web-mode)
+(add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode))
+
 
 ;; Python
 (elpy-enable)
@@ -225,7 +238,7 @@
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
    (quote
-    (org-tree-slide yasnippet yaml-mode smartparens shell-switcher rainbow-delimiters pretty-mode pandoc-mode org-plus-contrib markdown-mode magit json-mode helm-ag exec-path-from-shell cyberpunk-theme ag))))
+    (tidy web-mode org-tree-slide yasnippet yaml-mode smartparens shell-switcher rainbow-delimiters pretty-mode pandoc-mode org-plus-contrib markdown-mode magit json-mode helm-ag exec-path-from-shell cyberpunk-theme ag))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.

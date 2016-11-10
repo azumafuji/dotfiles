@@ -1,10 +1,10 @@
+
 ;; -*- mode: Lisp; fill-column: 75; comment-column: 50; -*-
 ;;; emacs -- Emacs init file for Dean
 ;;; Commentary:
 ;; My Emacs file for working with Python, Clojure, Org, and various other bits
 
 ;;; Code:
-
 
 ;; Set encoding
 (set-terminal-coding-system 'utf-8)
@@ -50,14 +50,20 @@
 
 ;; Set up package repos
 (require 'package)
-(setq package-archives '(
-                         ("gnu" . "https://elpa.gnu.org/packages/")
-                         ("melpa-stable" . "http://melpa-stable.milkbox.net/packages/")
-                         ("marmalade" . "http://marmalade-repo.org/packages/")
-                         ("org" . "http://orgmode.org/elpa/")))
+(setq package-archives
+      '(("gnu"          . "https://elpa.gnu.org/packages/")
+        ("melpa-stable" . "http://melpa-stable.milkbox.net/packages/")
+        ("melpa"        . "https://melpa.org/packages/")
+        ("org"          . "http://orgmode.org/elpa/"))
+      package-archive-priorities
+      '(("melpa-stable" . 10)
+        ("org"          . 8)
+        ("gnu"          . 5)
+        ("melpa"        . 0)))
 (package-initialize)
 
 (setq package-list '(ag
+                     color-theme-sanityinc-solarized
                      cyberpunk-theme
                      elpy
                      exec-path-from-shell
@@ -73,6 +79,12 @@
                      pretty-mode
                      pyvenv
                      rainbow-delimiters
+                     restclient
+                     restclient-helm
+                     ob-restclient
+                     ox-reveal
+                     ox-gfm
+                     ox-tufte
                      shell-switcher
                      smartparens
                      web-mode
@@ -122,12 +134,12 @@
 (global-set-key "\C-x\ \C-r" 'helm-recentf)
 
 ;; Set a nice color theme
-(load-theme 'cyberpunk t)
+(load-theme ' sanityinc-solarized-dark t)
 
 ;; For the GUI use this font and line spacing
 (set-face-attribute 'default nil
-                    :family "M+ 1mn" :height 120 :weight 'normal)
-(setq-default line-height 1.2)
+                    :family "mononoki" :height 140 :weight 'normal)
+(setq-default line-spacing 0.20)
 
 ;; Pretty mode redisplays some keywords as symbols
 (require 'pretty-mode)
@@ -135,6 +147,10 @@
 
 ;; Setup Visual line mode
 (add-hook 'text-mode-hook 'turn-on-visual-line-mode)
+
+;; restclient 
+(require 'restclient)
+(require 'restclient-helm)
 
 ;; ORG MODE
 (require 'org-install)
@@ -165,11 +181,14 @@
    (dot . t)
    (plantuml . t)
    (latex . t)
-   (python . t)))
+   (python . t)
+   (restclient . t)))
 
 (defun my-org-confirm-babel-evaluate (lang body)
   (not (or  (string= lang "ditaa")              ; don't ask for ditaa or dot
-         (string= lang "dot"))))                                    
+         (string= lang "dot")
+         (string= lang "restclient")
+         )))                     
 (setq org-confirm-babel-evaluate 'my-org-confirm-babel-evaluate)
 
 (require 'ox-md)
@@ -178,7 +197,8 @@
 (require 'ox-koma-letter)
 (require 'ox-beamer)
 (require 'ox-latex)
-(require 'ox-mm)
+(require 'ox-tufte)
+(require 'ox-gfm)
 
 (setq org-capture-templates
       '(("t" "Todo" entry (file+headline "~/Documents/org/notes.org" "Tasks")
@@ -223,12 +243,15 @@
 
 ;; Python
 (elpy-enable)
-
+ 
 
 ;; Default Files to open
 (find-file "~/Documents/org/notes.org")
 (find-file "~/Documents/org/journal.org")
 (find-file "~/Documents/org/projects/trialreach.org")
+
+;; Keybindings
+(global-set-key (kbd "C-x g") 'magit-status)
 
 
 (custom-set-variables
@@ -236,9 +259,36 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(ansi-color-faces-vector
+   [default bold shadow italic underline bold bold-italic bold])
+ '(ansi-color-names-vector
+   (vector "#839496" "#dc322f" "#859900" "#b58900" "#268bd2" "#d33682" "#2aa198" "#002b36"))
+ '(fci-rule-color "#073642")
  '(package-selected-packages
    (quote
-    (tidy web-mode org-tree-slide yasnippet yaml-mode smartparens shell-switcher rainbow-delimiters pretty-mode pandoc-mode org-plus-contrib markdown-mode magit json-mode helm-ag exec-path-from-shell cyberpunk-theme ag))))
+    (jinja2-mode terraform-mode yaml-mode web-mode smartparens shell-switcher restclient-helm rainbow-delimiters pretty-mode pandoc-mode ox-tufte ox-reveal ox-gfm org-tree-slide org-plus-contrib ob-restclient markdown-mode magit json-mode helm-ag exec-path-from-shell elpy cyberpunk-theme color-theme-sanityinc-solarized ag)))
+ '(vc-annotate-background nil)
+ '(vc-annotate-color-map
+   (quote
+    ((20 . "#dc322f")
+     (40 . "#cb4b16")
+     (60 . "#b58900")
+     (80 . "#859900")
+     (100 . "#2aa198")
+     (120 . "#268bd2")
+     (140 . "#d33682")
+     (160 . "#6c71c4")
+     (180 . "#dc322f")
+     (200 . "#cb4b16")
+     (220 . "#b58900")
+     (240 . "#859900")
+     (260 . "#2aa198")
+     (280 . "#268bd2")
+     (300 . "#d33682")
+     (320 . "#6c71c4")
+     (340 . "#dc322f")
+     (360 . "#cb4b16"))))
+ '(vc-annotate-very-old-color nil))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.

@@ -35,18 +35,15 @@ if [ -f ~/src/liquidprompt/liquidprompt ]; then
 fi
 
 
-if [ -f /opt/pkg/bin/source-highlight ]; then
-    export LESSOPEN="| ~/src/dotfiles/src-hilite-lesspipe.sh %s"
+if [ -f $(brew --prefix)/etc/bash_completion ]; then
+    . $(brew --prefix)/etc/bash_completion
 fi
+
 
 if [ -f .local.env ]; then
   source .local.env
 fi
 
-# Configure bash_completion
-if [ -r /opt/pkg/share/bash-completion/bash_completion ]; then
-    . /opt/pkg/share/bash-completion/bash_completion
-fi
 
 # Configure NVM
 export NVM_DIR="/Users/dean/.nvm"

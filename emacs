@@ -69,14 +69,18 @@
                      exec-path-from-shell
                      helm
                      helm-ag
+                     helm-projectile
+                     jinja2-mode
                      json-mode
                      json-snatcher
                      magit
                      markdown-mode
+                     neotree
                      org-plus-contrib
                      org-tree-slide
                      pandoc-mode
                      pretty-mode
+                     projectile
                      pyvenv
                      rainbow-delimiters
                      restclient
@@ -111,6 +115,8 @@
   (normal-top-level-add-to-load-path '("."))
   (normal-top-level-add-subdirs-to-load-path))
 
+(load-library "window-split.el")
+
 ;; Shell switcher mode for easier access to shells
 (require 'shell-switcher)
 (setq shell-switcher-mode t)
@@ -138,7 +144,7 @@
 
 ;; For the GUI use this font and line spacing
 (set-face-attribute 'default nil
-                    :family "mononoki" :height 140 :weight 'normal)
+                    :family "mononoki" :height 120 :weight 'normal)
 (setq-default line-spacing 0.20)
 
 ;; Pretty mode redisplays some keywords as symbols
@@ -253,6 +259,13 @@
 ;; Keybindings
 (global-set-key (kbd "C-x g") 'magit-status)
 
+;; Other config
+(add-to-list 'auto-mode-alist '("\\.j2\\'" . jinja2-mode))
+
+(projectile-global-mode)
+(require 'helm-projectile)
+(helm-projectile-on)
+
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
@@ -266,7 +279,7 @@
  '(fci-rule-color "#073642")
  '(package-selected-packages
    (quote
-    (jinja2-mode terraform-mode yaml-mode web-mode smartparens shell-switcher restclient-helm rainbow-delimiters pretty-mode pandoc-mode ox-tufte ox-reveal ox-gfm org-tree-slide org-plus-contrib ob-restclient markdown-mode magit json-mode helm-ag exec-path-from-shell elpy cyberpunk-theme color-theme-sanityinc-solarized ag)))
+    (dockerfile-mode projectile neotree jinja2-mode terraform-mode yaml-mode web-mode smartparens shell-switcher restclient-helm rainbow-delimiters pretty-mode pandoc-mode ox-tufte ox-reveal ox-gfm org-tree-slide org-plus-contrib ob-restclient markdown-mode magit json-mode helm-ag exec-path-from-shell elpy cyberpunk-theme color-theme-sanityinc-solarized ag)))
  '(vc-annotate-background nil)
  '(vc-annotate-color-map
    (quote

@@ -30,6 +30,7 @@ man() {
 # export AWS_CREDENTIAL_FILE="<Path to the credentials file>"
 
 export VAGRANT_DEFAULT_PROVIDER="vmware_fusion"
+export MP_FULLNAME="Dean J Sellis"
 
 ulimit -n 4096 
 

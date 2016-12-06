@@ -9,10 +9,25 @@ export CLICOLOR=1
 export LESS=" -R "
 export JAVA_HOME=$(/usr/libexec/java_home)
 
+export LESSOPEN="| ~/src/dotfiles/src-hilite-lesspipe.sh %s"
+
+man() {
+    env \
+        LESS_TERMCAP_mb=$(printf "\e[1;31m") \
+        LESS_TERMCAP_md=$(printf "\e[1;31m") \
+        LESS_TERMCAP_me=$(printf "\e[0m") \
+        LESS_TERMCAP_se=$(printf "\e[0m") \
+        LESS_TERMCAP_so=$(printf "\e[1;44;33m") \
+        LESS_TERMCAP_ue=$(printf "\e[0m") \
+        LESS_TERMCAP_us=$(printf "\e[1;32m") \
+            man "$@"
+}
+
+
 # Need to configure these 
-export AWS_ACCESS_KEY="<Your AWS Access ID>"
-export AWS_SECRET_KEY="<Your AWS Secret Key>"
-export AWS_CREDENTIAL_FILE="<Path to the credentials file>"
+# export AWS_ACCESS_KEY="<Your AWS Access ID>"
+# export AWS_SECRET_KEY="<Your AWS Secret Key>"
+# export AWS_CREDENTIAL_FILE="<Path to the credentials file>"
 
 export VAGRANT_DEFAULT_PROVIDER="vmware_fusion"
 
@@ -43,7 +58,6 @@ fi
 if [ -f .local.env ]; then
   source .local.env
 fi
-
 
 # Configure NVM
 export NVM_DIR="/Users/dean/.nvm"

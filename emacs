@@ -140,11 +140,13 @@
 (global-set-key "\C-x\ \C-r" 'helm-recentf)
 
 ;; Set a nice color theme
-(load-theme ' sanityinc-solarized-dark t)
+(if (display-graphic-p) 
+    (load-theme ' sanityinc-solarized-light t))
+
 
 ;; For the GUI use this font and line spacing
 (set-face-attribute 'default nil
-                    :family "mononoki" :height 120 :weight 'normal)
+                    :family "Iosevka Term" :height 120 :weight 'regular)
 (setq-default line-spacing 0.20)
 
 ;; Pretty mode redisplays some keywords as symbols
@@ -279,7 +281,7 @@
  '(fci-rule-color "#073642")
  '(package-selected-packages
    (quote
-    (dockerfile-mode projectile neotree jinja2-mode terraform-mode yaml-mode web-mode smartparens shell-switcher restclient-helm rainbow-delimiters pretty-mode pandoc-mode ox-tufte ox-reveal ox-gfm org-tree-slide org-plus-contrib ob-restclient markdown-mode magit json-mode helm-ag exec-path-from-shell elpy cyberpunk-theme color-theme-sanityinc-solarized ag)))
+    (flymake-json urlenc uuidgen color-theme-solarized pyenv-mode dockerfile-mode projectile neotree jinja2-mode terraform-mode yaml-mode web-mode smartparens shell-switcher restclient-helm rainbow-delimiters pretty-mode pandoc-mode ox-tufte ox-reveal ox-gfm org-tree-slide org-plus-contrib ob-restclient markdown-mode magit json-mode helm-ag exec-path-from-shell elpy cyberpunk-theme color-theme-sanityinc-solarized ag)))
  '(vc-annotate-background nil)
  '(vc-annotate-color-map
    (quote

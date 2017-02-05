@@ -31,6 +31,7 @@ man() {
 
 export VAGRANT_DEFAULT_PROVIDER="vmware_fusion"
 export MP_FULLNAME="Dean J Sellis"
+export CLOUDSDK_PYTHON='/usr/bin/python'
 
 ulimit -n 4096 
 
@@ -41,9 +42,17 @@ alias serveit='python -m SimpleHTTPServer 8080'
 alias timestamp='date "+%Y%m%dT%H%M%S"'
 alias updaterepos='find . -maxdepth 1 -type d -print -execdir git --git-dir={}/.git --work-tree=$PWD/{} pull origin master \;'
 
+alias joinPDF='/System/Library/Automator/Combine\ PDF\ Pages.action/Contents/Resources/join.py'
+
 # Aliases for the installed emacs package
 alias emacs='/Applications/Emacs.app/Contents/MacOS/Emacs -nw "$@"'
 alias e='/Applications/Emacs.app/Contents/MacOS/Emacs "$@" &'
+
+# AWS SSH Aliases
+alias rdc-prod-qbms-1='ssh -fN -o ExitOnForwardFailure=yes -L 3389:10.20.21.91:3389 prod-bastion'
+alias rdc-prod-qbms-2='ssh -fN -o ExitOnForwardFailure=yes -L 3389:10.20.22.91:3389 prod-bastion'
+alias kill-rdc='kill $(lsof -t -i @localhost:3389 -sTCP:listen)'
+
 
 
 if [ -f ~/src/liquidprompt/liquidprompt ]; then
@@ -70,3 +79,5 @@ export PATH="/Users/dean/.pyenv/bin:$PATH"
 eval "$(pyenv init -)"
 eval "$(pyenv virtualenv-init -)"
 
+# Configure Rust
+source $HOME/.cargo/env

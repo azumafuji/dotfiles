@@ -1,4 +1,3 @@
-
 ;; -*- mode: Lisp; fill-column: 75; comment-column: 50; -*-
 ;;; emacs -- Emacs init file for Dean
 ;;; Commentary:
@@ -31,7 +30,8 @@
 
 ;; I like backups because I don't use version control for everything
 ;; Put everything in a saves directory so backups are scattered out everywhere
-(setq backup-directory-alist `(("." . "~/.saves")))
+(setq backup-directory-alist `((".*" . "~/.saves")))
+(setq auto-save-file-name-transforms `((".*" "~/.saves" t)))
 (setq backup-by-copying t)
 (setq delete-old-versions t
   kept-new-versions 6
@@ -63,8 +63,10 @@
 (package-initialize)
 
 (setq package-list '(ag
+                     all-the-icons
                      color-theme-sanityinc-solarized
                      cyberpunk-theme
+                     dockerfile-mode
                      elpy
                      exec-path-from-shell
                      helm
@@ -73,6 +75,7 @@
                      jinja2-mode
                      json-mode
                      json-snatcher
+                     kubernetes
                      magit
                      markdown-mode
                      neotree
@@ -140,13 +143,13 @@
 (global-set-key "\C-x\ \C-r" 'helm-recentf)
 
 ;; Set a nice color theme
-(if (display-graphic-p) 
-    (load-theme ' sanityinc-solarized-light t))
+;;(if (display-graphic-p) 
+;;    (load-theme 'tango t))
 
 
 ;; For the GUI use this font and line spacing
 (set-face-attribute 'default nil
-                    :family "Iosevka Term" :height 120 :weight 'regular)
+                    :family "Iosevka Term" :height 130 :weight 'regular)
 (setq-default line-spacing 0.20)
 
 ;; Pretty mode redisplays some keywords as symbols
@@ -251,7 +254,6 @@
 
 ;; Python
 (elpy-enable)
- 
 
 ;; Default Files to open
 (find-file "~/Documents/org/notes.org")
@@ -260,6 +262,7 @@
 
 ;; Keybindings
 (global-set-key (kbd "C-x g") 'magit-status)
+(setq smerge-command-prefix "\C-cv")
 
 ;; Other config
 (add-to-list 'auto-mode-alist '("\\.j2\\'" . jinja2-mode))
@@ -267,6 +270,16 @@
 (projectile-global-mode)
 (require 'helm-projectile)
 (helm-projectile-on)
+
+(require 'neotree)
+(global-set-key [f8] 'neotree-toggle)
+(setq neo-theme (if (display-graphic-p) 'icons 'arrow))
+(setq neo-smart-open t)
+(setq projectile-switch-project-action 'neotree-projectile-action)
+
+(add-to-list 'same-window-buffer-names "*SQL*")
+(add-to-list 'same-window-buffer-names "*HTTP Response*")
+
 
 
 (custom-set-variables
@@ -281,7 +294,7 @@
  '(fci-rule-color "#073642")
  '(package-selected-packages
    (quote
-    (flymake-json urlenc uuidgen color-theme-solarized pyenv-mode dockerfile-mode projectile neotree jinja2-mode terraform-mode yaml-mode web-mode smartparens shell-switcher restclient-helm rainbow-delimiters pretty-mode pandoc-mode ox-tufte ox-reveal ox-gfm org-tree-slide org-plus-contrib ob-restclient markdown-mode magit json-mode helm-ag exec-path-from-shell elpy cyberpunk-theme color-theme-sanityinc-solarized ag)))
+    (fill-column-indicator es-mode kubernetes all-the-icons nginx-mode lua-mode tango-plus-theme sexy-monochrome-theme helm-projectile flymake-json urlenc uuidgen color-theme-solarized pyenv-mode dockerfile-mode projectile neotree jinja2-mode terraform-mode yaml-mode web-mode smartparens shell-switcher restclient-helm rainbow-delimiters pretty-mode pandoc-mode ox-tufte ox-reveal ox-gfm org-tree-slide org-plus-contrib ob-restclient markdown-mode magit json-mode helm-ag exec-path-from-shell elpy cyberpunk-theme color-theme-sanityinc-solarized ag)))
  '(vc-annotate-background nil)
  '(vc-annotate-color-map
    (quote

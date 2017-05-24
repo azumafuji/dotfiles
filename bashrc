@@ -2,7 +2,7 @@
 # -*- mode: sh-mode -*-
 alias emacs='/Applications/Emacs.app/Contents/MacOS/Emacs -nw'
 
-export EDITOR='emacs'
+export EDITOR='/Applications/Emacs.app/Contents/MacOS/Emacs -nw'
 export TERM=xterm-256color
 export GREP_OPTIONS='--color=auto' GREP_COLOR='1;32'
 export CLICOLOR=1 
@@ -49,9 +49,6 @@ alias emacs='/Applications/Emacs.app/Contents/MacOS/Emacs -nw "$@"'
 alias e='/Applications/Emacs.app/Contents/MacOS/Emacs "$@" &'
 
 # AWS SSH Aliases
-alias rdc-prod-qbms-1='ssh -fN -o ExitOnForwardFailure=yes -L 3389:10.20.21.91:3389 prod-bastion'
-alias rdc-prod-qbms-2='ssh -fN -o ExitOnForwardFailure=yes -L 3389:10.20.22.91:3389 prod-bastion'
-alias kill-rdc='kill $(lsof -t -i @localhost:3389 -sTCP:listen)'
 
 
 
@@ -81,3 +78,24 @@ eval "$(pyenv virtualenv-init -)"
 
 # Configure Rust
 source $HOME/.cargo/env
+
+# Configure Go
+export PATH="$PATH:/Users/dean/go/bin:/usr/local/opt/go/libexec/bin"
+export GOPATH="/Users/dean/go"
+
+# HH config for fancy history
+export HH_CONFIG=hicolor,keywords         # get more colors
+shopt -s histappend              # append new history items to .bash_history
+export HISTCONTROL=ignorespace:ignoredups:erasedups   # leading space hides commands from history
+export HISTFILESIZE=9216         # increase history file size (default is 500)
+export HISTSIZE=${HISTFILESIZE}  # increase history size (default is 500)
+export HISTTIMEFORMAT="%h %d %H:%M:%S> "
+export PROMPT_COMMAND="history -a; history -n; ${PROMPT_COMMAND}"   # mem/file sync
+# if this is interactive shell, then bind hh to Ctrl-r (for Vi mode check doc)
+if [[ $- =~ .*i.* ]]; then bind '"\C-r": "\C-a hh -- \C-j"'; fi
+
+
+
+
+
+

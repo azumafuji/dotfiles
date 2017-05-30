@@ -50,6 +50,9 @@ alias e='/Applications/Emacs.app/Contents/MacOS/Emacs "$@" &'
 
 # AWS SSH Aliases
 
+export LC_ALL=en_US.UTF-8
+export LANG=en_US.UTF-8
+export LANGUAGE=en_US.UTF-8
 
 
 if [ -f ~/src/liquidprompt/liquidprompt ]; then

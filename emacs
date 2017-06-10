@@ -16,6 +16,14 @@
 (setq tab-stop-list '(4 8 12 16 20 24 28 32 36 40 44 48 52 56 60 64 68 72 76 80))
 (setq-default py-indent-offset 4)
 
+;; Keyboard changes
+(setq mac-command-modifier 'super)
+(setq mac-option-modifier 'meta)
+(setq mac-option-key-is-meta t)
+(global-set-key (kbd "s-v") 'yank)
+(global-set-key (kbd "s-c") 'kill-ring-save)
+
+
 ;; Some display settings for line numbers and the menubar
 ;;(global-linum-mode 1)
 (setq line-number-mode t)
@@ -195,9 +203,14 @@
    (python . t)
    (restclient . t)))
 
+(setq org-plantuml-jar-path
+      (setq plantuml-jar-path (expand-file-name "/usr/local/Cellar/plantuml/1.2017.13/libexec/plantuml.jar")))
+
+
 (defun my-org-confirm-babel-evaluate (lang body)
   (not (or  (string= lang "ditaa")              ; don't ask for ditaa or dot
          (string= lang "dot")
+         (string= lang "plantuml")
          (string= lang "restclient")
          )))                     
 (setq org-confirm-babel-evaluate 'my-org-confirm-babel-evaluate)
@@ -295,9 +308,10 @@
    (quote
     ("628278136f88aa1a151bb2d6c8a86bf2b7631fbea5f0f76cba2a0079cd910f7d" default)))
  '(fci-rule-color "#073642")
+ '(ns-use-srgb-colorspace t)
  '(package-selected-packages
    (quote
-    (color-theme-sanityinc-tomorrow flymake-lua luarocks fill-column-indicator es-mode kubernetes all-the-icons nginx-mode lua-mode tango-plus-theme sexy-monochrome-theme helm-projectile flymake-json urlenc uuidgen color-theme-solarized pyenv-mode dockerfile-mode projectile neotree jinja2-mode terraform-mode yaml-mode web-mode smartparens shell-switcher restclient-helm rainbow-delimiters pretty-mode pandoc-mode ox-tufte ox-reveal ox-gfm org-tree-slide org-plus-contrib ob-restclient markdown-mode magit json-mode helm-ag exec-path-from-shell elpy cyberpunk-theme color-theme-sanityinc-solarized ag)))
+    (github-pullrequest magit-gh-pulls org-jira ox-jira color-theme-sanityinc-tomorrow flymake-lua luarocks fill-column-indicator es-mode kubernetes all-the-icons nginx-mode lua-mode tango-plus-theme sexy-monochrome-theme helm-projectile flymake-json urlenc uuidgen color-theme-solarized pyenv-mode dockerfile-mode projectile neotree jinja2-mode terraform-mode yaml-mode web-mode smartparens shell-switcher restclient-helm rainbow-delimiters pretty-mode pandoc-mode ox-tufte ox-reveal ox-gfm org-tree-slide org-plus-contrib ob-restclient markdown-mode magit json-mode helm-ag exec-path-from-shell elpy cyberpunk-theme color-theme-sanityinc-solarized ag)))
  '(vc-annotate-background nil)
  '(vc-annotate-color-map
    (quote

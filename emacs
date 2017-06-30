@@ -80,7 +80,9 @@
                      cyberpunk-theme
                      dockerfile-mode
                      elpy
+                     embrace
                      exec-path-from-shell
+                     expand-region
                      helm
                      helm-ag
                      helm-projectile
@@ -89,6 +91,7 @@
                      json-snatcher
                      kubernetes
                      magit
+                     magithub
                      markdown-mode
                      neotree
                      org-plus-contrib
@@ -141,6 +144,13 @@
             'shell-switcher-switch-buffer-other-window)
 (define-key shell-switcher-mode-map (kbd "C-M-'")
             'shell-switcher-new-shell)
+
+;; Expand region and embrace
+(require 'expand-region)
+(global-set-key (kbd "C-=") 'er/expand-region)
+(global-set-key (kbd "C-,") #'embrace-commander)
+(add-hook 'org-mode-hook #'embrace-org-mode-hook)
+
 
 ;; Setup local snippets
 (setq yas-snippet-dirs
@@ -320,7 +330,7 @@
  '(ns-use-srgb-colorspace t)
  '(package-selected-packages
    (quote
-    (plantuml-mode origami yafolding hl-todo magit-gh-pulls org-jira ox-jira color-theme-sanityinc-tomorrow flymake-lua luarocks fill-column-indicator es-mode kubernetes all-the-icons nginx-mode lua-mode tango-plus-theme sexy-monochrome-theme helm-projectile flymake-json urlenc uuidgen color-theme-solarized pyenv-mode dockerfile-mode projectile neotree jinja2-mode terraform-mode yaml-mode web-mode smartparens shell-switcher restclient-helm rainbow-delimiters pretty-mode pandoc-mode ox-tufte ox-reveal ox-gfm org-tree-slide org-plus-contrib ob-restclient markdown-mode magit json-mode helm-ag exec-path-from-shell elpy cyberpunk-theme color-theme-sanityinc-solarized ag)))
+    (embrace expand-region plantuml-mode origami yafolding hl-todo magit-gh-pulls org-jira ox-jira color-theme-sanityinc-tomorrow flymake-lua luarocks fill-column-indicator es-mode kubernetes all-the-icons nginx-mode lua-mode tango-plus-theme sexy-monochrome-theme helm-projectile flymake-json urlenc uuidgen color-theme-solarized pyenv-mode dockerfile-mode projectile neotree jinja2-mode terraform-mode yaml-mode web-mode smartparens shell-switcher restclient-helm rainbow-delimiters pretty-mode pandoc-mode ox-tufte ox-reveal ox-gfm org-tree-slide org-plus-contrib ob-restclient markdown-mode magit json-mode helm-ag exec-path-from-shell elpy cyberpunk-theme color-theme-sanityinc-solarized ag)))
  '(vc-annotate-background nil)
  '(vc-annotate-color-map
    (quote

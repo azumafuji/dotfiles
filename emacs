@@ -46,6 +46,9 @@
   kept-old-versions 2
   version-control t)
 
+;; Set auto revert mode 
+(global-auto-revert-mode 1)
+
 (setq ns-use-srgb-colorspace t)
 
 ;; Reopen files with sudo if they are read-only
@@ -295,6 +298,10 @@
 (add-to-list 'same-window-buffer-names "*SQL*")
 (add-to-list 'same-window-buffer-names "*HTTP Response*")
 
+;; Github
+(require 'magithub)
+(magithub-feature-autoinject t)
+
 
 
 (custom-set-variables
@@ -313,7 +320,7 @@
  '(ns-use-srgb-colorspace t)
  '(package-selected-packages
    (quote
-    (plantuml-mode origami yafolding hl-todo github-pullrequest magit-gh-pulls org-jira ox-jira color-theme-sanityinc-tomorrow flymake-lua luarocks fill-column-indicator es-mode kubernetes all-the-icons nginx-mode lua-mode tango-plus-theme sexy-monochrome-theme helm-projectile flymake-json urlenc uuidgen color-theme-solarized pyenv-mode dockerfile-mode projectile neotree jinja2-mode terraform-mode yaml-mode web-mode smartparens shell-switcher restclient-helm rainbow-delimiters pretty-mode pandoc-mode ox-tufte ox-reveal ox-gfm org-tree-slide org-plus-contrib ob-restclient markdown-mode magit json-mode helm-ag exec-path-from-shell elpy cyberpunk-theme color-theme-sanityinc-solarized ag)))
+    (plantuml-mode origami yafolding hl-todo magit-gh-pulls org-jira ox-jira color-theme-sanityinc-tomorrow flymake-lua luarocks fill-column-indicator es-mode kubernetes all-the-icons nginx-mode lua-mode tango-plus-theme sexy-monochrome-theme helm-projectile flymake-json urlenc uuidgen color-theme-solarized pyenv-mode dockerfile-mode projectile neotree jinja2-mode terraform-mode yaml-mode web-mode smartparens shell-switcher restclient-helm rainbow-delimiters pretty-mode pandoc-mode ox-tufte ox-reveal ox-gfm org-tree-slide org-plus-contrib ob-restclient markdown-mode magit json-mode helm-ag exec-path-from-shell elpy cyberpunk-theme color-theme-sanityinc-solarized ag)))
  '(vc-annotate-background nil)
  '(vc-annotate-color-map
    (quote

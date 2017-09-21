@@ -91,7 +91,6 @@
                      json-snatcher
                      kubernetes
                      magit
-                     magithub
                      markdown-mode
                      neotree
                      org-plus-contrib
@@ -170,7 +169,7 @@
 
 ;; For the GUI use this font and line spacing
 (set-face-attribute 'default nil
-                    :family "Iosevka Term" :height 130 :weight 'regular)
+                    :family "Iosevka Term Slab" :height 130 :weight 'regular)
 (setq-default line-spacing 0.20)
 
 ;; Pretty mode redisplays some keywords as symbols
@@ -216,10 +215,11 @@
    (plantuml . t)
    (latex . t)
    (python . t)
-   (restclient . t)))
+   (restclient . t)
+   (shell . t)))
 
 (setq org-plantuml-jar-path
-      (setq plantuml-jar-path (expand-file-name "/usr/local/Cellar/plantuml/1.2017.13/libexec/plantuml.jar")))
+      (setq plantuml-jar-path (expand-file-name "/usr/local/Cellar/plantuml/1.2017.14/libexec/plantuml.jar")))
 
 
 (defun my-org-confirm-babel-evaluate (lang body)
@@ -239,6 +239,14 @@
 (require 'ox-tufte)
 (require 'ox-gfm)
 
+(setq org-latex-listings 'minted)
+(add-to-list 'org-latex-packages-alist '("" "minted"))
+
+(setq org-latex-pdf-process
+      '("pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f"
+        "pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f"
+        "pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f"))
+
 (setq org-capture-templates
       '(("t" "Todo" entry (file+headline "~/Documents/org/notes.org" "Tasks")
              "* TODO %?\n  %i\n  %a")
@@ -247,7 +255,7 @@
 
 (add-to-list 'org-latex-classes
         '("memoir"
-          "\\documentclass[9pt,letterpaper,extrafontsizes,article]{memoir}"
+          "\\documentclass[9pt,a4paper,extrafontsizes,article]{memoir}"
           ("\\chapter{%s}" . "\\chapter*{%s}")
           ("\\section{%s}" . "\\section*{%s}")
           ("\\subsection{%s}" . "\\subsection*{%s}")       
@@ -257,11 +265,9 @@
 
 (add-to-list 'org-latex-classes
         '("tufte"
-          "\\documentclass[10pt]{tufte-handout}"
-          ("\\chapter{%s}" . "\\chapter*{%s}")
+          "\\documentclass[8pt]{tufte-handout}"
           ("\\section{%s}" . "\\section*{%s}")
           ("\\subsection{%s}" . "\\subsection*{%s}")       
-          ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
           ("\\paragraph{%s}" . "\\paragraph*{%s}")
           ("\\subparagraph{%s}" . "\\subparagraph*{%s}"))
         )
@@ -308,10 +314,6 @@
 (add-to-list 'same-window-buffer-names "*SQL*")
 (add-to-list 'same-window-buffer-names "*HTTP Response*")
 
-;; Github
-(require 'magithub)
-(magithub-feature-autoinject t)
-
 
 
 (custom-set-variables
@@ -323,14 +325,15 @@
    [default bold shadow italic underline bold bold-italic bold])
  '(ansi-color-names-vector
    (vector "#839496" "#dc322f" "#859900" "#b58900" "#268bd2" "#d33682" "#2aa198" "#002b36"))
+ '(custom-enabled-themes (quote (sanityinc-solarized-dark)))
  '(custom-safe-themes
    (quote
-    ("628278136f88aa1a151bb2d6c8a86bf2b7631fbea5f0f76cba2a0079cd910f7d" default)))
+    ("4aee8551b53a43a883cb0b7f3255d6859d766b6c5e14bcb01bed572fcbef4328" "628278136f88aa1a151bb2d6c8a86bf2b7631fbea5f0f76cba2a0079cd910f7d" default)))
  '(fci-rule-color "#073642")
  '(ns-use-srgb-colorspace t)
  '(package-selected-packages
    (quote
-    (embrace expand-region plantuml-mode origami yafolding hl-todo magit-gh-pulls org-jira ox-jira color-theme-sanityinc-tomorrow flymake-lua luarocks fill-column-indicator es-mode kubernetes all-the-icons nginx-mode lua-mode tango-plus-theme sexy-monochrome-theme helm-projectile flymake-json urlenc uuidgen color-theme-solarized pyenv-mode dockerfile-mode projectile neotree jinja2-mode terraform-mode yaml-mode web-mode smartparens shell-switcher restclient-helm rainbow-delimiters pretty-mode pandoc-mode ox-tufte ox-reveal ox-gfm org-tree-slide org-plus-contrib ob-restclient markdown-mode magit json-mode helm-ag exec-path-from-shell elpy cyberpunk-theme color-theme-sanityinc-solarized ag)))
+    (csv-mode embrace expand-region plantuml-mode origami yafolding hl-todo magit-gh-pulls org-jira ox-jira color-theme-sanityinc-tomorrow flymake-lua luarocks fill-column-indicator es-mode kubernetes all-the-icons nginx-mode lua-mode tango-plus-theme sexy-monochrome-theme helm-projectile flymake-json urlenc uuidgen color-theme-solarized pyenv-mode dockerfile-mode projectile neotree jinja2-mode terraform-mode yaml-mode web-mode smartparens shell-switcher restclient-helm rainbow-delimiters pretty-mode pandoc-mode ox-tufte ox-reveal ox-gfm org-tree-slide org-plus-contrib ob-restclient markdown-mode magit json-mode helm-ag exec-path-from-shell elpy cyberpunk-theme color-theme-sanityinc-solarized ag)))
  '(vc-annotate-background nil)
  '(vc-annotate-color-map
    (quote

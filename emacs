@@ -326,9 +326,9 @@
   (slack-register-team
    :name "Antidote"
    :default t
-   :client-id "2561389651.352155134149"
-   :client-secret "baf4daac23c0560160ad8f54ab9f1fa0"
-   :token "xoxp-2561389651-3673406594-56688091254-f71e0fb7e9"
+   :client-id ""
+   :client-secret ""
+   :token ""
    :subscribed-channels '(engineering london-office)
    :full-and-display-names t
    )

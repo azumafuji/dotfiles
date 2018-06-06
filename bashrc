@@ -1,8 +1,7 @@
 #!/bin/bash
 # -*- mode: sh-mode -*-
-alias emacs='/Applications/Emacs.app/Contents/MacOS/Emacs -nw'
-
-export EDITOR='/Applications/Emacs.app/Contents/MacOS/Emacs -nw'
+alias emacs='/usr/local/Cellar/emacs/26.1_1/bin/emacsclient -nw'
+export EDITOR='emacs'
 export TERM=xterm-256color
 export GREP_OPTIONS='--color=auto' GREP_COLOR='1;32'
 export CLICOLOR=1 
@@ -44,9 +43,7 @@ alias updaterepos='find . -maxdepth 1 -type d -print -execdir git --git-dir={}/.
 
 alias joinPDF='/System/Library/Automator/Combine\ PDF\ Pages.action/Contents/Resources/join.py'
 
-# Aliases for the installed emacs package
-alias emacs='/Applications/Emacs.app/Contents/MacOS/Emacs -nw "$@"'
-alias e='/Applications/Emacs.app/Contents/MacOS/Emacs "$@" &'
+
 
 # AWS SSH Aliases
 

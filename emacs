@@ -1,7 +1,7 @@
 ;; -*- mode: Lisp; fill-column: 75; comment-column: 50; -*-
 ;;; emacs -- Emacs init file for Dean
 ;;; Commentary:
-;; My Emacs file for working with Python, Clojure, Org, and various other bits
+;; My Emacs file for doing stuff
 
 ;;; Code:
 
@@ -23,13 +23,12 @@
 (global-set-key (kbd "s-v") 'yank)
 (global-set-key (kbd "s-c") 'kill-ring-save)
 
-
 ;; Some display settings for line numbers and the menubar
 ;;(global-linum-mode 1)
 (setq line-number-mode t)
 (setq column-number-mode t)
 ;; (setq linum-format "%5d ")
-;; (global-visual-line-mode t)
+;;(global-visual-line-mode t)
 (menu-bar-mode -1)
 (tool-bar-mode -1)
 
@@ -58,7 +57,6 @@
                (file-writable-p buffer-file-name))
     (find-alternate-file (concat "/sudo:root@localhost:" buffer-file-name))))
 
-
 ;; Set up package repos
 (require 'package)
 (setq package-archives
@@ -75,9 +73,9 @@
 
 (setq package-list '(ag
                      all-the-icons
-                     color-theme-sanityinc-solarized
                      color-theme-sanityinc-tomorrow
-                     cyberpunk-theme
+                     company
+                     csv-mode
                      dockerfile-mode
                      elpy
                      embrace
@@ -107,7 +105,9 @@
                      ox-gfm
                      ox-tufte
                      shell-switcher
+                     slack
                      smartparens
+					 use-package
                      web-mode
                      yaml-mode
                      yasnippet
@@ -119,6 +119,8 @@
 (dolist (package package-list)
   (when (not (package-installed-p package))
     (package-install package)))
+
+(require 'use-package)
 
 ;; cd to my home directory on startup 
 (cd "~")
@@ -164,7 +166,7 @@
 (global-set-key "\C-x\ \C-r" 'helm-recentf)
 
 ;; Set a nice color theme
-(load-theme 'sanityinc-tomorrow-eighties t)
+(load-theme 'sanityinc-tomorrow-night t)
 
 
 ;; For the GUI use this font and line spacing
@@ -219,7 +221,7 @@
    (shell . t)))
 
 (setq org-plantuml-jar-path
-      (setq plantuml-jar-path (expand-file-name "/usr/local/Cellar/plantuml/1.2017.14/libexec/plantuml.jar")))
+      (setq plantuml-jar-path (expand-file-name "/usr/local/Cellar/plantuml/1.2018.6/libexec/plantuml.jar")))
 
 
 (defun my-org-confirm-babel-evaluate (lang body)
@@ -313,6 +315,24 @@
 
 (add-to-list 'same-window-buffer-names "*SQL*")
 (add-to-list 'same-window-buffer-names "*HTTP Response*")
+(add-to-list 'same-window-regexps "\*Slack.*")
+
+(use-package slack
+  :commands (slack-start)
+  :init
+  (setq slack-buffer-emojify t) ;; if you want to enable emoji, default nil
+  (setq slack-prefer-current-team t)
+  :config
+  (slack-register-team
+   :name "Antidote"
+   :default t
+   :client-id "2561389651.352155134149"
+   :client-secret "baf4daac23c0560160ad8f54ab9f1fa0"
+   :token "xoxp-2561389651-3673406594-56688091254-f71e0fb7e9"
+   :subscribed-channels '(engineering london-office)
+   :full-and-display-names t
+   )
+)
 
 
 
@@ -325,15 +345,14 @@
    [default bold shadow italic underline bold bold-italic bold])
  '(ansi-color-names-vector
    (vector "#839496" "#dc322f" "#859900" "#b58900" "#268bd2" "#d33682" "#2aa198" "#002b36"))
- '(custom-enabled-themes (quote (sanityinc-solarized-dark)))
  '(custom-safe-themes
    (quote
-    ("4aee8551b53a43a883cb0b7f3255d6859d766b6c5e14bcb01bed572fcbef4328" "628278136f88aa1a151bb2d6c8a86bf2b7631fbea5f0f76cba2a0079cd910f7d" default)))
+    ("69e7e7069edb56f9ed08c28ccf0db7af8f30134cab6415d5cf38ec5967348a3c" "a61109d38200252de49997a49d84045c726fa8d0f4dd637fce0b8affaa5c8620" "304c39b190267e9b863c0cf9c989da76dcfbb0649cbcb89592e7c5c08348fce9" "c614d2423075491e6b7f38a4b7ea1c68f31764b9b815e35c9741e9490119efc0" "4aee8551b53a43a883cb0b7f3255d6859d766b6c5e14bcb01bed572fcbef4328" "628278136f88aa1a151bb2d6c8a86bf2b7631fbea5f0f76cba2a0079cd910f7d" default)))
  '(fci-rule-color "#073642")
  '(ns-use-srgb-colorspace t)
  '(package-selected-packages
    (quote
-    (csv-mode embrace expand-region plantuml-mode origami yafolding hl-todo magit-gh-pulls org-jira ox-jira color-theme-sanityinc-tomorrow flymake-lua luarocks fill-column-indicator es-mode kubernetes all-the-icons nginx-mode lua-mode tango-plus-theme sexy-monochrome-theme helm-projectile flymake-json urlenc uuidgen color-theme-solarized pyenv-mode dockerfile-mode projectile neotree jinja2-mode terraform-mode yaml-mode web-mode smartparens shell-switcher restclient-helm rainbow-delimiters pretty-mode pandoc-mode ox-tufte ox-reveal ox-gfm org-tree-slide org-plus-contrib ob-restclient markdown-mode magit json-mode helm-ag exec-path-from-shell elpy cyberpunk-theme color-theme-sanityinc-solarized ag)))
+    (slack base16-theme csv-mode embrace expand-region plantuml-mode origami yafolding hl-todo magit-gh-pulls org-jira ox-jira color-theme-sanityinc-tomorrow flymake-lua luarocks fill-column-indicator es-mode kubernetes all-the-icons nginx-mode lua-mode tango-plus-theme sexy-monochrome-theme helm-projectile flymake-json urlenc uuidgen color-theme-solarized pyenv-mode dockerfile-mode projectile neotree jinja2-mode terraform-mode yaml-mode web-mode smartparens shell-switcher restclient-helm rainbow-delimiters pretty-mode pandoc-mode ox-tufte ox-reveal ox-gfm org-tree-slide org-plus-contrib ob-restclient markdown-mode magit json-mode helm-ag exec-path-from-shell elpy cyberpunk-theme color-theme-sanityinc-solarized ag)))
  '(vc-annotate-background nil)
  '(vc-annotate-color-map
    (quote
@@ -362,3 +381,4 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  )
+(put 'upcase-region 'disabled nil)

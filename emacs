@@ -57,10 +57,12 @@
       '(("gnu"          . "https://elpa.gnu.org/packages/")
         ("melpa-stable" . "http://melpa-stable.milkbox.net/packages/")
         ("melpa"        . "https://melpa.org/packages/")
-        ("org"          . "http://orgmode.org/elpa/"))
+        ("org"          . "http://orgmode.org/elpa/")
+        ("elpy"         . "https://jorgenschaefer.github.io/packages/"))
       package-archive-priorities
       '(("melpa-stable" . 10)
         ("org"          . 8)
+        ("elpy"         . 7)
         ("gnu"          . 5)
         ("melpa"        . 0)))
 (package-initialize)
@@ -70,10 +72,13 @@
                      company
                      company-quickhelp
                      counsel
+                     ebdb
+                     ebdb-gnorb
                      elpy
                      embrace
 		             expand-region
                      flycheck
+                     js2-mode
                      js2-refactor
                      json-mode
 		             magit
@@ -81,6 +86,7 @@
                      ob-restclient
 		             org-plus-contrib
                      ox-gfm
+                     pyenv-mode
                      rainbow-delimiters
 		             restclient
                      rjsx-mode
@@ -89,6 +95,7 @@
                      toml-mode
                      use-package
                      web-mode
+                     xref-js2
                      yaml-mode
 		             yasnippet))
 
@@ -134,7 +141,7 @@
                 
 (ivy-mode 1)
 (setq ivy-use-virtual-buffers t)
-(setq enable-recursive-minibuffers t)
+(setq enable-recursive-minibuffers nil)
 (setq ivy-count-format "(%d/%d) ")
 (setq ivy-display-style 'fancy)
 
@@ -145,8 +152,9 @@
 
 ;; Extra packages
 
+(exec-path-from-shell-initialize)
 
-;; Make sure we have recent files avaialble
+;; Rainbow delimiters to keep track of all the parens!
 (use-package rainbow-delimiters
   :config
   
@@ -165,6 +173,7 @@
   :hook
   (lisp-mode . rainbow-delimiters-mode))
 
+;; Make sure we have recent files avaialble
 (use-package recentf
   :init
   (recentf-mode 1)
@@ -172,7 +181,7 @@
   :bind
   ("C-x C-r" . counsel-recentf))
 
-
+;; Shell switcher for easy access to a shell via Emacs
 (use-package shell-switcher
   :init
   (setq shell-switcher-mode t)
@@ -181,14 +190,17 @@
   ("C-x 4 '" . shell-switcher-switch-buffer-other-window)
   ("C-M-'". shell-switcher-new-shell))
 
+;; Expand region to quickly select text
 (use-package expand-region
   :bind
   ("C-=" . er/expand-region))
 
+;; Go to the place
 (use-package ace-jump-mode
   :bind
   ("C-c SPC" . ace-jump-mode))
 
+;; For all the API testing 
 (use-package restclient)
 
 ;; ORG MODE
@@ -259,10 +271,8 @@
   ("C-c b" . org-iswitchb)
   ("C-c c" . org-capture))
 
-;; gnus
+;; gnus - If I ever get it to work for me
 (require 'gnus)
-
-
 (require 'ebdb-gnus)
 (require 'ebdb-message)
 
@@ -274,14 +284,15 @@
 (global-set-key (kbd "C-x g") 'magit-status)
 (setq smerge-command-prefix "\C-c v")
 
+;; Swiper for search
 (global-set-key (kbd "C-s") 'swiper)
-
 
 ;; Keep windows clean
 (add-to-list 'same-window-buffer-names "*SQL*")
 (add-to-list 'same-window-buffer-names "*HTTP Response*")
 (add-to-list 'same-window-regexps "\*Slack.*")
 
+;; To swap around window splits
 (defun toggle-window-split ()
   (interactive)
   (if (= (count-windows) 2)
@@ -309,6 +320,94 @@
 
 (global-set-key (kbd "C-x w t") 'toggle-window-split)
 
+;; Elpy Config
+
+
+(defun pyenv-activate-current-project ()
+  "Automatically activates pyenv version if .python-version file exists."
+  (interactive)
+  (let ((python-version-directory (locate-dominating-file (buffer-file-name) ".python-version")))
+    (if python-version-directory
+        (let* ((pyenv-version-path (f-expand ".python-version" python-version-directory))
+               (pyenv-current-version (s-trim (f-read-text pyenv-version-path 'utf-8))))
+          (pyenv-mode-set pyenv-current-version)
+          (message (concat "Setting virtualenv to " pyenv-current-version))))))
+
+(use-package elpy
+    :init
+    (add-to-list 'auto-mode-alist '("\\.py$" . python-mode))
+    :bind (:map elpy-mode-map
+	      ("<M-left>" . nil)
+	      ("<M-right>" . nil)
+	      ("<M-S-left>" . elpy-nav-indent-shift-left)
+	      ("<M-S-right>" . elpy-nav-indent-shift-right)
+	      ("M-." . elpy-goto-definition)
+	      ("M-," . pop-tag-mark))
+    :config
+    (setq elpy-rpc-backend "jedi"))
+
+(use-package python
+  :mode ("\\.py" . python-mode)
+  :config
+  (setq python-indent-offset 4)
+  (elpy-enable))
+
+(use-package pyenv-mode
+  :init
+  (add-to-list 'exec-path "~/.pyenv/shims")
+  (setenv "WORKON_HOME" "~/.pyenv/versions/")
+  :config
+  (pyenv-mode)
+  :bind
+  ("C-x p e" . pyenv-activate-current-project))
+
+(defvar pyenv-current-version nil nil)
+
+(defun pyenv-init()
+  "Initialize pyenv's current version to the global one."
+  (let ((global-pyenv (replace-regexp-in-string "\n" "" (shell-command-to-string "pyenv global"))))
+    (message (concat "Setting pyenv version to " global-pyenv))
+    (pyenv-mode-set global-pyenv)
+    (setq pyenv-current-version global-pyenv)))
+
+(add-hook 'after-init-hook 'pyenv-init)
+
+;; Javascript stuffs
+
+(require 'js2-refactor)
+(require 'xref-js2)
+
+(add-hook 'js2-mode-hook #'js2-refactor-mode)
+(js2r-add-keybindings-with-prefix "C-c C-r")
+(define-key js2-mode-map (kbd "C-k") #'js2r-kill)
+
+;; js-mode (which js2 is based on) binds "M-." which conflicts with xref, so
+;; unbind it.
+(define-key js-mode-map (kbd "M-.") nil)
+
+(add-hook 'js2-mode-hook (lambda ()
+  (add-hook 'xref-backend-functions #'xref-js2-xref-backend nil t)))
+
+(define-key js2-mode-map (kbd "C-k") #'js2r-kill)
+
+(add-to-list 'company-backends 'company-tern)
+(add-hook 'js2-mode-hook (lambda ()
+                           (tern-mode)
+                           (company-mode)))
+(define-key tern-mode-keymap (kbd "M-.") nil)
+(define-key tern-mode-keymap (kbd "M-,") nil)
+
+(require 'web-mode)
+(add-to-list 'auto-mode-alist '("\\.phtml\\'" . web-mode))
+(add-to-list 'auto-mode-alist '("\\.tpl\\.php\\'" . web-mode))
+(add-to-list 'auto-mode-alist '("\\.[agj]sp\\'" . web-mode))
+(add-to-list 'auto-mode-alist '("\\.as[cp]x\\'" . web-mode))
+(add-to-list 'auto-mode-alist '("\\.erb\\'" . web-mode))
+(add-to-list 'auto-mode-alist '("\\.mustache\\'" . web-mode))
+(add-to-list 'auto-mode-alist '("\\.djhtml\\'" . web-mode))
+(add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode))
+
+
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -316,7 +415,7 @@
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
    (quote
-    (counsel-ebdb ebdb ebdb-gnorb bbdb counsel-bbdb gnorb pinentry doom-themes counsel yasnippet use-package shell-switcher restclient org-plus-contrib magit embrace color-theme-sanityinc-tomorrow)))
+    (exec-path-from-shell pyenv-mode counsel-ebdb ebdb ebdb-gnorb bbdb counsel-bbdb gnorb pinentry doom-themes counsel yasnippet use-package shell-switcher restclient org-plus-contrib magit embrace color-theme-sanityinc-tomorrow)))
  '(send-mail-function (quote smtpmail-send-it)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.

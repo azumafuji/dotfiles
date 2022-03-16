@@ -6,6 +6,7 @@
 
 ;;; Code:
 
+;; Set initial frame size. 
 (if (display-graphic-p)
     (progn
       (setq initial-frame-alist
@@ -15,10 +16,7 @@
       (setq default-frame-alist
             '(
               (width . 180)
-              (height . 50))))
-  (progn
-    (setq initial-frame-alist '( (tool-bar-lines . 0)))
-    (setq default-frame-alist '( (tool-bar-lines . 0)))))
+              (height . 50)))))
 
 
 ;; Set encoding
@@ -29,6 +27,15 @@
 (setq locale-coding-system 'utf-8)
 (set-default-coding-systems 'utf-8)
 (set-terminal-coding-system 'utf-8)
+
+;; Fix Scrolling
+;; Emacs 29, use pixel scroll
+(pixel-scroll-precision-mode)
+(setq pixel-scroll-precision-use-momentum 1)
+(setq pixel-scroll-precision-large-scroll-height 20.0)
+(setq pixel-scroll-precision-interpolation-factor 30)
+
+;; Alternately good-scroll.el is also really good 
 
 
 ;; Default tabs and spacing
@@ -92,6 +99,7 @@
 (setq package-list '(ace-window
                      expand-region
                      lsp-mode
+                     lsp-treemacs
                      lsp-ui
                      magit
                      mct
@@ -104,7 +112,10 @@
                      recentf
                      restclient
                      treemacs
+                     treemacs-magit
+                     treemacs-projectile
                      use-package
+                     which-key
                      yasnippet
                      ))
 
@@ -295,9 +306,9 @@
               ("s-p" . projectile-command-map)
               ("C-c p" . projectile-command-map)))
 
-;; (use-package treemacs-projectile
-;;   :after (treemacs projectile)
-;;   :ensure t)
+(use-package treemacs-projectile
+   :after (treemacs projectile)
+   :ensure t)
 
 
 
@@ -305,9 +316,9 @@
   :bind (("C-x g" . magit-status)
          ("C-x C-g" . magit-status)))
 
-;; (use-package treemacs-magit
-;;   :after (treemacs magit)
-;;   :ensure t)
+(use-package treemacs-magit
+   :after (treemacs magit)
+   :ensure t)
 
 
 
@@ -322,7 +333,10 @@
          (lsp-mode . lsp-enable-which-key-integration))
   :commands lsp)
 
-
+(use-package lsp-treemacs
+    :after (lsp-mode)
+    :config
+    (lsp-treemacs-sync-mode 1))
 
 
 ;; optionally
@@ -332,7 +346,7 @@
 ;; if you are ivy user
 ;; (use-package lsp-ivy :commands lsp-ivy-workspace-symbol)
 
-;;(use-package lsp-treemacs :commands lsp-treemacs-errors-list)
+(use-package lsp-treemacs :commands lsp-treemacs-errors-list)
 
 ;; optionally if you want to use debugger
 ;; (use-package dap-mode)
@@ -350,7 +364,7 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
-   '(treemacs-magit treemacs-projectile treemacs projectile magit lsp-mode ob-restclient ox-tufte ox-gfm orderless mct yasnippet use-package modus-themes expand-region)))
+   '(which-key treemacs-magit treemacs-projectile treemacs projectile magit lsp-mode ob-restclient ox-tufte ox-gfm orderless mct yasnippet use-package modus-themes expand-region)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.

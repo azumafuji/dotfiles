@@ -1,4 +1,4 @@
-;; -*- mode: Lisp; fill-column: 78; comment-column: 50; -*-
+;; -*- mode: emacs-lisp; fill-column: 78; comment-column: 50; -*-
 ;;; emacs -- Emacs init file for Dean
 
 ;;; Commentary:
@@ -30,10 +30,10 @@
 
 ;; Fix Scrolling
 ;; Emacs 29, use pixel scroll
-(pixel-scroll-precision-mode)
-(setq pixel-scroll-precision-use-momentum 1)
-(setq pixel-scroll-precision-large-scroll-height 20.0)
-(setq pixel-scroll-precision-interpolation-factor 30)
+;; (pixel-scroll-precision-mode)
+;; (setq pixel-scroll-precision-use-momentum 1)
+;; (setq pixel-scroll-precision-large-scroll-height 20.0)
+;; (setq pixel-scroll-precision-interpolation-factor 30)
 
 ;; Alternately good-scroll.el is also really good 
 
@@ -97,6 +97,8 @@
 
 
 (setq package-list '(ace-window
+                     corfu
+                     corfu-doc   
                      expand-region
                      lsp-mode
                      lsp-treemacs
@@ -130,14 +132,6 @@
 
 (global-set-key (kbd "M-o") 'ace-window)
 
-(use-package recentf
-  :bind
-  ("C-x C-r" . recentf-open-files)
-  :config
-  (setq recentf-max-menu-items 15
-        recentf-max-saved-items 100
-        )
-  (recentf-mode 1))
 
 (use-package orderless
   :ensure t
@@ -162,6 +156,86 @@
   :init
   (mct-minibuffer-mode 1)
   (mct-region-mode 1))
+
+(use-package recentf
+  :bind
+  ("C-x C-r" . recentf-open-files)
+  :config
+  (setq recentf-max-menu-items 15
+        recentf-max-saved-items 100
+        )
+  (recentf-mode 1))
+
+(use-package corfu
+  ;; Optional customizations
+  :custom
+  ;;(corfu-cycle t)                ;; Enable cycling for `corfu-next/previous'
+  (corfu-auto t)                 ;; Enable auto completion
+  (corfu-separator ?\s)          ;; Orderless field separator
+  ;; (corfu-quit-at-boundary nil)   ;; Never quit at completion boundary
+  ;; (corfu-quit-no-match nil)      ;; Never quit, even if there is no match
+  ;; (corfu-preview-current nil)    ;; Disable current candidate preview
+  ;; (corfu-preselect-first nil)    ;; Disable candidate preselection
+  ;; (corfu-on-exact-match nil)     ;; Configure handling of exact matches
+  ;; (corfu-echo-documentation nil) ;; Disable documentation in the echo area
+  ;; (corfu-scroll-margin 5)        ;; Use scroll margin
+
+  ;; You may want to enable Corfu only for certain modes.
+  ;; :hook ((prog-mode . corfu-mode)
+  ;;        (shell-mode . corfu-mode)
+  ;;        (eshell-mode . corfu-mode))
+
+  ;; Recommended: Enable Corfu globally.
+  ;; This is recommended since dabbrev can be used globally (M-/).
+  :init
+  (corfu-global-mode))
+
+(add-hook 'corfu-mode-hook #'corfu-doc-mode)
+(define-key corfu-map (kbd "M-p") #'corfu-doc-scroll-down) 
+(define-key corfu-map (kbd "M-n") #'corfu-doc-scroll-up)  
+(define-key corfu-map (kbd "M-d") #'corfu-doc-toggle)
+
+ 
+;; Optionally use the `orderless' completion style. See `+orderless-dispatch'
+;; in the Consult wiki for an advanced Orderless style dispatcher.
+;; Enable `partial-completion' for files to allow path expansion.
+;; You may prefer to use `initials' instead of `partial-completion'.
+;; (use-package orderless
+;;   :init
+;;   ;; Configure a custom style dispatcher (see the Consult wiki)
+;;   ;; (setq orderless-style-dispatchers '(+orderless-dispatch)
+;;   ;;       orderless-component-separator #'orderless-escapable-split-on-space)
+;;   (setq completion-styles '(orderless)
+;;         completion-category-defaults nil
+;;         completion-category-overrides '((file (styles . (partial-completion))))))
+
+
+;; A few more useful configurations...
+(use-package emacs
+  :init
+  ;; TAB cycle if there are only few candidates
+  (setq completion-cycle-threshold 10)
+
+  ;; Emacs 28: Hide commands in M-x which do not apply to the current mode.
+  ;; Corfu commands are hidden, since they are not supposed to be used via M-x.
+  (setq read-extended-command-predicate
+        #'command-completion-default-include-p)
+
+  ;; Enable indentation+completion using the TAB key.
+  ;; `completion-at-point' is often bound to M-TAB.
+  (setq tab-always-indent 'complete))
+
+(defun corfu-enable-always-in-minibuffer ()
+  "Enable Corfu in the minibuffer if Vertico/Mct are not active."
+  (unless (or (bound-and-true-p mct--active)
+              (bound-and-true-p vertico--input))
+    ;; (setq-local corfu-auto nil) Enable/disable auto completion
+    (corfu-mode 1)))
+
+(add-hook 'minibuffer-setup-hook #'corfu-enable-always-in-minibuffer 1)
+
+
+;; (add-hook 'emacs-lisp-mode-hook 'ielm-auto-complete)
 
 ;;best themes with easy switching between dark and light
 (use-package modus-themes
@@ -321,8 +395,6 @@
    :ensure t)
 
 
-
-
 (use-package lsp-mode
   :init
   ;; set prefix for lsp-command-keymap (few alternatives - "C-l", "C-c l")
@@ -364,7 +436,7 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
-   '(which-key treemacs-magit treemacs-projectile treemacs projectile magit lsp-mode ob-restclient ox-tufte ox-gfm orderless mct yasnippet use-package modus-themes expand-region)))
+   '(corfu-doc which-key treemacs-magit treemacs-projectile treemacs projectile magit lsp-mode ob-restclient ox-tufte ox-gfm orderless mct yasnippet use-package modus-themes expand-region)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.

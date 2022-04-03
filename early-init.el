@@ -23,5 +23,4 @@
 
 (setq native-comp-async-report-warnings-errors 'silent) ; emacs28 with native compilation
 
-
 ;;; early-init.el ends here

@@ -97,9 +97,12 @@
 
 
 (setq package-list '(ace-window
+                     cider
+                     clojure-mode
                      corfu
                      corfu-doc   
                      expand-region
+                     json-mode
                      lsp-mode
                      lsp-treemacs
                      lsp-ui
@@ -119,6 +122,7 @@
                      use-package
                      which-key
                      yasnippet
+                     yaml-mode
                      ))
 
 (when (not package-archive-contents)
@@ -200,21 +204,21 @@
 ;; in the Consult wiki for an advanced Orderless style dispatcher.
 ;; Enable `partial-completion' for files to allow path expansion.
 ;; You may prefer to use `initials' instead of `partial-completion'.
-;; (use-package orderless
-;;   :init
-;;   ;; Configure a custom style dispatcher (see the Consult wiki)
-;;   ;; (setq orderless-style-dispatchers '(+orderless-dispatch)
-;;   ;;       orderless-component-separator #'orderless-escapable-split-on-space)
-;;   (setq completion-styles '(orderless)
-;;         completion-category-defaults nil
-;;         completion-category-overrides '((file (styles . (partial-completion))))))
+(use-package orderless
+  :init
+  ;; Configure a custom style dispatcher (see the Consult wiki)
+  ;; (setq orderless-style-dispatchers '(+orderless-dispatch)
+  ;;       orderless-component-separator #'orderless-escapable-split-on-space)
+  (setq completion-styles '(orderless)
+        completion-category-defaults nil
+        completion-category-overrides '((file (styles . (partial-completion))))))
 
 
 ;; A few more useful configurations...
 (use-package emacs
   :init
   ;; TAB cycle if there are only few candidates
-  (setq completion-cycle-threshold 10)
+  (setq completion-cycle-threshold 4)
 
   ;; Emacs 28: Hide commands in M-x which do not apply to the current mode.
   ;; Corfu commands are hidden, since they are not supposed to be used via M-x.
@@ -234,8 +238,6 @@
 
 (add-hook 'minibuffer-setup-hook #'corfu-enable-always-in-minibuffer 1)
 
-
-;; (add-hook 'emacs-lisp-mode-hook 'ielm-auto-complete)
 
 ;;best themes with easy switching between dark and light
 (use-package modus-themes
@@ -385,7 +387,6 @@
    :ensure t)
 
 
-
 (use-package magit
   :bind (("C-x g" . magit-status)
          ("C-x C-g" . magit-status)))
@@ -394,6 +395,23 @@
    :after (treemacs magit)
    :ensure t)
 
+(use-package cider
+  :ensure t
+  :pin melpa-stable)
+
+(add-hook 'clojure-mode-hook 'lsp)
+(add-hook 'clojurescript-mode-hook 'lsp)
+(add-hook 'clojurec-mode-hook 'lsp)
+
+(setq gc-cons-threshold (* 100 1024 1024)
+      read-process-output-max (* 1024 1024)
+      treemacs-space-between-root-nodes nil
+      company-minimum-prefix-length 1
+      lsp-lens-enable t
+      lsp-signature-auto-activate nil
+      ; lsp-enable-indentation nil ; uncomment to use cider indentation instead of lsp
+      ; lsp-enable-completion-at-point nil ; uncomment to use cider completion instead of lsp
+      )
 
 (use-package lsp-mode
   :init
@@ -436,7 +454,7 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
-   '(corfu-doc which-key treemacs-magit treemacs-projectile treemacs projectile magit lsp-mode ob-restclient ox-tufte ox-gfm orderless mct yasnippet use-package modus-themes expand-region)))
+   '(ag corfu-doc which-key treemacs-magit treemacs-projectile treemacs projectile magit lsp-mode ob-restclient ox-tufte ox-gfm orderless mct yasnippet use-package modus-themes expand-region)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.

@@ -28,14 +28,6 @@
 (set-default-coding-systems 'utf-8)
 (set-terminal-coding-system 'utf-8)
 
-;; Fix Scrolling
-;; Emacs 29, use pixel scroll
-;; (pixel-scroll-precision-mode)
-;; (setq pixel-scroll-precision-use-momentum 1)
-;; (setq pixel-scroll-precision-large-scroll-height 20.0)
-;; (setq pixel-scroll-precision-interpolation-factor 30)
-
-;; Alternately good-scroll.el is also really good 
 
 
 ;; Default tabs and spacing
@@ -102,6 +94,7 @@
                      corfu
                      corfu-doc   
                      expand-region
+                     good-scroll
                      json-mode
                      lsp-mode
                      lsp-treemacs
@@ -133,6 +126,20 @@
     (package-install package)))
 
 (require 'use-package)
+
+;; Fix Scrolling
+;; Emacs 29, use pixel scroll
+
+(if (>= emacs-major-version 29)
+    ((pixel-scroll-precision-mode)
+     (setq pixel-scroll-precision-use-momentum 1)
+     (setq pixel-scroll-precision-large-scroll-height 20.0)
+     (setq pixel-scroll-precision-interpolation-factor 30))
+  (use-package good-scroll
+    :hook (after-init . good-scroll-mode)))
+
+;; Alternately good-scroll.el is also really good 
+
 
 (global-set-key (kbd "M-o") 'ace-window)
 
@@ -347,11 +354,6 @@
   (progn
     (setq treemacs-collapse-dirs                   (if treemacs-python-executable 3 0))
 
-
-    ;; The default width and height of the icons is 22 pixels. If you are
-    ;; using a Hi-DPI display, uncomment this to double the icon size.
-    ;;(treemacs-resize-icons 44)
-
     (treemacs-follow-mode t)
     (treemacs-filewatch-mode t)
     (treemacs-fringe-indicator-mode 'always)
@@ -454,7 +456,7 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
-   '(ag corfu-doc which-key treemacs-magit treemacs-projectile treemacs projectile magit lsp-mode ob-restclient ox-tufte ox-gfm orderless mct yasnippet use-package modus-themes expand-region)))
+   '(good-scroll ag corfu-doc which-key treemacs-magit treemacs-projectile treemacs projectile magit lsp-mode ox-tufte ox-gfm orderless mct yasnippet use-package modus-themes expand-region)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.

@@ -180,8 +180,8 @@
 (use-package corfu
   ;; Optional customizations
   :custom
-  ;;(corfu-cycle t)                ;; Enable cycling for `corfu-next/previous'
-  (corfu-auto t)                 ;; Enable auto completion
+  ;; (corfu-cycle t)                ;; Enable cycling for `corfu-next/previous'
+  ;; (corfu-auto t)                 ;; Enable auto completion
   (corfu-separator ?\s)          ;; Orderless field separator
   ;; (corfu-quit-at-boundary nil)   ;; Never quit at completion boundary
   ;; (corfu-quit-no-match nil)      ;; Never quit, even if there is no match
@@ -290,6 +290,7 @@
   (setq org-startup-indented t)
   (add-hook 'org-mode-hook #'visual-line-mode)
   (use-package ox-gfm)
+  (use-package ox-epub)
   (use-package ox-odt)
   (use-package ox-koma-letter)
   (use-package ox-latex)
@@ -456,7 +457,7 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
-   '(good-scroll ag corfu-doc which-key treemacs-magit treemacs-projectile treemacs projectile magit lsp-mode ox-tufte ox-gfm orderless mct yasnippet use-package modus-themes expand-region)))
+   '(ox-epub good-scroll ag corfu-doc which-key treemacs-magit treemacs-projectile treemacs projectile magit lsp-mode ox-tufte ox-gfm orderless mct yasnippet use-package modus-themes expand-region)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.

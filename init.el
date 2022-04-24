@@ -100,7 +100,6 @@
                      lsp-treemacs
                      lsp-ui
                      magit
-                     mct
                      modus-themes
                      ob-restclient
                      orderless
@@ -113,6 +112,7 @@
                      treemacs-magit
                      treemacs-projectile
                      use-package
+                     vertico
                      which-key
                      yasnippet
                      yaml-mode
@@ -129,6 +129,7 @@
 
 ;; Fix Scrolling
 ;; Emacs 29, use pixel scroll
+;; Alternately good-scroll.el is also really good
 
 (if (>= emacs-major-version 29)
     ((pixel-scroll-precision-mode)
@@ -138,44 +139,76 @@
   (use-package good-scroll
     :hook (after-init . good-scroll-mode)))
 
-;; Alternately good-scroll.el is also really good 
-
 
 (global-set-key (kbd "M-o") 'ace-window)
-
 
 (use-package orderless
   :ensure t
   :custom (completion-styles '(orderless)))
 
-(use-package mct
-  :config
-  (setq mct-apply-completion-stripes t)
-  ;; We make the SPC key insert a literal space and the same for the
-  ;; question mark.  Spaces are used to delimit orderless groups, while
-  ;; the quedtion mark is a valid regexp character.
-  (let ((map minibuffer-local-completion-map))
-    (define-key map (kbd "SPC") nil)
-    (define-key map (kbd "?") nil))
-  
-  ;; Because SPC works for Orderless and is trivial to activate, I like to
-  ;; put `orderless' at the end of my `completion-styles'.  Like this:
-  (setq completion-styles
-        '(basic substring initials flex partial-completion orderless))
-  (setq completion-category-overrides
-        '((file (styles . (basic partial-completion orderless)))))
+;; Enable vertico
+(use-package vertico
   :init
-  (mct-minibuffer-mode 1)
-  (mct-region-mode 1))
+  (vertico-mode)
+
+  ;; Different scroll margin
+  ;; (setq vertico-scroll-margin 0)
+
+  ;; Show more candidates
+  ;; (setq vertico-count 20)
+
+  ;; Grow and shrink the Vertico minibuffer
+  ;; (setq vertico-resize t)
+
+  ;; Optionally enable cycling for `vertico-next' and `vertico-previous'.
+  ;; (setq vertico-cycle t)
+  )
+
+;; Persist history over Emacs restarts. Vertico sorts by history position.
+(use-package savehist
+  :init
+  (savehist-mode))
+
+;; A few more useful configurations...
+(use-package emacs
+  :init
+  ;; Add prompt indicator to `completing-read-multiple'.
+  ;; Alternatively try `consult-completing-read-multiple'.
+  (defun crm-indicator (args)
+    (cons (concat "[CRM] " (car args)) (cdr args)))
+  (advice-add #'completing-read-multiple :filter-args #'crm-indicator)
+
+  ;; Do not allow the cursor in the minibuffer prompt
+  (setq minibuffer-prompt-properties
+        '(read-only t cursor-intangible t face minibuffer-prompt))
+  (add-hook 'minibuffer-setup-hook #'cursor-intangible-mode)
+
+  ;; Emacs 28: Hide commands in M-x which do not work in the current mode.
+  ;; Vertico commands are hidden in normal buffers.
+  ;; (setq read-extended-command-predicate
+  ;;       #'command-completion-default-include-p)
+
+  ;; Enable recursive minibuffers
+  (setq enable-recursive-minibuffers t))
+
+;; This is a simple function to use the default completing read for recentf
+(defun default-recentf (file)
+  "Use `completing-read' to open a recent FILE."
+  (interactive (list (completing-read "Find recent file: "
+                                      recentf-list))))
 
 (use-package recentf
   :bind
-  ("C-x C-r" . recentf-open-files)
+  ("C-x C-r" . default-recentf)
   :config
-  (setq recentf-max-menu-items 15
-        recentf-max-saved-items 100
-        )
+  (setq recentf-max-saved-items 100)
   (recentf-mode 1))
+
+(setq recentf-exclude `(,(expand-file-name "eln-cache/" user-emacs-directory)
+                        ,(expand-file-name "etc/" user-emacs-directory)
+                        ,(expand-file-name "var/" user-emacs-directory)))
+
+
 
 (use-package corfu
   ;; Optional customizations
@@ -206,7 +239,6 @@
 (define-key corfu-map (kbd "M-n") #'corfu-doc-scroll-up)  
 (define-key corfu-map (kbd "M-d") #'corfu-doc-toggle)
 
- 
 ;; Optionally use the `orderless' completion style. See `+orderless-dispatch'
 ;; in the Consult wiki for an advanced Orderless style dispatcher.
 ;; Enable `partial-completion' for files to allow path expansion.
@@ -457,7 +489,7 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
-   '(ox-epub good-scroll ag corfu-doc which-key treemacs-magit treemacs-projectile treemacs projectile magit lsp-mode ox-tufte ox-gfm orderless mct yasnippet use-package modus-themes expand-region)))
+   '(vertico ox-epub good-scroll ag corfu-doc which-key treemacs-magit treemacs-projectile treemacs projectile magit lsp-mode ox-tufte ox-gfm orderless yasnippet use-package modus-themes expand-region)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.

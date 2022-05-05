@@ -62,7 +62,7 @@
 
 ;; For the GUI use this font and line spacing
 (set-face-attribute 'default nil
-                    :family "Sudo" :height 140)
+                    :family "Sudo" :height 120)
 (setq-default line-spacing 0.20)
 
 ;; Proportionately spaced typeface
@@ -92,22 +92,26 @@
                      cider
                      clojure-mode
                      corfu
-                     corfu-doc   
+                     corfu-doc
+                     eglot
+                     elfeed
                      expand-region
                      good-scroll
                      json-mode
-                     lsp-mode
-                     lsp-treemacs
-                     lsp-ui
                      magit
                      modus-themes
+                     org-mime
                      ob-restclient
                      orderless
+                     ox-epub
                      ox-gfm
                      ox-tufte
+                     php-mode
                      projectile
                      recentf
                      restclient
+                     terraform-doc
+                     terraform-mode
                      treemacs
                      treemacs-magit
                      treemacs-projectile
@@ -132,12 +136,13 @@
 ;; Alternately good-scroll.el is also really good
 
 (if (>= emacs-major-version 29)
-    ((pixel-scroll-precision-mode)
-     (setq pixel-scroll-precision-use-momentum 1)
-     (setq pixel-scroll-precision-large-scroll-height 20.0)
-     (setq pixel-scroll-precision-interpolation-factor 30))
+    ;; ((pixel-scroll-precision-mode)
+    ;;  (setq pixel-scroll-precision-use-momentum 1)
+    ;;  (setq pixel-scroll-precision-large-scroll-height 20.0)
+    ;;  (setq pixel-scroll-precision-interpolation-factor 30))
   (use-package good-scroll
     :hook (after-init . good-scroll-mode)))
+
 
 
 (global-set-key (kbd "M-o") 'ace-window)
@@ -192,14 +197,22 @@
   (setq enable-recursive-minibuffers t))
 
 ;; This is a simple function to use the default completing read for recentf
-(defun default-recentf (file)
+(defun open-recentf (file)
   "Use `completing-read' to open a recent FILE."
   (interactive (list (completing-read "Find recent file: "
                                       recentf-list))))
 
+(defun ds/find-recentf (file)
+  "Use `completing-read' to open a recent FILE."
+  (interactive (list (completing-read "Find recent file: "
+                                      recentf-list)))
+  (when file
+    (find-file file)))
+
+
 (use-package recentf
   :bind
-  ("C-x C-r" . default-recentf)
+  ("C-x C-r" . #'ds/find-recentf)
   :config
   (setq recentf-max-saved-items 100)
   (recentf-mode 1))
@@ -208,7 +221,15 @@
                         ,(expand-file-name "etc/" user-emacs-directory)
                         ,(expand-file-name "var/" user-emacs-directory)))
 
-
+;; use browser depending on url
+(setq
+ browse-url-handlerqs
+ '(
+   ("wikipedia\\.org" . browse-url-firefox)
+   ("github" . browse-url-chromium)
+   ("thefreedictionary\\.com" . eww-browse-url)
+   ("." . eww-browse-url)
+   ))
 
 (use-package corfu
   ;; Optional customizations
@@ -434,54 +455,42 @@
   :ensure t
   :pin melpa-stable)
 
-(add-hook 'clojure-mode-hook 'lsp)
-(add-hook 'clojurescript-mode-hook 'lsp)
-(add-hook 'clojurec-mode-hook 'lsp)
 
-(setq gc-cons-threshold (* 100 1024 1024)
-      read-process-output-max (* 1024 1024)
-      treemacs-space-between-root-nodes nil
-      company-minimum-prefix-length 1
-      lsp-lens-enable t
-      lsp-signature-auto-activate nil
-      ; lsp-enable-indentation nil ; uncomment to use cider indentation instead of lsp
-      ; lsp-enable-completion-at-point nil ; uncomment to use cider completion instead of lsp
-      )
-
-(use-package lsp-mode
-  :init
-  ;; set prefix for lsp-command-keymap (few alternatives - "C-l", "C-c l")
-  (setq lsp-keymap-prefix "C-c l")
-  :hook (;; replace XXX-mode with concrete major-mode(e. g. python-mode)
-         (python-mode . lsp)
-         ;; if you want which-key integration
-         (lsp-mode . lsp-enable-which-key-integration))
-  :commands lsp)
-
-(use-package lsp-treemacs
-    :after (lsp-mode)
-    :config
-    (lsp-treemacs-sync-mode 1))
+(use-package eglot)
 
 
-;; optionally
-(use-package lsp-ui :commands lsp-ui-mode)
-;; if you are helm user
-;; (use-package helm-lsp :commands helm-lsp-workspace-symbol)
-;; if you are ivy user
-;; (use-package lsp-ivy :commands lsp-ivy-workspace-symbol)
 
-(use-package lsp-treemacs :commands lsp-treemacs-errors-list)
+;; mu4e -------------------------------------------------------
+(require 'org-mime)
 
-;; optionally if you want to use debugger
-;; (use-package dap-mode)
-;; (use-package dap-LANGUAGE) to load the dap adapter for your language
+(add-to-list 'load-path "/usr/local/share/emacs/site-lisp/mu4e/")
+(require 'mu4e)
 
-;; optional if you want which-key integration
-;; (use-package which-key
-;;    :config
-;;    (which-key-mode))
+(setq mu4e-maildir (expand-file-name "~/Maildir"))                     
 
+
+
+
+;; elfeed -------------------------------------------------------
+(use-package elfeed
+  :bind (("C-c w" . elfeed)
+         :map elfeed-show-mode-map
+         ("q" . delete-window)
+         ("S-SPC" . scroll-down-command)
+         ("M-SPC" . scroll-down-command))
+  :custom (elfeed-feeds
+           '("https://news.ycombinator.com/rss"
+             "https://irreal.org/blog/?feed=rss2"
+             "https://emacsninja.com/feed.atom"
+             "http://pragmaticemacs.com/feed/"
+             "https://emacsnotes.wordpress.com/feed/"
+             "https://metaredux.com/feed.xml"
+             "https://emacsredux.com/atom.xml"
+             "https://endlessparentheses.com/atom.xml"
+             "https://www.masteringemacs.org/feed"
+             "https://planet.lisp.org/rss20.xml"))
+  :config
+  (setq elfeed-show-entry-switch #'pop-to-buffer))
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
@@ -489,7 +498,7 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
-   '(vertico ox-epub good-scroll ag corfu-doc which-key treemacs-magit treemacs-projectile treemacs projectile magit lsp-mode ox-tufte ox-gfm orderless yasnippet use-package modus-themes expand-region)))
+   '(org-mime terraform-doc terraform-mode php-mode org-gcal vertico ox-epub good-scroll ag corfu-doc which-key treemacs-magit treemacs-projectile treemacs projectile magit ox-tufte ox-gfm orderless yasnippet use-package modus-themes expand-region)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.

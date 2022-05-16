@@ -89,6 +89,7 @@
 
 
 (setq package-list '(ace-window
+                     ag
                      cider
                      clojure-mode
                      corfu
@@ -100,16 +101,22 @@
                      json-mode
                      magit
                      modus-themes
+                     ng2-mode
                      org-mime
                      ob-restclient
+                     olivetti
                      orderless
                      ox-epub
                      ox-gfm
                      ox-tufte
                      php-mode
+                     prettier
+                     prettier-js
+                     prettier-rc
                      projectile
                      recentf
                      restclient
+                     shell-switcher
                      terraform-doc
                      terraform-mode
                      treemacs
@@ -120,6 +127,7 @@
                      which-key
                      yasnippet
                      yaml-mode
+                     web-mode
                      ))
 
 (when (not package-archive-contents)
@@ -210,6 +218,9 @@
     (find-file file)))
 
 
+(require 'shell-switcher)
+
+
 (use-package recentf
   :bind
   ("C-x C-r" . #'ds/find-recentf)
@@ -253,7 +264,7 @@
   ;; Recommended: Enable Corfu globally.
   ;; This is recommended since dabbrev can be used globally (M-/).
   :init
-  (corfu-global-mode))
+  (global-corfu-mode))
 
 (add-hook 'corfu-mode-hook #'corfu-doc-mode)
 (define-key corfu-map (kbd "M-p") #'corfu-doc-scroll-down) 
@@ -466,8 +477,106 @@
 (add-to-list 'load-path "/usr/local/share/emacs/site-lisp/mu4e/")
 (require 'mu4e)
 
-(setq mu4e-maildir (expand-file-name "~/Maildir"))                     
+(setq mu4e-maildir (expand-file-name "~/Maildir")
+      mu4e-refile-folder "/[Gmail].All Mail")                     
 
+; get mail
+(setq mu4e-get-mail-command "mbsync -c ~/.emacs.d/mu4e/.mbsyncrc -a"
+  mu4e-view-prefer-html t
+  mu4e-update-interval 180
+  mu4e-headers-auto-update t
+  mu4e-compose-signature-auto-include nil
+  mu4e-compose-format-flowed t)
+
+(add-to-list 'mu4e-view-actions
+             '("ViewInBrowser" . mu4e-action-view-in-browser) t)
+
+(setq mu4e-view-show-images t)
+(setq mu4e-sent-messages-behavior 'delete)
+(add-hook 'mu4e-view-mode-hook #'visual-line-mode)
+
+(add-hook 'mu4e-compose-mode-hook
+    (defun my-do-compose-stuff ()
+       "My settings for message composition."
+       (visual-line-mode)
+       (org-mu4e-compose-org-mode)
+           (use-hard-newlines -1)
+           (flyspell-mode)))
+
+(require 'smtpmail)
+(setq mu4e-change-filenames-when-moving t)
+
+;;set up queue for offline email
+;;use mu mkdir  ~/Maildir/acc/queue to set up first
+(setq smtpmail-queue-mail nil)  ;; start in normal mode
+
+;;from the info manual
+(setq mu4e-attachment-dir  "~/Downloads")
+
+(setq message-kill-buffer-on-exit t)
+(setq mu4e-compose-dont-reply-to-self t)
+
+(require 'org-mu4e)
+
+;; convert org mode to HTML automatically
+(setq org-mu4e-convert-to-html t)
+(setq mu4e-view-show-addresses 't)
+(setq mu4e-context-policy 'pick-first)
+(setq mu4e-compose-context-policy 'always-ask)
+(setq mu4e-contexts
+  (list
+   (make-mu4e-context
+    :name "jefb" ;;for acc1-gmail
+    :enter-func (lambda () (mu4e-message "Entering context JEfB"))
+    :leave-func (lambda () (mu4e-message "Leaving context JEfB"))
+    :match-func (lambda (msg)
+		  (when msg
+		(mu4e-message-contact-field-matches
+		 msg '(:from :to :cc :bcc) "dean.sellis@citypantry.com")))
+    :vars '((user-mail-address . "dean.sellis@citypantry.com")
+	    (user-full-name . "Dean Sellis")
+	    (mu4e-sent-folder . "/jefb-gmail/[jefb].Sent Mail")
+	    (mu4e-drafts-folder . "/jefb-gmail/[jefb].drafts")
+	    (mu4e-trash-folder . "/jefb-gmail/[jefb].Bin")
+	    (mu4e-compose-signature . (concat "Formal Signature\n" "Emacs 25, org-mode 9, mu4e 1.0\n"))
+	    (mu4e-compose-format-flowed . t)
+	    (smtpmail-queue-dir . "~/Maildir/jefb-gmail/queue/cur")
+	    (message-send-mail-function . smtpmail-send-it)
+	    (smtpmail-smtp-user . "dean.sellis@citypantry.com")
+	    (smtpmail-starttls-credentials . (("smtp.gmail.com" 587 nil nil)))
+	    (smtpmail-auth-credentials . (expand-file-name "~/.authinfo.gpg"))
+	    (smtpmail-default-smtp-server . "smtp.gmail.com")
+	    (smtpmail-smtp-server . "smtp.gmail.com")
+	    (smtpmail-smtp-service . 587)
+	    (smtpmail-debug-info . t)
+	    (smtpmail-debug-verbose . t)
+	    (mu4e-maildir-shortcuts . ( ("/jefb-gmail/INBOX"            . ?i)
+					("/jefb-gmail/[jefb].Sent Mail" . ?s)
+					("/jefb-gmail/[jefb].Bin"       . ?t)
+					("/jefb-gmail/[jefb].All Mail"  . ?a)
+					("/jefb-gmail/[jefb].Starred"   . ?r)
+					("/jefb-gmail/[jefb].drafts"    . ?d)
+					))))))
+
+
+(setq mu4e-bookmarks
+      '(( :name  "Big messages"
+          :query "size:5M..500M"
+          :key   ?b)
+        ( :name  "Unread messages"
+          :query "flag:unread AND NOT (flag:trashed OR flag:list)"
+          :key ?u)
+        ( :name "Today's messages"
+          :query "date:today..now AND NOT (flag:trashed OR flag:list)"
+          :key ?t)
+        ( :name "Last 7 days"
+          :query "date:7d..now AND NOT (flag:trashed OR flag:list)"
+          :hide-unread t
+          :key ?w)
+        ( :name "Messages with images"
+          :query "mime:image/*"
+          :key ?p)
+        ))
 
 
 
@@ -498,7 +607,7 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
-   '(org-mime terraform-doc terraform-mode php-mode org-gcal vertico ox-epub good-scroll ag corfu-doc which-key treemacs-magit treemacs-projectile treemacs projectile magit ox-tufte ox-gfm orderless yasnippet use-package modus-themes expand-region)))
+   '(olivetti shell-switcher prettier prettier-js prettier-rc typescript-mode org-mime terraform-doc terraform-mode php-mode org-gcal vertico ox-epub good-scroll ag corfu-doc which-key treemacs-magit treemacs-projectile treemacs projectile magit ox-tufte ox-gfm orderless yasnippet use-package modus-themes expand-region)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.

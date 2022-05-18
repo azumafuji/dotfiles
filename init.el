@@ -569,6 +569,9 @@
         ( :name "Today's messages"
           :query "date:today..now AND NOT (flag:trashed OR flag:list)"
           :key ?t)
+        ( :name "Today's list messages"
+          :query "date:today..now AND flag:list AND NOT flag:trashed"
+          :key ?l)
         ( :name "Last 7 days"
           :query "date:7d..now AND NOT (flag:trashed OR flag:list)"
           :hide-unread t

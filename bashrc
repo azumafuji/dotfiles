@@ -1,13 +1,111 @@
-#!/bin/bash
-# -*- mode: sh-mode -*-
-alias emacs='/usr/local/Cellar/emacs/26.1_1/bin/emacsclient -nw'
-export EDITOR='emacs'
-export TERM=xterm-256color
-export GREP_OPTIONS='--color=auto' GREP_COLOR='1;32'
-export CLICOLOR=1 
-export LESS=" -R "
-export JAVA_HOME=$(/usr/libexec/java_home)
+# .bashrc
 
+# Source global definitions
+if [ -f /etc/bashrc ]; then
+	. /etc/bashrc
+fi
+
+# User specific environment
+if ! [[ "$PATH" =~ "$HOME/.local/bin:$HOME/bin:" ]]
+then
+    PATH="$HOME/.local/bin:$HOME/bin:$PATH"
+fi
+export PATH
+
+# Uncomment the following line if you don't like systemctl's auto-paging feature:
+# export SYSTEMD_PAGER=
+
+# User specific aliases and functions
+if [ -d ~/.bashrc.d ]; then
+	for rc in ~/.bashrc.d/*; do
+		if [ -f "$rc" ]; then
+			. "$rc"
+		fi
+	done
+fi
+
+unset rc
+
+# Prevent file overwrite on stdout redirection
+# Use `>|` to force redirection to an existing file
+set -o noclobber
+
+# Update window size after every command
+shopt -s checkwinsize
+
+# Automatically trim long paths in the prompt (requires Bash 4.x)
+PROMPT_DIRTRIM=2
+
+# Enable history expansion with space
+# E.g. typing !!<space> will replace the !! with your last command
+bind Space:magic-space
+
+# Turn on recursive globbing (enables ** to recurse all directories)
+shopt -s globstar 2> /dev/null
+
+# Case-insensitive globbing (used in pathname expansion)
+shopt -s nocaseglob;
+
+## SMARTER TAB-COMPLETION (Readline bindings) ##
+
+# Perform file completion in a case insensitive fashion
+bind "set completion-ignore-case on"
+
+# Treat hyphens and underscores as equivalent
+bind "set completion-map-case on"
+
+# Display matches for ambiguous patterns at first tab press
+bind "set show-all-if-ambiguous on"
+
+# Immediately add a trailing slash when autocompleting symlinks to directories
+bind "set mark-symlinked-directories on"
+
+## BETTER DIRECTORY NAVIGATION ##
+
+# Prepend cd to directory names automatically
+shopt -s autocd 2> /dev/null
+# Correct spelling errors during tab-completion
+shopt -s dirspell 2> /dev/null
+# Correct spelling errors in arguments supplied to cd
+shopt -s cdspell 2> /dev/null
+
+# This defines where cd looks for targets
+# Add the directories you want to have fast access to, separated by colon
+# Ex: CDPATH=".:~:~/projects" will look for targets in the current working directory, in home and in the ~/projects folder
+CDPATH="."
+
+# This allows you to bookmark your favorite places across the file system
+# Define a variable containing a path and you will be able to cd into it regardless of the directory you're in
+shopt -s cdable_vars
+
+# Examples:
+# export dotfiles="$HOME/dotfiles"
+# export projects="$HOME/projects"
+# export documents="$HOME/Documents"
+# export dropbox="$HOME/Dropbox"
+
+
+# HSTR configuration - add this to ~/.bashrc
+alias hh=hstr                    # hh to be alias for hstr
+export HSTR_CONFIG=hicolor,prompt-bottom,hide-help       # get more colors
+export HISTIGNORE="&:[ ]*:exit:ls:bg:fg:history:clear"
+export HSTR_PROMPT="find: "
+shopt -s histappend              # append new history items to .bash_history
+export HISTCONTROL=ignorespace   # leading space hides commands from history
+export HISTFILESIZE=10000        # increase history file size (default is 500)
+export HISTSIZE=${HISTFILESIZE}  # increase history size (default is 500)
+# ensure synchronization between bash memory and history file
+export PROMPT_COMMAND="history -a; history -n; ${PROMPT_COMMAND}"
+# if this is interactive shell, then bind hstr to Ctrl-r (for Vi mode check doc)
+if [[ $- =~ .*i.* ]]; then bind '"\C-r": "\C-a hstr -- \C-j"'; fi
+# if this is interactive shell, then bind 'kill last command' to Ctrl-x k
+if [[ $- =~ .*i.* ]]; then bind '"\C-xk": "\C-a hstr -k \C-j"'; fi
+
+
+# Only load Liquidprompt in interactive shells, not from a script or from scp
+[[ $- = *i* ]] && source ~/src/liquidprompt/liquidprompt
+
+export LESS=" -R "
 export LESSOPEN="| ~/src/dotfiles/src-hilite-lesspipe.sh %s"
 
 man() {
@@ -21,81 +119,3 @@ man() {
         LESS_TERMCAP_us=$(printf "\e[1;32m") \
             man "$@"
 }
-
-
-# Need to configure these 
-# export AWS_ACCESS_KEY="<Your AWS Access ID>"
-# export AWS_SECRET_KEY="<Your AWS Secret Key>"
-# export AWS_CREDENTIAL_FILE="<Path to the credentials file>"
-
-export VAGRANT_DEFAULT_PROVIDER="vmware_fusion"
-export MP_FULLNAME="Dean J Sellis"
-export CLOUDSDK_PYTHON='/usr/bin/python'
-
-ulimit -n 4096 
-
-alias rcp='rsync -aP'
-alias cleanpyc='find . -name '*.pyc' -exec rm {} \;'
-
-alias serveit='python -m SimpleHTTPServer 8080'
-alias timestamp='date "+%Y%m%dT%H%M%S"'
-alias updaterepos='find . -maxdepth 1 -type d -print -execdir git --git-dir={}/.git --work-tree=$PWD/{} pull origin master \;'
-
-alias joinPDF='/System/Library/Automator/Combine\ PDF\ Pages.action/Contents/Resources/join.py'
-
-
-
-# AWS SSH Aliases
-
-export LC_ALL=en_US.UTF-8
-export LANG=en_US.UTF-8
-export LANGUAGE=en_US.UTF-8
-
-
-if [ -f ~/src/liquidprompt/liquidprompt ]; then
-    source ~/src/liquidprompt/liquidprompt
-fi
-
-
-if [ -f $(brew --prefix)/etc/bash_completion ]; then
-    . $(brew --prefix)/etc/bash_completion
-fi
-
-
-if [ -f .local.env ]; then
-  source .local.env
-fi
-
-# Configure NVM
-export NVM_DIR="/Users/dean/.nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"  # This loads nvm
-
-
-# Configure Pyenv
-export PATH="/Users/dean/.pyenv/bin:$PATH"
-eval "$(pyenv init -)"
-eval "$(pyenv virtualenv-init -)"
-
-# Configure Rust
-source $HOME/.cargo/env
-
-# Configure Go
-export PATH="$PATH:/Users/dean/go/bin:/usr/local/opt/go/libexec/bin"
-export GOPATH="/Users/dean/go"
-
-# HH config for fancy history
-export HH_CONFIG=hicolor,keywords         # get more colors
-shopt -s histappend              # append new history items to .bash_history
-export HISTCONTROL=ignorespace:ignoredups:erasedups   # leading space hides commands from history
-export HISTFILESIZE=9216         # increase history file size (default is 500)
-export HISTSIZE=${HISTFILESIZE}  # increase history size (default is 500)
-export HISTTIMEFORMAT="%h %d %H:%M:%S> "
-export PROMPT_COMMAND="history -a; history -n; ${PROMPT_COMMAND}"   # mem/file sync
-# if this is interactive shell, then bind hh to Ctrl-r (for Vi mode check doc)
-if [[ $- =~ .*i.* ]]; then bind '"\C-r": "\C-a hh -- \C-j"'; fi
-
-
-
-
-
-

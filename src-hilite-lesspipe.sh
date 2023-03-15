@@ -8,6 +8,8 @@ for source in "$@"; do
         source-highlight --failsafe -f esc --lang-def=makefile.lang --style-file=esc256.style -i "$source" ;;
 	*.tar|*.tgz|*.gz|*.bz2|*.xz)
         lesspipe "$source" ;;
-        *) source-highlight --failsafe --infer-lang -f esc --style-file=esc256.style -i "$source" ;;
+    .bash*)
+        source-highlight --failsafe -f esc --lang-def=sh.lang --style-file=esc256.style -i "$source" ;;
+    *) source-highlight --failsafe --infer-lang -f esc --style-file=esc256.style -i "$source" ;;
     esac
 done

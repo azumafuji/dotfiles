@@ -70,14 +70,14 @@
 
 ;; For the GUI use this font and line spacing
 (set-face-attribute 'default nil
-                    :family "Iosevka Curly" :height 110)
+                    :family "Iosevka Curly" :height 120 :weight 'regular)
 (setq-default line-spacing 0.10)
 
 ;; Proportionately spaced typeface
 (set-face-attribute 'variable-pitch nil :family "Iosevka Aile" :height 1.0)
 
 ;; Monospaced typeface
-(set-face-attribute 'fixed-pitch nil :family "Iosevka Curly" :height 1.0)
+(set-face-attribute 'fixed-pitch nil :family "Iosevka Curly" :height 1.0 :weight 'light)
 
 ;; Setup Visual line mode
 (add-hook 'text-mode-hook 'turn-on-visual-line-mode)
@@ -95,7 +95,8 @@
 
 (package-initialize)
 
-(setq package-list '(consult
+(setq package-list '(anaconda-mode
+                     consult
                      expand-region
                      vertico
                      orderless
@@ -107,6 +108,7 @@
                      modus-themes
                      corfu
                      ob-restclient
+                     pulsar
                      ))
 
 
@@ -118,6 +120,42 @@
     (package-install package)))
 
 (require 'use-package)
+
+(when (memq window-system '(mac ns x pgtk))
+  (exec-path-from-shell-initialize))
+
+(when (daemonp)
+  (exec-path-from-shell-initialize))
+
+(use-package notmuch
+  :init
+  (setq notmuch-archive-tags '("-inbox" "-new"))
+  (setq notmuch-show-logo nil)
+  (defvar notmuch-saved-searches
+  `((:name "inbox" :query "tag:inbox" :key ,(kbd "i"))
+    (:name "unread" :query "tag:unread" :key ,(kbd "u"))
+    (:name "flagged" :query "tag:flagged" :key ,(kbd "f"))
+    (:name "sent" :query "tag:sent" :key ,(kbd "t"))
+    (:name "drafts" :query "tag:draft" :key ,(kbd "d"))
+    (:name "all mail" :query "*" :key ,(kbd "a"))
+    (:name "recent" :sort-order "newest-first" :query "tag:inbox date:3d..today" :key ,(kbd "r"))))
+  :config
+  (define-key notmuch-search-mode-map "D"
+              (lambda (&optional beg end)
+                "move message to trash"
+                (interactive (notmuch-interactive-region))
+                (notmuch-search-tag (list "+trash" "-inbox" "-unread" "-new") beg end)))
+  (define-key notmuch-show-mode-map "D"
+              (lambda()
+                "move message to trash"
+                (interactive)
+                (notmuch-show-add-tag (list "+trash" "-inbox" "-unread" "-new"))))
+  (setq sendmail-program "gmi")
+  (setq send-mail-function 'sendmail-send-it)
+  (setq message-sendmail-extra-arguments '("send" "--quiet" "-t" "-C" "~/.mail/account.jet"))
+  (setq notmuch-fcc-dirs nil))
+
+
 
 (use-package orderless
   :ensure t
@@ -134,6 +172,12 @@
 (use-package savehist
   :init
   (savehist-mode))
+
+;; Pulsar
+(use-package pulsar
+  :config
+  (setq pulsar-iterations 10)
+  (pulsar-global-mode 1))
 
 ;; A few more useful configurations...
 (use-package emacs
@@ -231,7 +275,7 @@
         modus-themes-preset-overrides-intense)
 
   ;; Load the theme of your choice.
-  (load-theme 'modus-operandi t)
+  (load-theme 'modus-vivendi t)
 
   (define-key global-map (kbd "<f5>") #'modus-themes-toggle))
 
@@ -429,6 +473,29 @@
   ("C-c b" . org-iswitchb)
   ("C-c c" . org-capture))
 
+
+(setq org-agenda-files '("~/Documents/org"))
+
+(use-package ox-latex
+  :config
+  (progn
+    (setq org-latex-compiler "lualatex")))
+
+(use-package ox-beamer
+  :commands (org-beamer-export-as-latex
+             org-beamer-export-to-latex
+             org-beamer-export-to-pdf)
+  :config
+  (progn
+    ;; allow for export=>beamer by placing
+    ;; #+LaTeX_CLASS: beamer in org files
+    (add-to-list 'org-latex-classes
+                 '("beamer"
+                   "\\documentclass[presentation]{beamer}"
+                   ("\\section{%s}"        . "\\section*{%s}")
+                   ("\\subsection{%s}"     . "\\subsection*{%s}")
+                   ("\\subsubsection{%s}"  . "\\subsubsection*{%s}")))))
+
 ;; Magit is an Emacs interface to Git.
 ;; (It's awesome)
 ;; https://github.com/magit/magit
@@ -522,13 +589,103 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(connection-local-criteria-alist
+   '(((:application tramp)
+      tramp-connection-local-default-system-profile tramp-connection-local-default-shell-profile)
+     ((:application eshell)
+      eshell-connection-default-profile)))
+ '(connection-local-profile-alist
+   '((tramp-connection-local-darwin-ps-profile
+      (tramp-process-attributes-ps-args "-acxww" "-o" "pid,uid,user,gid,comm=abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ" "-o" "state=abcde" "-o" "ppid,pgid,sess,tty,tpgid,minflt,majflt,time,pri,nice,vsz,rss,etime,pcpu,pmem,args")
+      (tramp-process-attributes-ps-format
+       (pid . number)
+       (euid . number)
+       (user . string)
+       (egid . number)
+       (comm . 52)
+       (state . 5)
+       (ppid . number)
+       (pgrp . number)
+       (sess . number)
+       (ttname . string)
+       (tpgid . number)
+       (minflt . number)
+       (majflt . number)
+       (time . tramp-ps-time)
+       (pri . number)
+       (nice . number)
+       (vsize . number)
+       (rss . number)
+       (etime . tramp-ps-time)
+       (pcpu . number)
+       (pmem . number)
+       (args)))
+     (tramp-connection-local-busybox-ps-profile
+      (tramp-process-attributes-ps-args "-o" "pid,user,group,comm=abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ" "-o" "stat=abcde" "-o" "ppid,pgid,tty,time,nice,etime,args")
+      (tramp-process-attributes-ps-format
+       (pid . number)
+       (user . string)
+       (group . string)
+       (comm . 52)
+       (state . 5)
+       (ppid . number)
+       (pgrp . number)
+       (ttname . string)
+       (time . tramp-ps-time)
+       (nice . number)
+       (etime . tramp-ps-time)
+       (args)))
+     (tramp-connection-local-bsd-ps-profile
+      (tramp-process-attributes-ps-args "-acxww" "-o" "pid,euid,user,egid,egroup,comm=abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ" "-o" "state,ppid,pgid,sid,tty,tpgid,minflt,majflt,time,pri,nice,vsz,rss,etimes,pcpu,pmem,args")
+      (tramp-process-attributes-ps-format
+       (pid . number)
+       (euid . number)
+       (user . string)
+       (egid . number)
+       (group . string)
+       (comm . 52)
+       (state . string)
+       (ppid . number)
+       (pgrp . number)
+       (sess . number)
+       (ttname . string)
+       (tpgid . number)
+       (minflt . number)
+       (majflt . number)
+       (time . tramp-ps-time)
+       (pri . number)
+       (nice . number)
+       (vsize . number)
+       (rss . number)
+       (etime . number)
+       (pcpu . number)
+       (pmem . number)
+       (args)))
+     (tramp-connection-local-default-shell-profile
+      (shell-file-name . "/bin/sh")
+      (shell-command-switch . "-c"))
+     (tramp-connection-local-default-system-profile
+      (path-separator . ":")
+      (null-device . "/dev/null"))
+     (eshell-connection-default-profile
+      (eshell-path-env-list))))
  '(custom-safe-themes
    '("bfc0b9c3de0382e452a878a1fb4726e1302bf9da20e69d6ec1cd1d5d82f61e3d" default))
+ '(notmuch-saved-searches
+   '((:name "inbox" :query "tag:inbox" :key "i")
+     (:name "unread" :query "tag:unread" :key "u")
+     (:name "flagged" :query "tag:flagged" :key "f")
+     (:name "sent" :query "tag:sent" :key "t")
+     (:name "drafts" :query "tag:draft" :key "d")
+     (:name "all mail" :query "*" :key "a")
+     (:name "Recent Inbox" :query "tag:inbox AND date:3d..today")))
  '(package-selected-packages
-   '(rebase-mode magit-blame magit ob-restclient expand-region corfu modus-themes use-package marginalia embark-consult embark orderless vertico consult)))
+   '(anaconda-mode python-black poetry auctex auctex-latexmk auctex-lua pulsar rebase-mode magit-blame magit ob-restclient expand-region corfu modus-themes use-package marginalia embark-consult embark orderless vertico consult))
+ '(python-black-command "poetry"))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  )
+(put 'downcase-region 'disabled nil)

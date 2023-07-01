@@ -12,11 +12,11 @@
       (setq initial-frame-alist
             '(
               (width . 120) ; chars
-              (height . 50))) ; lines
+              (height . 43))) ; lines
       (setq default-frame-alist
             '(
               (width . 120)
-              (height . 50)))))
+              (height . 43)))))
 
 (pixel-scroll-precision-mode)
 
@@ -70,14 +70,14 @@
 
 ;; For the GUI use this font and line spacing
 (set-face-attribute 'default nil
-                    :family "Iosevka Curly" :height 120 :weight 'regular)
-(setq-default line-spacing 0.10)
+                    :family "IBM Plex Mono" :height 100 :weight 'regular)
+(setq-default line-spacing 0.20)
 
 ;; Proportionately spaced typeface
-(set-face-attribute 'variable-pitch nil :family "Iosevka Aile" :height 1.0)
+(set-face-attribute 'variable-pitch nil :family "IBM Plex Sans" :height 1.0)
 
 ;; Monospaced typeface
-(set-face-attribute 'fixed-pitch nil :family "Iosevka Curly" :height 1.0 :weight 'light)
+(set-face-attribute 'fixed-pitch nil :family "IBM Plex Mono" :height 1.0 :weight 'light)
 
 ;; Setup Visual line mode
 (add-hook 'text-mode-hook 'turn-on-visual-line-mode)
@@ -89,26 +89,39 @@
         ("melpa-stable" . "https://stable.melpa.org/packages/")
         ("melpa"        . "https://melpa.org/packages/"))
       package-archive-priorities
-      '(("melpa-stable" . 10)
+      '(("melpa-stable" . 0)
         ("gnu"          . 8)
-        ("melpa"        . 0)))
+        ("melpa"        . 10)))
 
 (package-initialize)
 
-(setq package-list '(anaconda-mode
+(setq package-list '(ag
+                     anaconda-mode
+                     closql
                      consult
+                     consult-ag
                      expand-region
+                     exec-path-from-shell
                      vertico
                      orderless
                      embark
                      embark-consult
+                     exec-path-from-shell
+                     forge
+                     ghub
                      marginalia
+                     markdown-mode
                      magit
                      use-package
                      modus-themes
                      corfu
                      ob-restclient
                      pulsar
+                     poetry
+                     python-black
+                     treepy
+                     which-key
+                     yaml
                      ))
 
 
@@ -131,15 +144,16 @@
   :init
   (setq notmuch-archive-tags '("-inbox" "-new"))
   (setq notmuch-show-logo nil)
-  (defvar notmuch-saved-searches
-  `((:name "inbox" :query "tag:inbox" :key ,(kbd "i"))
-    (:name "unread" :query "tag:unread" :key ,(kbd "u"))
-    (:name "flagged" :query "tag:flagged" :key ,(kbd "f"))
-    (:name "sent" :query "tag:sent" :key ,(kbd "t"))
-    (:name "drafts" :query "tag:draft" :key ,(kbd "d"))
-    (:name "all mail" :query "*" :key ,(kbd "a"))
-    (:name "recent" :sort-order "newest-first" :query "tag:inbox date:3d..today" :key ,(kbd "r"))))
+
   :config
+  (setq notmuch-saved-searches
+        `((:name "inbox" :query "tag:inbox" :key ,(kbd "i"))
+          (:name "unread" :query "tag:unread" :key ,(kbd "u"))
+          (:name "flagged" :query "tag:flagged" :key ,(kbd "f"))
+          (:name "sent" :query "tag:sent" :key ,(kbd "t"))
+          (:name "drafts" :query "tag:draft" :key ,(kbd "d"))
+          (:name "all mail" :query "*" :key ,(kbd "a"))
+          (:name "recent" :sort-order "newest-first" :query "tag:inbox date:3d..today" :key ,(kbd "r"))))
   (define-key notmuch-search-mode-map "D"
               (lambda (&optional beg end)
                 "move message to trash"
@@ -275,7 +289,7 @@
         modus-themes-preset-overrides-intense)
 
   ;; Load the theme of your choice.
-  (load-theme 'modus-vivendi t)
+  (load-theme 'modus-operandi t)
 
   (define-key global-map (kbd "<f5>") #'modus-themes-toggle))
 
@@ -486,6 +500,8 @@
              org-beamer-export-to-latex
              org-beamer-export-to-pdf)
   :config
+  (setq-default TeX-engine 'luatex)
+  (setq-default TeX-PDF-mode t)
   (progn
     ;; allow for export=>beamer by placing
     ;; #+LaTeX_CLASS: beamer in org files
@@ -580,6 +596,20 @@
      magit-set-upstream-on-push 'askifnotset
      )))
 
+(use-package forge
+  :after magit)
+
+(use-package poetry
+  :ensure t
+  :config
+  (poetry-tracking-mode))
+
+(use-package anaconda-mode
+  :ensure t
+  :bind (("C-c C-x" . next-error))
+  :init
+  (add-hook 'python-mode-hook 'anaconda-mode)
+  (add-hook 'python-mode-hook 'anaconda-eldoc-mode))
 
 
 
@@ -678,9 +708,10 @@
      (:name "sent" :query "tag:sent" :key "t")
      (:name "drafts" :query "tag:draft" :key "d")
      (:name "all mail" :query "*" :key "a")
-     (:name "Recent Inbox" :query "tag:inbox AND date:3d..today")))
+     (:name "recent" :sort-order "newest-first" :query "tag:inbox date:3d..today" :key "r")
+     (:name "Work" :query "tag:inbox AND (from:\"/.*@justeattakeaway[.]com/\" OR from:\"/.*@citypantry[.]com/\")")))
  '(package-selected-packages
-   '(anaconda-mode python-black poetry auctex auctex-latexmk auctex-lua pulsar rebase-mode magit-blame magit ob-restclient expand-region corfu modus-themes use-package marginalia embark-consult embark orderless vertico consult))
+   '(csv-mode consult-ag emacsql emacsql-sqlite consult-flyspell which-key anaconda-mode python-black poetry auctex auctex-latexmk auctex-lua pulsar rebase-mode magit-blame magit ob-restclient expand-region corfu modus-themes use-package marginalia embark-consult embark orderless vertico consult))
  '(python-black-command "poetry"))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.

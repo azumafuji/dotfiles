@@ -1,235 +1,248 @@
-;; -*- mode: emacs-lisp; fill-column: 78; comment-column: 50; -*-
-;;; emacs -- Emacs init file for Dean
+;;; Minimal init.el
 
-;;; Commentary:
-;; My Emacs file for doing stuff
+;;; Contents:
+;;;
+;;;  - Basic settings
+;;;  - Discovery aids
+;;;  - Minibuffer/completion settings
+;;;  - Interface enhancements/defaults
+;;;  - Tab-bar configuration
+;;;  - Theme
+;;;  - Optional extras
+;;;  - Built-in customization framework
 
-;;; Code:
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;
+;;;   Basic settings
+;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 
 ;; Set initial frame size. 
 (if (display-graphic-p)
     (progn
       (setq initial-frame-alist
             '(
-              (width . 120) ; chars
-              (height . 43))) ; lines
+              (width . 180) ; chars
+              (height . 50))) ; lines
       (setq default-frame-alist
             '(
-              (width . 120)
-              (height . 43)))))
-
-(pixel-scroll-precision-mode)
+              (width . 180)
+              (height . 50)))))
 
 ;; Set encoding
-(setq locale-coding-system 'utf-8)
 (set-terminal-coding-system 'utf-8)
 (set-keyboard-coding-system 'utf-8)
 (prefer-coding-system 'utf-8)
 (set-language-environment 'utf-8)
+(setq locale-coding-system 'utf-8)
 (set-default-coding-systems 'utf-8)
-
-;; Default tabs and spacing
-(setq-default indent-tabs-mode nil)
-(setq-default tab-width 4)
-(setq tab-stop-list '(4 8 12 16 20 24 28 32 36 40 44 48 52 56 60 64 68 72 76 80))
-(setq-default python-indent-offset 4)
-
-;;somewhat better long-line handling
-(setq bidi-paragraph-direction 'left-to-right)
-(setq bidi-inhibit-bpa t)
-
-;; Some display settings for line numbers and the menubar
-(setq line-number-mode t)
-(setq column-number-mode t)
+(set-terminal-coding-system 'utf-8)
 
 ;; cd to my home directory on startup 
 (cd "~")
 
+
 ;; I like backups because I don't use version control for everything
 ;; Put everything in a saves directory so backups are scattered out everywhere
-(let ((backup-dir "~/.saves")
-      (auto-saves-dir "~/.saves/"))
-  (dolist (dir (list backup-dir auto-saves-dir))
-    (when (not (file-directory-p dir))
-      (make-directory dir t)))
-  (setq backup-directory-alist `(("." . ,backup-dir))
-        auto-save-file-name-transforms `((".*" ,auto-saves-dir t))
-        auto-save-list-file-prefix (concat auto-saves-dir ".saves-")
-        tramp-backup-directory-alist `((".*" . ,backup-dir))
-        tramp-auto-save-directory auto-saves-dir))
+(setq backup-directory-alist `((".*" . "~/.saves")))
+(setq auto-save-file-name-transforms `((".*" "~/.saves" t)))
+(setq backup-by-copying t)
+(setq delete-old-versions t
+  kept-new-versions 6
+  kept-old-versions 2
+  version-control t)
 
-(setq backup-by-copying t    ; Don't delink hardlinks                           
-      delete-old-versions t  ; Clean up the backups                             
-      version-control t      ; Use version numbers on backups,                  
-      kept-new-versions 5    ; keep some new versions                           
-      kept-old-versions 2)   ; and some old ones, too                           
-
+;; Don't create lock files
 (setq create-lockfiles nil)
 
-;; Set auto revert mode 
-(global-auto-revert-mode 1)
 
+(setq initial-major-mode 'fundamental-mode)  ; default mode for the *scratch* buffer
+(setq display-time-default-load-average nil) ; this information is useless for most
+
+;; Automatically reread from disk if the underlying file changes
+(setq auto-revert-interval 1)
+(setq auto-revert-check-vc-info t)
+(global-auto-revert-mode)
+
+;; Save history of minibuffer
+(savehist-mode)
+
+;; Move through windows with Ctrl-<arrow keys>
+(windmove-default-keybindings 'control) ; You can use other modifiers here
+
+;; Fix archaic defaults
+(setq sentence-end-double-space nil)
+
+;; Make right-click do something sensible
+(when (display-graphic-p)
+  (context-menu-mode))
+
+
+;; Set Fonts
 ;; For the GUI use this font and line spacing
-(set-face-attribute 'default nil
-                    :family "CaskaydiaCove Nerd Font Mono" :height 90 :weight 'Semilight)
+;;(set-face-attribute 'default nil
+;;                    :family "Iosevka Aile" :height 90 :weight 'Semilight)
 
 (set-face-attribute 'default nil
-                    :family "CaskaydiaCove Nerd Font Mono" :height 120 :weight 'Semilight)
-(setq-default line-spacing 0.25)
+                    :family "Iosevka Term Curly" :height 110)
+(setq-default line-spacing 0.2)
 
 ;; Proportionately spaced typeface
-(set-face-attribute 'variable-pitch nil :family "CaskadiaCove Nerd Font Propo" :height 1.0)
+(set-face-attribute 'variable-pitch nil :family "Iosevka Aile" :height 1.0)
 
 ;; Monospaced typeface
-(set-face-attribute 'fixed-pitch nil :family "CaskaydiaCove Nerd Font Mono" :height 1.0 :weight 'light)
+(set-face-attribute 'fixed-pitch nil :family "Iosevka Term Curly" :height 1.0 :weight 'light)
 
-;; Setup Visual line mode
-(add-hook 'text-mode-hook 'turn-on-visual-line-mode)
 
-;; Set up package repos
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;
+;;;   Packages 
+;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 (require 'package)
 (setq package-archives
       '(("gnu"          . "https://elpa.gnu.org/packages/")
         ("melpa-stable" . "https://stable.melpa.org/packages/")
-        ("melpa"        . "https://melpa.org/packages/"))
+        ("melpa"        . "https://melpa.org/packages/")
+        ("nongnu"       . "https://elpa.nongnu.org/nongnu/")))
       package-archive-priorities
       '(("melpa-stable" . 0)
         ("gnu"          . 8)
-        ("melpa"        . 10)))
-
-(package-initialize)
-
-(setq package-list '(ag
-                     anaconda-mode
-                     auctex
-                     consult
-                     consult-ag
-                     expand-region
-                     exec-path-from-shell
-                     vertico
-                     orderless
-                     embark
-                     embark-consult
-                     exec-path-from-shell
-                     forge
-                     ghub
-                     marginalia
-                     markdown-mode
-                     magit
-                     use-package
-                     modus-themes
-                     corfu
-                     ob-restclient
-                     pulsar
-                     poetry
-                     python-black
-                     treepy
-                     which-key
-                     yaml
-                     terraform-mode
-                     org-jira
-                     org-modern
-                     which-key
-                     savehist
-                     rainbow-delimiters
-                     ))
+        ("melpa"        . 10)
+        ("nongnu"       . 0))
 
 
-(when (not package-archive-contents)
-  (package-refresh-contents))
+;; (setq package-list '(ag
+;;                      expand-region
+;;                      exec-path-from-shell
+;;                      ob-restclient
+;;                      pulsar
+;;                      treepy
+;;                      which-key
+;;                      ))
 
-(dolist (package package-list)
-  (when (not (package-installed-p package))
-    (package-install package)))
+;; (when (not package-archive-contents)
+;;   (package-refresh-contents))
 
-(require 'use-package)
-
-(when (memq window-system '(mac ns x pgtk))
-  (exec-path-from-shell-initialize))
-
-(when (daemonp)
-  (exec-path-from-shell-initialize))
-
-(use-package notmuch
-  :init
-  (setq notmuch-archive-tags '("-inbox" "-new"))
-  (setq notmuch-show-logo nil)
-
-  :config
-  (setq notmuch-saved-searches
-        `((:name "inbox" :query "tag:inbox" :key ,(kbd "i"))
-          (:name "unread" :query "tag:unread" :key ,(kbd "u"))
-          (:name "flagged" :query "tag:flagged" :key ,(kbd "f"))
-          (:name "sent" :query "tag:sent" :key ,(kbd "t"))
-          (:name "drafts" :query "tag:draft" :key ,(kbd "d"))
-          (:name "all mail" :query "*" :key ,(kbd "a"))
-          (:name "recent" :sort-order "newest-first" :query "tag:inbox date:3d..today" :key ,(kbd "r"))))
-  (define-key notmuch-search-mode-map "D"
-              (lambda (&optional beg end)
-                "move message to trash"
-                (interactive (notmuch-interactive-region))
-                (notmuch-search-tag (list "+trash" "-inbox" "-unread" "-new") beg end)))
-  (define-key notmuch-show-mode-map "D"
-              (lambda()
-                "move message to trash"
-                (interactive)
-                (notmuch-show-add-tag (list "+trash" "-inbox" "-unread" "-new"))))
-  (setq sendmail-program "gmi")
-  (setq send-mail-function 'sendmail-send-it)
-  (setq message-sendmail-extra-arguments '("send" "--quiet" "-t" "-C" "~/.mail/account.jet"))
-  (setq notmuch-fcc-dirs nil))
+;; (dolist (package package-list)
+;;   (when (not (package-installed-p package))
+;;     (package-install package)))
 
 
-(use-package orderless
+
+(use-package exec-path-from-shell
   :ensure t
-  :custom (completion-styles '(orderless basic)
-           completion-category-defaults nil
-           completion-category-overrides '((file (styles . (partial-completion))))))
-
-;; Enable vertico
-(use-package vertico
-  :init
-  (vertico-mode))
-
-;; Persist history over Emacs restarts. Vertico sorts by history position.
-(use-package savehist
-  :init
-  (savehist-mode))
-
-;; Pulsar
-(use-package pulsar
   :config
-  (setq pulsar-iterations 10)
-  (pulsar-global-mode 1))
+  (setq exec-path-from-shell-variables '("PATH" "GOPATH"))
+  (exec-path-from-shell-initialize))
 
-;; A few more useful configurations...
-(use-package emacs
-  :init
-  ;; Add prompt indicator to `completing-read-multiple'.
-  ;; Alternatively try `consult-completing-read-multiple'.
-  (defun crm-indicator (args)
-    (cons (concat "[CRM] " (car args)) (cdr args)))
-  (advice-add #'completing-read-multiple :filter-args #'crm-indicator)
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;
+;;;   Discovery aids
+;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-  ;; Do not allow the cursor in the minibuffer prompt
-  (setq minibuffer-prompt-properties
-        '(read-only t cursor-intangible t face minibuffer-prompt))
-  (add-hook 'minibuffer-setup-hook #'cursor-intangible-mode)
+;; Show the help buffer after startup
+;;(add-hook 'after-init-hook 'help-quick)
 
-  ;; Emacs 28: Hide commands in M-x which do not work in the current mode.
-  ;; Vertico commands are hidden in normal buffers.
-  (setq read-extended-command-predicate
-         #'command-completion-default-include-p)
+;; which-key: shows a popup of available keybindings when typing a long key
+;; sequence (e.g. C-x ...)
+(use-package which-key
+  :ensure t
+  :config
+  (which-key-setup-side-window-right-bottom)
+  (which-key-mode))
 
-  ;; Enable recursive minibuffers
-  (setq enable-recursive-minibuffers t))
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;
+;;;   Minibuffer/completion settings
+;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-;; This is a simple function to use the default completing read for recentf
-;; (defun open-recentf (file)
-;;   "Use `completing-read' to open a recent FILE."
-;;   (interactive (list (completing-read "Find recent file: "
-;;                                       recentf-list))))
+;; For help, see: https://www.masteringemacs.org/article/understanding-minibuffer-completion
 
+(setq enable-recursive-minibuffers t)                ; Use the minibuffer whilst in the minibuffer
+(setq completion-cycle-threshold 1)                  ; TAB cycles candidates
+(setq completions-detailed t)                        ; Show annotations
+(setq tab-always-indent 'complete)                   ; When I hit TAB, try to complete, otherwise, indent
+(setq completion-styles '(basic initials substring)) ; Different styles to match input to candidates
+
+(setq completion-auto-help 'always)                  ; Open completion always; `lazy' another option
+(setq completions-max-height 20)                     ; This is arbitrary
+(setq completions-detailed t)
+(setq completions-format 'one-column)
+(setq completions-group t)
+(setq completion-auto-select 'second-tab)            ; Much more eager
+;(setq completion-auto-select t)                     ; See `C-h v completion-auto-select' for more possible values
+
+(keymap-set minibuffer-mode-map "TAB" 'minibuffer-complete) ; TAB acts more like how it does in the shell
+
+;; For a fancier built-in completion option, try ido-mode or fido-mode. See also
+;; the file extras/base.el
+;(fido-vertical-mode)
+;(setq icomplete-delay-completions-threshold 4000)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;
+;;;   Interface enhancements/defaults
+;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;; Somewhat better long-line handling
+(setq bidi-paragraph-direction 'left-to-right)
+(setq bidi-inhibit-bpa t)
+
+;; Mode line information
+(setq line-number-mode t)                        ; Show current line in modeline
+(setq column-number-mode t)                      ; Show column as well
+
+(setq x-underline-at-descent-line nil)           ; Prettier underlines
+(setq switch-to-buffer-obey-display-actions t)   ; Make switching buffers more consistent
+
+(setq-default show-trailing-whitespace nil)      ; By default, don't underline trailing spaces
+(setq-default indicate-buffer-boundaries 'left)  ; Show buffer top and bottom in the margin
+
+;; Enable horizontal scrolling
+(setq mouse-wheel-tilt-scroll t)
+(setq mouse-wheel-flip-direction t)
+
+;; We won't set these, but they're good to know about
+;;
+(setq-default indent-tabs-mode nil)
+(setq-default tab-width 4)
+
+;; Misc. UI tweaks
+(blink-cursor-mode -1)                                ; Steady cursor
+(setq pixel-scroll-precision-mode t)                  ; Smooth scrolling
+(setq frame-inhibit-implied-resize t)                 ; Don't arbitrarily resize frame
+(setq show-trailing-whitespace t)
+(setq kill-whole-line t)
+
+;; Use common keystrokes by default
+;;(cua-mode)
+
+;; Display line numbers in programming mode
+(add-hook 'prog-mode-hook 'display-line-numbers-mode)
+(setq-default display-line-numbers-width 4)           ; Set a minimum width
+
+;; Nice line wrapping when working with text
+(add-hook 'text-mode-hook 'visual-line-mode)
+
+;; Modes to highlight the current line with
+(let ((hl-line-hooks '(text-mode-hook prog-mode-hook)))
+  (mapc (lambda (hook) (add-hook hook 'hl-line-mode)) hl-line-hooks))
+
+;; Expand region to quickly select text
+(use-package expand-region
+  :bind
+  ("C-=" . er/expand-region))
+
+
+;; Recent Files search
 (defun ds/find-recentf (file)
   "Use `completing-read' to open a recent FILE."
   (interactive (list (completing-read "Find recent file: "
@@ -248,393 +261,92 @@
                         ,(expand-file-name "etc/" user-emacs-directory)
                         ,(expand-file-name "var/" user-emacs-directory)))
 
+;; Set background for sudo buffers
+(defun ds/sudo-bg-color ()
+       (setq buffer-face-mode-face '(:background "#FFF0F9"))
+       (buffer-face-mode 1))
 
-(defun flyspell-on-for-buffer-type ()
-  "Enable Flyspell appropriately for the major mode of the current buffer.  Uses `flyspell-prog-mode' for modes derived from `prog-mode', so only strings and comments get checked.  All other buffers get `flyspell-mode' to check all text.  If flyspell is already enabled, does nothing."
-  (interactive)
-  (if (not (symbol-value flyspell-mode)) ; if not already on
-	  (progn
-	    (if (derived-mode-p 'prog-mode)
-	        (progn
-	          (message "Flyspell on (code)")
-	          (flyspell-prog-mode))
-	      ;; else
-	      (progn
-	        (message "Flyspell on (text)")
-	        (flyspell-mode 1)))
-	    ;; I tried putting (flyspell-buffer) here but it didn't seem to work
-	    )))
+(defun ds/sudo-set-bg ()
+  (cond ((string-match-p "sudo" (concat "." (file-remote-p default-directory)))
+         (ds/sudo-bg-color))))
 
-(defun flyspell-toggle ()
-  "Turn Flyspell on if it is off, or off if it is on.  When turning on, it uses `flyspell-on-for-buffer-type' so code-vs-text is handled appropriately."
-  (interactive)
-  (if (symbol-value flyspell-mode)
-	  (progn ; flyspell is on, turn it off
-	    (message "Flyspell off")
-	    (flyspell-mode -1)) ; else - flyspell is off, turn it on
-	(flyspell-on-for-buffer-type)))
+(add-hook 'find-file-hook 'ds/sudo-set-bg)
 
-(global-set-key (kbd "C-c f") 'flyspell-toggle )
-(add-hook 'find-file-hook 'flyspell-on-for-buffer-type)
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;
+;;;   Tab-bar configuration
+;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-;;best themes with easy switching between dark and light
+;; Show the tab-bar as soon as tab-bar functions are invoked
+(setq tab-bar-show 0)
 
-;; (use-package modus-themes
-;;   :ensure t
-;;   :config
-;;   ;; Add all your customizations prior to loading the themes
-;;   (setq modus-themes-italic-constructs f
-;;         modus-themes-bold-constructs f
-;;         modus-themes-mixed-fonts t
-;;         )
-;;   (setq modus-themes-headings
-;;       '((1 . (variable-pitch 1.5))
-;;         (2 . (1.3))
-;;         (agenda-date . (1.3))
-;;         (agenda-structure . (variable-pitch light 1.8))
-;;         (t . (1.1))))
+;; Add the time to the tab-bar, if visible
+(add-to-list 'tab-bar-format 'tab-bar-format-align-right 'append)
+(add-to-list 'tab-bar-format 'tab-bar-format-global 'append)
+(setq display-time-format "%a %F %T")
+(setq display-time-interval 1)
+(display-time-mode)
 
-;;   ;; Maybe define some palette overrides, such as by using our presets
-;;   (setq modus-themes-common-palette-overrides
-;;         modus-themes-preset-overrides-intense)
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;
+;;;   Theme
+;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-;;   ;; Load the theme of your choice.
-;;   (load-theme 'modus-operandi-tinted t)
-
-;;   (define-key global-map (kbd "<f5>") #'modus-themes-toggle))
-
-(use-package almost-mono-themes
+(use-package emacs
   :config
-  ;; (load-theme 'almost-mono-black t)
-  ;; (load-theme 'almost-mono-gray t)
-  ;; (load-theme 'almost-mono-cream t)
-  (load-theme 'almost-mono-gray t))
+  (setq modus-themes-italic-constructs t
+        modus-themes-bold-constructs t
+        modus-themes-mixed-fonts t
+        )
+  (setq modus-themes-headings
+        '((1 . (variable-pitch 1.3))
+          (2 . (variable-pitch 1.15))
+          (3 . (variable-pitch))
+          (agenda-date . (1.3))
+          (agenda-structure . (variable-pitch light 1.45))
+          (t . (1.1))))
+  (load-theme 'modus-operandi t)
+  (define-key global-map (kbd "<f5>") #'modus-themes-toggle))
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;
+;;;   Optional extras
+;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(use-package flymake)
+;; Uncomment the (load-file …) lines or copy code from the extras/ elisp files
+;; as desired
 
-;; Example configuration for Consult
-(use-package consult
-  ;; Replace bindings. Lazily loaded due by `use-package'.
-  :bind (;; C-c bindings (mode-specific-map)
-         ("C-c M-x" . consult-mode-command)
-         ("C-c h" . consult-history)
-         ("C-c k" . consult-kmacro)
-         ("C-c m" . consult-man)
-         ("C-c i" . consult-info)
-         ([remap Info-search] . consult-info)
-         ;; C-x bindings (ctl-x-map)
-         ("C-x M-:" . consult-complex-command)     ;; orig. repeat-complex-command
-         ("C-x b" . consult-buffer)                ;; orig. switch-to-buffer
-         ("C-x 4 b" . consult-buffer-other-window) ;; orig. switch-to-buffer-other-window
-         ("C-x 5 b" . consult-buffer-other-frame)  ;; orig. switch-to-buffer-other-frame
-         ("C-x r b" . consult-bookmark)            ;; orig. bookmark-jump
-         ("C-x p b" . consult-project-buffer)      ;; orig. project-switch-to-buffer
-         ;; Custom M-# bindings for fast register access
-         ("M-#" . consult-register-load)
-         ("M-'" . consult-register-store)          ;; orig. abbrev-prefix-mark (unrelated)
-         ("C-M-#" . consult-register)
-         ;; Other custom bindings
-         ("M-y" . consult-yank-pop)                ;; orig. yank-pop
-         ;; M-g bindings (goto-map)
-         ("M-g e" . consult-compile-error)
-         ("M-g f" . consult-flymake)               ;; Alternative: consult-flycheck
-         ("M-g g" . consult-goto-line)             ;; orig. goto-line
-         ("M-g M-g" . consult-goto-line)           ;; orig. goto-line
-         ("M-g o" . consult-outline)               ;; Alternative: consult-org-heading
-         ("M-g m" . consult-mark)
-         ("M-g k" . consult-global-mark)
-         ("M-g i" . consult-imenu)
-         ("M-g I" . consult-imenu-multi)
-         ;; M-s bindings (search-map)
-         ("M-s d" . consult-find)
-         ("M-s D" . consult-locate)
-         ("M-s g" . consult-grep)
-         ("M-s G" . consult-git-grep)
-         ("M-s r" . consult-ripgrep)
-         ("M-s l" . consult-line)
-         ("M-s L" . consult-line-multi)
-         ("M-s k" . consult-keep-lines)
-         ("M-s u" . consult-focus-lines)
-         ;; Isearch integration
-         ("M-s e" . consult-isearch-history)
-         :map isearch-mode-map
-         ("M-e" . consult-isearch-history)         ;; orig. isearch-edit-string
-         ("M-s e" . consult-isearch-history)       ;; orig. isearch-edit-string
-         ("M-s l" . consult-line)                  ;; needed by consult-line to detect isearch
-         ("M-s L" . consult-line-multi)            ;; needed by consult-line to detect isearch
-         ;; Minibuffer history
-         :map minibuffer-local-map
-         ("M-s" . consult-history)                 ;; orig. next-matching-history-element
-         ("M-r" . consult-history))                ;; orig. previous-matching-history-element
+;; UI/UX enhancements mostly focused on minibuffer and autocompletion interfaces
+;; These ones are *strongly* recommended!
+(load-file (expand-file-name "extras/base.el" user-emacs-directory))
 
-  ;; Enable automatic preview at point in the *Completions* buffer. This is
-  ;; relevant when you use the default completion UI.
-  :hook (completion-list-mode . consult-preview-at-point-mode)
+;; Packages for software development
+(load-file (expand-file-name "extras/dev.el" user-emacs-directory))
 
-  ;; The :init configuration is always executed (Not lazy)
-  :init
+;; Vim-bindings in Emacs (evil-mode configuration)
+;(load-file (expand-file-name "extras/vim-like.el" user-emacs-directory))
 
-  ;; Optionally configure the register formatting. This improves the register
-  ;; preview for `consult-register', `consult-register-load',
-  ;; `consult-register-store' and the Emacs built-ins.
-  (setq register-preview-delay 0.5
-        register-preview-function #'consult-register-format)
+;; Org-mode configuration
+;; WARNING: need to customize things inside the elisp file before use! See
+;; the file extras/org-intro.txt for help.
+;(load-file (expand-file-name "extras/org.el" user-emacs-directory))
 
-  ;; Optionally tweak the register preview window.
-  ;; This adds thin lines, sorting and hides the mode line of the window.
-  (advice-add #'register-preview :override #'consult-register-window)
+;; Email configuration in Emacs
+;; WARNING: needs the `mu' program installed; see the elisp file for more
+;; details.
+;(load-file (expand-file-name "extras/email.el" user-emacs-directory))
 
-  ;; Use Consult to select xref locations with preview
-  (setq xref-show-xrefs-function #'consult-xref
-        xref-show-definitions-function #'consult-xref)
+;; Tools for academic researchers
+;(load-file (expand-file-name "extras/researcher.el" user-emacs-directory))
 
-  ;; Configure other variables and modes in the :config section,
-  ;; after lazily loading the package.
-  :config
-
-  ;; Optionally configure preview. The default value
-  ;; is 'any, such that any key triggers the preview.
-  ;; (setq consult-preview-key 'any)
-  ;; (setq consult-preview-key "M-.")
-  ;; (setq consult-preview-key '("S-<down>" "S-<up>"))
-  ;; For some commands and buffer sources it is useful to configure the
-  ;; :preview-key on a per-command basis using the `consult-customize' macro.
-  (consult-customize
-   consult-theme :preview-key '(:debounce 0.2 any)
-   consult-ripgrep consult-git-grep consult-grep
-   consult-bookmark consult-recent-file consult-xref
-   consult--source-bookmark consult--source-file-register
-   consult--source-recent-file consult--source-project-recent-file
-   ;; :preview-key "M-."
-   :preview-key '(:debounce 0.4 any))
-
-  ;; Optionally configure the narrowing key.
-  ;; Both < and C-+ work reasonably well.
-  (setq consult-narrow-key "<") ;; "C-+"
-
-  ;; Optionally make narrowing help available in the minibuffer.
-  ;; You may want to use `embark-prefix-help-command' or which-key instead.
-  ;; (define-key consult-narrow-map (vconcat consult-narrow-key "?") #'consult-narrow-help)
-
-  ;; By default `consult-project-function' uses `project-root' from project.el.
-  ;; Optionally configure a different project root function.
-  ;;;; 1. project.el (the default)
-  ;; (setq consult-project-function #'consult--default-project--function)
-  ;;;; 2. vc.el (vc-root-dir)
-  ;; (setq consult-project-function (lambda (_) (vc-root-dir)))
-  ;;;; 3. locate-dominating-file
-  ;; (setq consult-project-function (lambda (_) (locate-dominating-file "." ".git")))
-  ;;;; 4. projectile.el (projectile-project-root)
-  ;; (autoload 'projectile-project-root "projectile")
-  ;; (setq consult-project-function (lambda (_) (projectile-project-root)))
-  ;;;; 5. No project support
-  ;; (setq consult-project-function nil)
-)
-
-(use-package corfu
-  ;; Optional customizations
-  :custom
-  (corfu-cycle t)                ;; Enable cycling for `corfu-next/previous'
-  (corfu-auto t)                 ;; Enable auto completion
-  ;; (corfu-separator ?\s)          ;; Orderless field separator
-  ;; (corfu-quit-at-boundary nil)   ;; Never quit at completion boundary
-  (corfu-quit-no-match 'separator)      ;; Never quit, even if there is no match
-  ;; (corfu-preview-current nil)    ;; Disable current candidate preview
-  ;; (corfu-preselect 'prompt)      ;; Preselect the prompt
-  ;; (corfu-on-exact-match nil)     ;; Configure handling of exact matches
-  ;; (corfu-scroll-margin 5)        ;; Use scroll margin
-
-  ;; Enable Corfu only for certain modes.
-  ;; :hook ((prog-mode . corfu-mode)
-  ;;        (shell-mode . corfu-mode)
-  ;;        (eshell-mode . corfu-mode))
-
-  ;; Use TAB for cycling, default is `corfu-complete'.
-  :bind
-  (:map corfu-map
-        ("TAB" . corfu-next)
-        ([tab] . corfu-next)
-        ("S-TAB" . corfu-previous)
-        ([backtab] . corfu-previous))
-  
-  ;; Recommended: Enable Corfu globally.
-  ;; This is recommended since Dabbrev can be used globally (M-/).
-  ;; See also `corfu-excluded-modes'.
-  :init
-  (global-corfu-mode))
-
-;; Expand region to quickly select text
-(use-package expand-region
-  :bind
-  ("C-=" . er/expand-region))
-
-; ORG MODE
-(use-package org
-  :init
-  (setq org-startup-indented t)
-  (add-hook 'org-mode-hook #'visual-line-mode)
-  :config
-  (org-babel-do-load-languages
-   'org-babel-load-languages
-   '((ditaa . t)
-     (dot . t)
-     (plantuml . t)
-     (latex . t)
-     (python . t)
-     (restclient . t)
-     (shell . t)))
-
-  (defun my-org-confirm-babel-evaluate (lang body)
-    (not (or  (string= lang "ditaa")              ; don't ask for ditaa or dot
-              (string= lang "dot")
-              (string= lang "elisp")
-              (string= lang "plantuml")
-              (string= lang "restclient")
-              )))
-  (setq org-confirm-babel-evaluate 'my-org-confirm-babel-evaluate)
-
-  (setq org-capture-templates
-        '(("t" "Todo" entry (file+headline "~/Documents/org/notes.org" "Tasks")
-           "* TODO %?\n  %i\n  %a")
-          ("j" "Journal" entry (file+datetree "~/Documents/org/journal.org")
-           "* %?\nEntered on %U\n  %i\n  %a")))
-  :bind
-  ("C-c l" . org-store-link)
-  ("C-c a" . org-agenda)
-  ("C-c b" . org-iswitchb)
-  ("C-c c" . org-capture))
-
-
-(setq org-agenda-files '("~/Documents/org"))
-(with-eval-after-load 'org (global-org-modern-mode))
-
-(use-package ox-latex
-  :config
-  (progn
-    (setq org-latex-compiler "lualatex")))
-
-(use-package ox-beamer
-  :commands (org-beamer-export-as-latex
-             org-beamer-export-to-latex
-             org-beamer-export-to-pdf)
-  :config
-  (setq-default TeX-engine 'luatex)
-  (setq-default TeX-PDF-mode t)
-  (progn
-    ;; allow for export=>beamer by placing
-    ;; #+LaTeX_CLASS: beamer in org files
-    (add-to-list 'org-latex-classes
-                 '("beamer"
-                   "\\documentclass[presentation]{beamer}"
-                   ("\\section{%s}"        . "\\section*{%s}")
-                   ("\\subsection{%s}"     . "\\subsection*{%s}")
-                   ("\\subsubsection{%s}"  . "\\subsubsection*{%s}")))))
-
-(setq jiralib-url "https://citypantry.atlassian.net")
-
-
-;; Magit is an Emacs interface to Git.
-;; (It's awesome)
-;; https://github.com/magit/magit
-
-(use-package magit
-  :commands magit-get-top-dir
-  :bind (("C-c g" . magit-status)
-         ("C-c C-g l" . magit-file-log))
-  :init
-  (progn
-    ;; magit extensions
-    (use-package magit-blame
-      :bind ("C-c C-g b" . magit-blame-mode))
-
-    ;; we no longer need vc-git
-    (delete 'Git vc-handled-backends)
-    ;; make magit status go full-screen but remember previous window
-    ;; settings
-    ;; from: http://whattheemacsd.com/setup-magit.el-01.html
-    (defadvice magit-status (around magit-fullscreen activate)
-      (window-configuration-to-register :magit-fullscreen)
-      ad-do-it
-      (delete-other-windows))
-
-    ;; Close popup when commiting - this stops the commit window
-    ;; hanging around
-    ;; From: http://git.io/rPBE0Q
-    (defadvice git-commit-commit (after delete-window activate)
-      (delete-window))
-
-    (defadvice git-commit-abort (after delete-window activate)
-      (delete-window))
-
-    ;; these two force a new line to be inserted into a commit window,
-    ;; which stops the invalid style showing up.
-    ;; From: http://git.io/rPBE0Q
-    (defun magit-commit-mode-init ()
-      (when (looking-at "\n")
-        (open-line 1)))
-
-    (add-hook 'git-commit-mode-hook 'magit-commit-mode-init))
-  :config
-  (progn
-    ;; restore previously hidden windows
-    (defadvice magit-quit-window (around magit-restore-screen activate)
-      (let ((current-mode major-mode))
-        ad-do-it
-        ;; we only want to jump to register when the last seen buffer
-        ;; was a magit-status buffer.
-        (when (eq 'magit-status-mode current-mode)
-          (jump-to-register :magit-fullscreen))))
-
-    (defun magit-maybe-commit (&optional show-options)
-      "Runs magit-commit unless prefix is passed"
-      (interactive "P")
-      (if show-options
-          (magit-key-mode-popup-committing)
-        (magit-commit)))
-
-    (define-key magit-mode-map "c" 'magit-maybe-commit)
-
-    ;; major mode for editing `git rebase -i` files
-    ;;(use-package rebase-mode)
-
-    ;; magit settings
-    (setq
-     ;; use ido to look for branches
-     ;; magit-completing-read-function 'magit-ido-completing-read
-     ;; don't put "origin-" in front of new branch names by default
-     magit-default-tracking-name-function 'magit-default-tracking-name-branch-only
-     ;; open magit status in same window as current buffer
-     magit-status-buffer-switch-function 'switch-to-buffer
-     ;; highlight word/letter changes in hunk diffs
-     magit-diff-refine-hunk t
-     ;; ask me if I want to include a revision when rewriting
-     magit-rewrite-inclusive 'ask
-     ;; ask me to save buffers
-     magit-save-some-buffers t
-     ;; pop the process buffer if we're taking a while to complete
-     magit-process-popup-time 10
-     ;; ask me if I want a tracking upstream
-     magit-set-upstream-on-push 'askifnotset
-     )))
-
-(use-package forge
-  :after magit)
-
-(use-package poetry
-  :ensure t
-  :config
-  (poetry-tracking-mode))
-
-(use-package anaconda-mode
-  :ensure t
-  :bind (("C-c C-x" . next-error))
-  :init
-  (add-hook 'python-mode-hook 'anaconda-mode)
-  (add-hook 'python-mode-hook 'anaconda-eldoc-mode))
-
-
-
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;
+;;;   Built-in customization framework
+;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
@@ -642,24 +354,13 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(custom-safe-themes
-   '("cbd85ab34afb47003fa7f814a462c24affb1de81ebf172b78cb4e65186ba59d2" "bfc0b9c3de0382e452a878a1fb4726e1302bf9da20e69d6ec1cd1d5d82f61e3d" default))
- '(notmuch-saved-searches
-   '((:name "inbox" :query "tag:inbox" :key "i")
-     (:name "unread" :query "tag:unread" :key "u")
-     (:name "flagged" :query "tag:flagged" :key "f")
-     (:name "sent" :query "tag:sent" :key "t")
-     (:name "drafts" :query "tag:draft" :key "d")
-     (:name "all mail" :query "*" :key "a")
-     (:name "recent" :sort-order "newest-first" :query "tag:inbox not tag:trash date:3d..today" :key "r")
-     (:name "Work" :query "tag:inbox AND (from:\"/.*@justeattakeaway[.]com/\" OR from:\"/.*@citypantry[.]com/\")")))
+   '("21e3d55141186651571241c2ba3c665979d1e886f53b2e52411e9e96659132d4" "69f7e8101867cfac410e88140f8c51b4433b93680901bb0b52014144366a08c8" default))
+ '(delete-selection-mode nil)
  '(package-selected-packages
-   '(psysh consult-eglot eglot olivetti rainbow-delimiters org-modern php-mode treemacs treemacs-magit treemacs-nerd-icons org-jira terraform-mode which-key python-black poetry pulsar ob-restclient corfu modus-themes marginalia forge embark-consult embark orderless vertico exec-path-from-shell expand-region consult-ag consult closql auctex anaconda-mode ag)))
-
-
+   '(treemacs treemacs-magit olivetti vterm lua-mode csharp-mode docker exec-path-from-shell php-mode which-key)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  )
-(put 'downcase-region 'disabled nil)

@@ -64,20 +64,24 @@
       kept-new-versions 5    ; keep some new versions                           
       kept-old-versions 2)   ; and some old ones, too                           
 
+(setq create-lockfiles nil)
 
 ;; Set auto revert mode 
 (global-auto-revert-mode 1)
 
 ;; For the GUI use this font and line spacing
 (set-face-attribute 'default nil
-                    :family "IBM Plex Mono" :height 100 :weight 'regular)
-(setq-default line-spacing 0.20)
+                    :family "CaskaydiaCove Nerd Font Mono" :height 90 :weight 'Semilight)
+
+(set-face-attribute 'default nil
+                    :family "CaskaydiaCove Nerd Font Mono" :height 120 :weight 'Semilight)
+(setq-default line-spacing 0.25)
 
 ;; Proportionately spaced typeface
-(set-face-attribute 'variable-pitch nil :family "IBM Plex Sans" :height 1.0)
+(set-face-attribute 'variable-pitch nil :family "CaskadiaCove Nerd Font Propo" :height 1.0)
 
 ;; Monospaced typeface
-(set-face-attribute 'fixed-pitch nil :family "IBM Plex Mono" :height 1.0 :weight 'light)
+(set-face-attribute 'fixed-pitch nil :family "CaskaydiaCove Nerd Font Mono" :height 1.0 :weight 'light)
 
 ;; Setup Visual line mode
 (add-hook 'text-mode-hook 'turn-on-visual-line-mode)
@@ -97,7 +101,7 @@
 
 (setq package-list '(ag
                      anaconda-mode
-                     closql
+                     auctex
                      consult
                      consult-ag
                      expand-region
@@ -122,6 +126,12 @@
                      treepy
                      which-key
                      yaml
+                     terraform-mode
+                     org-jira
+                     org-modern
+                     which-key
+                     savehist
+                     rainbow-delimiters
                      ))
 
 
@@ -170,7 +180,6 @@
   (setq notmuch-fcc-dirs nil))
 
 
-
 (use-package orderless
   :ensure t
   :custom (completion-styles '(orderless basic)
@@ -216,10 +225,10 @@
   (setq enable-recursive-minibuffers t))
 
 ;; This is a simple function to use the default completing read for recentf
-(defun open-recentf (file)
-  "Use `completing-read' to open a recent FILE."
-  (interactive (list (completing-read "Find recent file: "
-                                      recentf-list))))
+;; (defun open-recentf (file)
+;;   "Use `completing-read' to open a recent FILE."
+;;   (interactive (list (completing-read "Find recent file: "
+;;                                       recentf-list))))
 
 (defun ds/find-recentf (file)
   "Use `completing-read' to open a recent FILE."
@@ -270,28 +279,37 @@
 
 ;;best themes with easy switching between dark and light
 
-(use-package modus-themes
-  :ensure t
+;; (use-package modus-themes
+;;   :ensure t
+;;   :config
+;;   ;; Add all your customizations prior to loading the themes
+;;   (setq modus-themes-italic-constructs f
+;;         modus-themes-bold-constructs f
+;;         modus-themes-mixed-fonts t
+;;         )
+;;   (setq modus-themes-headings
+;;       '((1 . (variable-pitch 1.5))
+;;         (2 . (1.3))
+;;         (agenda-date . (1.3))
+;;         (agenda-structure . (variable-pitch light 1.8))
+;;         (t . (1.1))))
+
+;;   ;; Maybe define some palette overrides, such as by using our presets
+;;   (setq modus-themes-common-palette-overrides
+;;         modus-themes-preset-overrides-intense)
+
+;;   ;; Load the theme of your choice.
+;;   (load-theme 'modus-operandi-tinted t)
+
+;;   (define-key global-map (kbd "<f5>") #'modus-themes-toggle))
+
+(use-package almost-mono-themes
   :config
-  ;; Add all your customizations prior to loading the themes
-  (setq modus-themes-italic-constructs t
-        modus-themes-bold-constructs t
-        modus-themes-mixed-fonts t)
-  (setq modus-themes-headings
-      '((1 . (variable-pitch 1.5))
-        (2 . (1.3))
-        (agenda-date . (1.3))
-        (agenda-structure . (variable-pitch light 1.8))
-        (t . (1.1))))
+  ;; (load-theme 'almost-mono-black t)
+  ;; (load-theme 'almost-mono-gray t)
+  ;; (load-theme 'almost-mono-cream t)
+  (load-theme 'almost-mono-gray t))
 
-  ;; Maybe define some palette overrides, such as by using our presets
-  (setq modus-themes-common-palette-overrides
-        modus-themes-preset-overrides-intense)
-
-  ;; Load the theme of your choice.
-  (load-theme 'modus-operandi t)
-
-  (define-key global-map (kbd "<f5>") #'modus-themes-toggle))
 
 (use-package flymake)
 
@@ -489,6 +507,7 @@
 
 
 (setq org-agenda-files '("~/Documents/org"))
+(with-eval-after-load 'org (global-org-modern-mode))
 
 (use-package ox-latex
   :config
@@ -511,6 +530,9 @@
                    ("\\section{%s}"        . "\\section*{%s}")
                    ("\\subsection{%s}"     . "\\subsection*{%s}")
                    ("\\subsubsection{%s}"  . "\\subsubsection*{%s}")))))
+
+(setq jiralib-url "https://citypantry.atlassian.net")
+
 
 ;; Magit is an Emacs interface to Git.
 ;; (It's awesome)
@@ -619,88 +641,8 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(connection-local-criteria-alist
-   '(((:application tramp)
-      tramp-connection-local-default-system-profile tramp-connection-local-default-shell-profile)
-     ((:application eshell)
-      eshell-connection-default-profile)))
- '(connection-local-profile-alist
-   '((tramp-connection-local-darwin-ps-profile
-      (tramp-process-attributes-ps-args "-acxww" "-o" "pid,uid,user,gid,comm=abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ" "-o" "state=abcde" "-o" "ppid,pgid,sess,tty,tpgid,minflt,majflt,time,pri,nice,vsz,rss,etime,pcpu,pmem,args")
-      (tramp-process-attributes-ps-format
-       (pid . number)
-       (euid . number)
-       (user . string)
-       (egid . number)
-       (comm . 52)
-       (state . 5)
-       (ppid . number)
-       (pgrp . number)
-       (sess . number)
-       (ttname . string)
-       (tpgid . number)
-       (minflt . number)
-       (majflt . number)
-       (time . tramp-ps-time)
-       (pri . number)
-       (nice . number)
-       (vsize . number)
-       (rss . number)
-       (etime . tramp-ps-time)
-       (pcpu . number)
-       (pmem . number)
-       (args)))
-     (tramp-connection-local-busybox-ps-profile
-      (tramp-process-attributes-ps-args "-o" "pid,user,group,comm=abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ" "-o" "stat=abcde" "-o" "ppid,pgid,tty,time,nice,etime,args")
-      (tramp-process-attributes-ps-format
-       (pid . number)
-       (user . string)
-       (group . string)
-       (comm . 52)
-       (state . 5)
-       (ppid . number)
-       (pgrp . number)
-       (ttname . string)
-       (time . tramp-ps-time)
-       (nice . number)
-       (etime . tramp-ps-time)
-       (args)))
-     (tramp-connection-local-bsd-ps-profile
-      (tramp-process-attributes-ps-args "-acxww" "-o" "pid,euid,user,egid,egroup,comm=abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ" "-o" "state,ppid,pgid,sid,tty,tpgid,minflt,majflt,time,pri,nice,vsz,rss,etimes,pcpu,pmem,args")
-      (tramp-process-attributes-ps-format
-       (pid . number)
-       (euid . number)
-       (user . string)
-       (egid . number)
-       (group . string)
-       (comm . 52)
-       (state . string)
-       (ppid . number)
-       (pgrp . number)
-       (sess . number)
-       (ttname . string)
-       (tpgid . number)
-       (minflt . number)
-       (majflt . number)
-       (time . tramp-ps-time)
-       (pri . number)
-       (nice . number)
-       (vsize . number)
-       (rss . number)
-       (etime . number)
-       (pcpu . number)
-       (pmem . number)
-       (args)))
-     (tramp-connection-local-default-shell-profile
-      (shell-file-name . "/bin/sh")
-      (shell-command-switch . "-c"))
-     (tramp-connection-local-default-system-profile
-      (path-separator . ":")
-      (null-device . "/dev/null"))
-     (eshell-connection-default-profile
-      (eshell-path-env-list))))
  '(custom-safe-themes
-   '("bfc0b9c3de0382e452a878a1fb4726e1302bf9da20e69d6ec1cd1d5d82f61e3d" default))
+   '("cbd85ab34afb47003fa7f814a462c24affb1de81ebf172b78cb4e65186ba59d2" "bfc0b9c3de0382e452a878a1fb4726e1302bf9da20e69d6ec1cd1d5d82f61e3d" default))
  '(notmuch-saved-searches
    '((:name "inbox" :query "tag:inbox" :key "i")
      (:name "unread" :query "tag:unread" :key "u")
@@ -708,11 +650,12 @@
      (:name "sent" :query "tag:sent" :key "t")
      (:name "drafts" :query "tag:draft" :key "d")
      (:name "all mail" :query "*" :key "a")
-     (:name "recent" :sort-order "newest-first" :query "tag:inbox date:3d..today" :key "r")
+     (:name "recent" :sort-order "newest-first" :query "tag:inbox not tag:trash date:3d..today" :key "r")
      (:name "Work" :query "tag:inbox AND (from:\"/.*@justeattakeaway[.]com/\" OR from:\"/.*@citypantry[.]com/\")")))
  '(package-selected-packages
-   '(csv-mode consult-ag emacsql emacsql-sqlite consult-flyspell which-key anaconda-mode python-black poetry auctex auctex-latexmk auctex-lua pulsar rebase-mode magit-blame magit ob-restclient expand-region corfu modus-themes use-package marginalia embark-consult embark orderless vertico consult))
- '(python-black-command "poetry"))
+   '(psysh consult-eglot eglot olivetti rainbow-delimiters org-modern php-mode treemacs treemacs-magit treemacs-nerd-icons org-jira terraform-mode which-key python-black poetry pulsar ob-restclient corfu modus-themes marginalia forge embark-consult embark orderless vertico exec-path-from-shell expand-region consult-ag consult closql auctex anaconda-mode ag)))
+
+
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.

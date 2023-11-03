@@ -69,6 +69,7 @@
 (setq org-refile-targets 'FIXME)
 
 ;;; Phase 3 variables
+(setq org-startup-indented t)
 
 ;; Org-roam variables
 (setq org-roam-directory "~/Documents/org-roam/")
@@ -152,24 +153,8 @@
 ;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(use-package org-roam
-  :ensure t
-  :config
-  (org-roam-db-autosync-mode)
-  ;; Dedicated side window for backlinks
-  (add-to-list 'display-buffer-alist
-               '("\\*org-roam\\*"
-                 (display-buffer-in-side-window)
-                 (side . right)
-                 (window-width . 0.4)
-                 (window-height . fit-window-to-buffer))))
+(use-package ox-gfm)
+(use-package ox-epub)
+(use-package ox-odt)
+(use-package ox-tufte)
 
-;; Pretty web interface for org-roam
-;(use-package org-roam-ui
-;  :ensure t
-;  :after org-roam
-;  :config
-;  (setq org-roam-ui-sync-theme t
-;        org-roam-ui-follow t
-;        org-roam-ui-update-on-save t
-;        org-roam-ui-open-on-start t))

@@ -17,7 +17,6 @@
 ;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-
 ;; Set initial frame size. 
 (if (display-graphic-p)
     (progn
@@ -42,9 +41,8 @@
 ;; cd to my home directory on startup 
 (cd "~")
 
-
 ;; I like backups because I don't use version control for everything
-;; Put everything in a saves directory so backups are scattered out everywhere
+;; Put everything in a saves directory so backups are not scattered
 (setq backup-directory-alist `((".*" . "~/.saves")))
 (setq auto-save-file-name-transforms `((".*" "~/.saves" t)))
 (setq backup-by-copying t)
@@ -55,7 +53,6 @@
 
 ;; Don't create lock files
 (setq create-lockfiles nil)
-
 
 (setq initial-major-mode 'fundamental-mode)  ; default mode for the *scratch* buffer
 (setq display-time-default-load-average nil) ; this information is useless for most
@@ -69,7 +66,7 @@
 (savehist-mode)
 
 ;; Move through windows with Ctrl-<arrow keys>
-(windmove-default-keybindings 'control) ; You can use other modifiers here
+;;(windmove-default-keybindings 'control) ; You can use other modifiers here
 
 ;; Fix archaic defaults
 (setq sentence-end-double-space nil)
@@ -77,7 +74,6 @@
 ;; Make right-click do something sensible
 (when (display-graphic-p)
   (context-menu-mode))
-
 
 ;; Set Fonts
 ;; For the GUI use this font and line spacing
@@ -94,8 +90,8 @@
 ;; Monospaced typeface
 (set-face-attribute 'fixed-pitch nil :family "Iosevka Term Curly" :height 1.0 :weight 'light)
 
-
-
+;; Set docview DPI
+(setq doc-view-resolution 300)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;
@@ -108,13 +104,13 @@
       '(("gnu"          . "https://elpa.gnu.org/packages/")
         ("melpa-stable" . "https://stable.melpa.org/packages/")
         ("melpa"        . "https://melpa.org/packages/")
-        ("nongnu"       . "https://elpa.nongnu.org/nongnu/")))
+        ("nongnu"       . "https://elpa.nongnu.org/nongnu/")
+        ("ox-odt" . "https://kjambunathan.github.io/elpa/")))
       package-archive-priorities
       '(("melpa-stable" . 0)
         ("gnu"          . 8)
         ("melpa"        . 10)
         ("nongnu"       . 0))
-
 
 ;; (setq package-list '(ag
 ;;                      expand-region
@@ -131,8 +127,6 @@
 ;; (dolist (package package-list)
 ;;   (when (not (package-installed-p package))
 ;;     (package-install package)))
-
-
 
 (use-package exec-path-from-shell
   :ensure t
@@ -272,6 +266,12 @@
 
 (add-hook 'find-file-hook 'ds/sudo-set-bg)
 
+;; Ollivetii 
+(use-package olivetti
+  :hook (text-mode . olivetti-mode)
+  :config
+  (setq-default olivetti-body-width 80))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;
 ;;;   Tab-bar configuration
@@ -326,13 +326,15 @@
 ;; Packages for software development
 (load-file (expand-file-name "extras/dev.el" user-emacs-directory))
 
+(load-file (expand-file-name "extras/treemacs.el" user-emacs-directory))
+
 ;; Vim-bindings in Emacs (evil-mode configuration)
 ;(load-file (expand-file-name "extras/vim-like.el" user-emacs-directory))
 
 ;; Org-mode configuration
 ;; WARNING: need to customize things inside the elisp file before use! See
 ;; the file extras/org-intro.txt for help.
-;(load-file (expand-file-name "extras/org.el" user-emacs-directory))
+(load-file (expand-file-name "extras/org.el" user-emacs-directory))
 
 ;; Email configuration in Emacs
 ;; WARNING: needs the `mu' program installed; see the elisp file for more
@@ -357,7 +359,7 @@
    '("21e3d55141186651571241c2ba3c665979d1e886f53b2e52411e9e96659132d4" "69f7e8101867cfac410e88140f8c51b4433b93680901bb0b52014144366a08c8" default))
  '(delete-selection-mode nil)
  '(package-selected-packages
-   '(treemacs treemacs-magit olivetti vterm lua-mode csharp-mode docker exec-path-from-shell php-mode which-key)))
+   '(ox-odt ox-gfm ox-jira ox-pandoc ox-slack ox-tufte treemacs treemacs-magit olivetti vterm lua-mode csharp-mode docker exec-path-from-shell php-mode which-key)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.

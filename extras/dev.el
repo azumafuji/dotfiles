@@ -89,7 +89,6 @@
   :ensure t
   :bind ("C-c d" . docker))
 
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;
 ;;;   Eglot, the built-in LSP client for Emacs
@@ -114,7 +113,6 @@
   ;;(add-to-list 'eglot-server-programs '(php-mode "intelephense" "--stdio"))
   )
 
-
 (defun init-php-mode ()
   (eglot-ensure))
 
@@ -122,7 +120,6 @@
   ;; If phpactor command is not installed as global, remove next ;; and write the full path
   ;; (custom-set-variables '(lsp-phpactor-path "/path/to/phpactor"))
   (add-hook 'php-mode-hook #'init-php-mode))
-
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;

@@ -38,6 +38,8 @@
 
 ;;; Phase 1 variables
 
+
+
 ;;; Phase 2 variables
 
 ;; Agenda variables
@@ -126,7 +128,29 @@
   ;; Refile configuration
   (setq org-outline-path-complete-in-steps nil)
   (setq org-refile-use-outline-path 'file)
+  
+  (org-babel-do-load-languages
+   'org-babel-load-languages
+   '((ditaa . t)
+     (dot . t)
+     (plantuml . t)
+     (latex . t)
+     (python . t)
+     (restclient . t)
+     (shell . t)
+     (sql . t)))
 
+  (defun my-org-confirm-babel-evaluate (lang body)
+    (not (or  (string= lang "ditaa")              ; don't ask for ditaa or dot
+              (string= lang "dot")
+              (string= lang "plantuml")
+              (string= lang "restclient")
+              (string= lang "latex")
+              (string= lang "sql")
+              )))
+  (setq org-confirm-babel-evaluate 'my-org-confirm-babel-evaluate)
+  
+  (setq org-babel-latex-pdf-svg-process "pdf2svg %F %O")
   (setq org-capture-templates
         '(("c" "Default Capture" entry (file "inbox.org")
            "* TODO %?\n%U\n%i")
@@ -157,4 +181,8 @@
 (use-package ox-epub)
 (use-package ox-odt)
 (use-package ox-tufte)
+(use-package ob-sql)
+
+
+(setq exec-path (append exec-path '("/usr/local/texlive/2023/bin/x86_64-linux")))
 

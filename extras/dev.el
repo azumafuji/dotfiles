@@ -116,10 +116,18 @@
 (defun init-php-mode ()
   (eglot-ensure))
 
+(defun init-python-mode ()
+  (eglot-ensure))
+
 (with-eval-after-load 'php-mode
   ;; If phpactor command is not installed as global, remove next ;; and write the full path
   ;; (custom-set-variables '(lsp-phpactor-path "/path/to/phpactor"))
   (add-hook 'php-mode-hook #'init-php-mode))
+
+(with-eval-after-load 'python-mode
+  (add-hook 'python-mode-hook #'init-python-mode))
+
+
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;

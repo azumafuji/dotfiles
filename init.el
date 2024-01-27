@@ -53,6 +53,8 @@
 
 ;; Don't create lock files
 (setq create-lockfiles nil)
+(setq lock-file-name-transforms
+      '(("\\`/.*/\\([^/]+\\)\\'" "/var/tmp/\\1" t)))
 
 (setq initial-major-mode 'fundamental-mode)  ; default mode for the *scratch* buffer
 (setq display-time-default-load-average nil) ; this information is useless for most
@@ -74,6 +76,9 @@
 ;; Make right-click do something sensible
 (when (display-graphic-p)
   (context-menu-mode))
+
+;; Follow symlinks
+(setq vc-follow-symlinks t)
 
 ;; Set Fonts
 ;; For the GUI use this font and line spacing
@@ -232,6 +237,7 @@
 
 ;; Expand region to quickly select text
 (use-package expand-region
+  :ensure t
   :bind
   ("C-=" . er/expand-region))
 
@@ -245,6 +251,7 @@
     (find-file file)))
 
 (use-package recentf
+  :ensure t
   :bind
   ("C-x C-r" . #'ds/find-recentf)
   :config
@@ -268,6 +275,7 @@
 
 ;; Ollivetii 
 (use-package olivetti
+  :ensure t
   :hook (text-mode . olivetti-mode)
   :config
   (setq-default olivetti-body-width 80))
@@ -331,6 +339,124 @@
 ;; Vim-bindings in Emacs (evil-mode configuration)
 ;(load-file (expand-file-name "extras/vim-like.el" user-emacs-directory))
 
+
+
+(use-package yasnippet
+  :ensure t
+  :bind
+  ("C-c y s" . yas-insert-snippet)
+  ("C-c y v" . yas-visit-snippet-file)
+  :config
+  (add-to-list 'yas-snippet-dirs "~/.emacs.d/snippets")
+  (yas-global-mode 1))
+
+
+(defun mode-line-window-selected-p ()
+  "Return non-nil if we're updating the mode line for the selected window.
+This function is meant to be called in `:eval' mode line
+constructs to allow altering the look of the mode line depending
+on whether the mode line belongs to the currently selected window
+or not."
+  (let ((window (selected-window)))
+    (or (eq window (old-selected-window))
+	(and (minibuffer-window-active-p (minibuffer-window))
+	     (with-selected-window (minibuffer-window)
+	       (eq window (minibuffer-selected-window)))))))
+
+(use-package spacious-padding
+  :ensure t
+  :bind
+  ("<f8>" . spacious-padding-mode)
+  :config
+  (setq spacious-padding-widths
+      '( :internal-border-width 15
+         :header-line-width 4
+         :mode-line-width 2
+         :tab-width 4
+         :right-divider-width 30
+         :scroll-bar-width 8))
+  (setq spacious-padding-subtle-mode-line
+      `( :mode-line-active 'default
+         :mode-line-inactive vertical-border)))
+
+(spacious-padding-mode 1)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;
+;;;   Tab-bar configuration
+;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;; Show the tab-bar as soon as tab-bar functions are invoked
+(setq tab-bar-show 0)
+
+;; Add the time to the tab-bar, if visible
+(add-to-list 'tab-bar-format 'tab-bar-format-align-right 'append)
+(add-to-list 'tab-bar-format 'tab-bar-format-global 'append)
+(setq display-time-format "%a %F %T")
+(setq display-time-interval 1)
+(display-time-mode)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;
+;;;   Theme
+;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+
+;; (load-theme 'tsdh-light t)
+
+;; (use-package mindre-theme
+;;     :ensure t
+;;     :custom
+;;     (mindre-use-more-bold t)
+;;     (mindre-use-faded-lisp-parens t)
+;;     :config
+;;     (load-theme 'mindre t))
+
+(use-package hima-theme
+    :ensure t
+    :config
+    (load-theme 'hima t))
+
+
+;; (use-package emacs
+;;   :config
+;;   (setq modus-themes-italic-constructs t
+;;         modus-themes-bold-constructs t
+;;         modus-themes-mixed-fonts t
+;;         )
+;;   (setq modus-themes-headings
+;;         '((1 . (variable-pitch 1.3))
+;;           (2 . (variable-pitch 1.15))
+;;           (3 . (variable-pitch))
+;;           (agenda-date . (1.3))
+;;           (agenda-structure . (variable-pitch light 1.45))
+;;           (t . (1.1))))
+;;   (load-theme 'modus-operandi t)
+;;   (define-key global-map (kbd "<f5>") #'modus-themes-toggle))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;
+;;;   Optional extras
+;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;; Uncomment the (load-file …) lines or copy code from the extras/ elisp files
+;; as desired
+
+;; UI/UX enhancements mostly focused on minibuffer and autocompletion interfaces
+;; These ones are *strongly* recommended!
+(load-file (expand-file-name "extras/base.el" user-emacs-directory))
+
+;; Packages for software development
+(load-file (expand-file-name "extras/dev.el" user-emacs-directory))
+
+(load-file (expand-file-name "extras/treemacs.el" user-emacs-directory))
+ 
+;; Vim-bindings in Emacs (evil-mode configuration)
+;(load-file (expand-file-name "extras/vim-like.el" user-emacs-directory))
+
 ;; Org-mode configuration
 ;; WARNING: need to customize things inside the elisp file before use! See
 ;; the file extras/org-intro.txt for help.
@@ -350,19 +476,31 @@
 ;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(custom-safe-themes
-   '("21e3d55141186651571241c2ba3c665979d1e886f53b2e52411e9e96659132d4" "69f7e8101867cfac410e88140f8c51b4433b93680901bb0b52014144366a08c8" default))
  '(delete-selection-mode nil)
  '(package-selected-packages
-   '(ox-odt ox-gfm ox-jira ox-pandoc ox-slack ox-tufte treemacs treemacs-magit olivetti vterm lua-mode csharp-mode docker exec-path-from-shell php-mode which-key)))
+   '(ob-restclient hima-theme yasnippet yaml-mode which-key wgrep vertico treemacs-tab-bar treemacs-projectile treemacs-persp treemacs-magit treemacs-icons-dired treemacs-evil spacious-padding php-mode ox-tufte ox-pandoc ox-gfm ox-epub orderless marginalia kind-icon json-mode expand-region exec-path-from-shell embark-consult docker corfu-terminal cape)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- )
+ '(fringe ((t :background "#ffffff")))
+ '(header-line ((t :box (:line-width 4 :color "#e5e5e5" :style nil))))
+ '(header-line-highlight ((t :box (:color "#000000"))))
+ '(keycast-key ((t)))
+ '(line-number ((t :background "#ffffff")))
+ '(mode-line ((t :background "#ffffff" :overline "#0a0a0a" :box (:line-width 2 :color "#ffffff" :style nil))))
+ '(mode-line-active ((t :background "#ffffff" :overline "#0a0a0a" :box (:line-width 2 :color "#ffffff" :style nil))))
+ '(mode-line-highlight ((t :box (:color "#000000"))))
+ '(mode-line-inactive ((t :background "#ffffff" :overline "#888888" :box (:line-width 2 :color "#ffffff" :style nil))))
+ '(tab-bar-tab ((t :box (:line-width 4 :color "#f6f6f6" :style nil))))
+ '(tab-bar-tab-inactive ((t :box (:line-width 4 :color "#b7b7b7" :style nil))))
+ '(window-divider ((t :background "#ffffff" :foreground "#ffffff")))
+ '(window-divider-first-pixel ((t :background "#ffffff" :foreground "#ffffff")))
+ '(window-divider-last-pixel ((t :background "#ffffff" :foreground "#ffffff"))))

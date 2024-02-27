@@ -43,13 +43,13 @@
 
 ;; I like backups because I don't use version control for everything
 ;; Put everything in a saves directory so backups are not scattered
-(setq backup-directory-alist `((".*" . "~/.saves")))
-(setq auto-save-file-name-transforms `((".*" "~/.saves" t)))
-(setq backup-by-copying t)
-(setq delete-old-versions t
-  kept-new-versions 6
-  kept-old-versions 2
-  version-control t)
+(setq backup-directory-alist `(("." . "~/.saves/")))
+(setq auto-save-file-name-transforms `((".*" "~/.saves/" t)))
+(setq backup-by-copying t
+      delete-old-versions t
+      kept-new-versions 6
+      kept-old-versions 2
+      version-control t)
 
 ;; Don't create lock files
 (setq create-lockfiles nil)
@@ -482,25 +482,27 @@ or not."
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(custom-safe-themes
+   '("f60404efc40b646a6a742d833c7097f9225550288565f945ec990d343c1a22ff" "fbf914d9595c385f605133f4f221449c18b57370e7a292562aa62c95a86d8782" default))
  '(delete-selection-mode nil)
  '(package-selected-packages
-   '(ob-restclient hima-theme yasnippet yaml-mode which-key wgrep vertico treemacs-tab-bar treemacs-projectile treemacs-persp treemacs-magit treemacs-icons-dired treemacs-evil spacious-padding php-mode ox-tufte ox-pandoc ox-gfm ox-epub orderless marginalia kind-icon json-mode expand-region exec-path-from-shell embark-consult docker corfu-terminal cape)))
+   '(ef-themes ob-restclient hima-theme yasnippet yaml-mode which-key wgrep vertico treemacs-tab-bar treemacs-projectile treemacs-persp treemacs-magit treemacs-icons-dired treemacs-evil spacious-padding php-mode ox-tufte ox-pandoc ox-gfm ox-epub orderless marginalia kind-icon json-mode expand-region exec-path-from-shell embark-consult docker corfu-terminal cape)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(fringe ((t :background "#ffffff")))
- '(header-line ((t :box (:line-width 4 :color "#e5e5e5" :style nil))))
+ '(header-line ((t :box (:line-width 4 :color "#f2f2f2" :style nil))))
  '(header-line-highlight ((t :box (:color "#000000"))))
  '(keycast-key ((t)))
  '(line-number ((t :background "#ffffff")))
- '(mode-line ((t :background "#ffffff" :overline "#0a0a0a" :box (:line-width 2 :color "#ffffff" :style nil))))
- '(mode-line-active ((t :background "#ffffff" :overline "#0a0a0a" :box (:line-width 2 :color "#ffffff" :style nil))))
+ '(mode-line ((t :background "#ffffff" :overline "#000000" :box (:line-width 2 :color "#ffffff" :style nil))))
+ '(mode-line-active ((t :background "#ffffff" :overline "#000000" :box (:line-width 2 :color "#ffffff" :style nil))))
  '(mode-line-highlight ((t :box (:color "#000000"))))
- '(mode-line-inactive ((t :background "#ffffff" :overline "#888888" :box (:line-width 2 :color "#ffffff" :style nil))))
- '(tab-bar-tab ((t :box (:line-width 4 :color "#f6f6f6" :style nil))))
- '(tab-bar-tab-inactive ((t :box (:line-width 4 :color "#b7b7b7" :style nil))))
+ '(mode-line-inactive ((t :background "#ffffff" :overline "#9f9f9f" :box (:line-width 2 :color "#ffffff" :style nil))))
+ '(tab-bar-tab ((t :box (:line-width 4 :color "#ffffff" :style nil))))
+ '(tab-bar-tab-inactive ((t :box (:line-width 4 :color "#c2c2c2" :style nil))))
  '(window-divider ((t :background "#ffffff" :foreground "#ffffff")))
  '(window-divider-first-pixel ((t :background "#ffffff" :foreground "#ffffff")))
  '(window-divider-last-pixel ((t :background "#ffffff" :foreground "#ffffff"))))

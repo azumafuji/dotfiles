@@ -86,14 +86,14 @@
 ;;                    :family "Iosevka Aile" :height 90 :weight 'Semilight)
 
 (set-face-attribute 'default nil
-                    :family "Iosevka Term Curly" :height 110)
+                    :family "Recursive Mono Casual Static" :height 110)
 (setq-default line-spacing 0.2)
 
 ;; Proportionately spaced typeface
-(set-face-attribute 'variable-pitch nil :family "Iosevka Aile" :height 1.0)
+(set-face-attribute 'variable-pitch nil :family "Recursive Sans Linear" :height 1.0)
 
 ;; Monospaced typeface
-(set-face-attribute 'fixed-pitch nil :family "Iosevka Term Curly" :height 1.0 :weight 'light)
+(set-face-attribute 'fixed-pitch nil :family "Iosevka Curly Slab" :height 1.0 :weight 'light)
 
 ;; Set docview DPI
 (setq doc-view-resolution 300)
@@ -110,7 +110,7 @@
         ("melpa-stable" . "https://stable.melpa.org/packages/")
         ("melpa"        . "https://melpa.org/packages/")
         ("nongnu"       . "https://elpa.nongnu.org/nongnu/")
-        ("ox-odt" . "https://kjambunathan.github.io/elpa/")))
+        ("ox-odt"       . "https://kjambunathan.github.io/elpa/")))
       package-archive-priorities
       '(("melpa-stable" . 0)
         ("gnu"          . 8)
@@ -376,7 +376,7 @@ or not."
          :right-divider-width 30
          :scroll-bar-width 8))
   (setq spacious-padding-subtle-mode-line
-      `( :mode-line-active 'default
+      `( :mode-line-active "#eeeefe"
          :mode-line-inactive vertical-border)))
 
 (spacious-padding-mode 1)
@@ -486,23 +486,10 @@ or not."
    '("f60404efc40b646a6a742d833c7097f9225550288565f945ec990d343c1a22ff" "fbf914d9595c385f605133f4f221449c18b57370e7a292562aa62c95a86d8782" default))
  '(delete-selection-mode nil)
  '(package-selected-packages
-   '(ef-themes ob-restclient hima-theme yasnippet yaml-mode which-key wgrep vertico treemacs-tab-bar treemacs-projectile treemacs-persp treemacs-magit treemacs-icons-dired treemacs-evil spacious-padding php-mode ox-tufte ox-pandoc ox-gfm ox-epub orderless marginalia kind-icon json-mode expand-region exec-path-from-shell embark-consult docker corfu-terminal cape)))
+   '(0blayout vterm ef-themes ob-restclient hima-theme yasnippet yaml-mode which-key wgrep vertico treemacs-tab-bar treemacs-projectile treemacs-persp treemacs-magit treemacs-icons-dired treemacs-evil spacious-padding php-mode ox-tufte ox-pandoc ox-gfm ox-epub orderless marginalia kind-icon json-mode expand-region exec-path-from-shell embark-consult docker corfu-terminal cape)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(fringe ((t :background "#ffffff")))
- '(header-line ((t :box (:line-width 4 :color "#f2f2f2" :style nil))))
- '(header-line-highlight ((t :box (:color "#000000"))))
- '(keycast-key ((t)))
- '(line-number ((t :background "#ffffff")))
- '(mode-line ((t :background "#ffffff" :overline "#000000" :box (:line-width 2 :color "#ffffff" :style nil))))
- '(mode-line-active ((t :background "#ffffff" :overline "#000000" :box (:line-width 2 :color "#ffffff" :style nil))))
- '(mode-line-highlight ((t :box (:color "#000000"))))
- '(mode-line-inactive ((t :background "#ffffff" :overline "#9f9f9f" :box (:line-width 2 :color "#ffffff" :style nil))))
- '(tab-bar-tab ((t :box (:line-width 4 :color "#ffffff" :style nil))))
- '(tab-bar-tab-inactive ((t :box (:line-width 4 :color "#c2c2c2" :style nil))))
- '(window-divider ((t :background "#ffffff" :foreground "#ffffff")))
- '(window-divider-first-pixel ((t :background "#ffffff" :foreground "#ffffff")))
- '(window-divider-last-pixel ((t :background "#ffffff" :foreground "#ffffff"))))
+ '(tab-line-tab-active ((t))))

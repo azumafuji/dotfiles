@@ -83,14 +83,14 @@
 ;;                    :family "Iosevka Aile" :height 90 :weight 'Semilight)
 
 (set-face-attribute 'default nil
-                    :family "IBM Plex Mono" :height 100)
-(setq-default line-spacing 0.2)
+                     :family "Iosevka Fixed Curly")
+(setq-default line-spacing 0.1)
 
 ;; Proportionately spaced typeface
-(set-face-attribute 'variable-pitch nil :family "IBM Plex Sans" :height 1.0)
+(set-face-attribute 'variable-pitch nil :family "Ubuntu Sans" :height 1.0)
 
 ;; Monospaced typeface
-(set-face-attribute 'fixed-pitch nil :family "IBM Plex Mono" :height 1.0 :weight 'light)
+(set-face-attribute 'fixed-pitch nil :family "Ubuntu Mono" :height 1.0 :weight 'light)
 
 ;; Set docview DPI
 (setq doc-view-resolution 300)
@@ -260,6 +260,24 @@
   :config
   (setq-default olivetti-body-width 80))
 
+(defun ds/slugify (str)
+  (interactive)
+  (string-replace " " "-"
+                  (string-trim
+                   (string-limit
+                    (string-clean-whitespace str) 32))))
+
+(defun ds/yank-with-slugify ()
+  (interactive)
+  (let ((yank-transform-functions
+	 '(ds/slugify)))
+    (call-interactively #'yank)))
+
+(global-set-key (kbd "C-c y") 'ds/yank-with-slugify)
+
+
+
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;
 ;;;   Tab-bar configuration
@@ -300,12 +318,19 @@
   (setq heaven-and-hell-themes
         '((light . tsdh-light)
           (dark . tsdh-dark))) ;; Themes can be the list: (dark . (tsdh-dark wombat))
-  ;; Optionall, load themes without asking for confirmation.
+  ;; Optional, load themes without asking for confirmation.
   (setq heaven-and-hell-load-theme-no-confirm t)
   :hook (after-init . heaven-and-hell-init-hook)
   :bind (("C-c <f6>" . heaven-and-hell-load-default-theme)
          ("<f6>" . heaven-and-hell-toggle-theme)))
 
+;; Dimmer
+;; (use-package dimmer
+;;   :ensure t
+;;   :config
+;;   (setq dimmer-fraction 0.4)
+;;   :init
+;;   (dimmer-mode t))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; UI/UX enhancements mostly focused on minibuffer and autocompletion interfaces
@@ -315,9 +340,10 @@
 (load-file (expand-file-name "init.d/dev.el" user-emacs-directory))
 (load-file (expand-file-name "init.d/org.el" user-emacs-directory))
 (load-file (expand-file-name "init.d/org-gcal.el" user-emacs-directory))
+(load-file (expand-file-name "init.d/textsize.el" user-emacs-directory))
 
-
-
+(use-package textsize
+  :init (textsize-mode))
 
 
 (custom-set-variables
@@ -325,9 +351,10 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(custom-enabled-themes '(tsdh-dark))
  '(delete-selection-mode nil)
  '(package-selected-packages
-   '(heaven-and-hell ox-latex oauth2 org-caldav auto-sudoedit jinx casual-avy oauth2-auto org-gcal ob-sql-mode ob-sql ox-tufte ox-odt ox-epub ox-gfm ob-restclient docker php-mode json-mode yaml-mode forge magit tree-sitter-langs tree-sitter wgrep orderless kind-icon cape corfu-terminal corfu marginalia vertico embark-consult embark consult avy which-key exec-path-from-shell)))
+   '(go-mode smudge password-generator dimmer org-jira terraform-doc terraform-mode luarocks lua-mode eglot-luau ox-slack heaven-and-hell ox-latex oauth2 org-caldav auto-sudoedit jinx casual-avy oauth2-auto org-gcal ob-sql-mode ob-sql ox-tufte ox-odt ox-epub ox-gfm ob-restclient docker php-mode json-mode yaml-mode forge magit tree-sitter-langs tree-sitter wgrep orderless kind-icon cape corfu-terminal corfu marginalia vertico embark-consult embark consult avy which-key exec-path-from-shell)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -338,10 +365,10 @@
  '(header-line-highlight ((t :box (:color "black"))))
  '(keycast-key ((t)))
  '(line-number ((t :background "white")))
- '(mode-line ((t :background "white" :overline "#222232" :box (:line-width 2 :color "white" :style nil))))
- '(mode-line-active ((t :background "white" :overline "#222232" :box (:line-width 2 :color "white" :style nil))))
+ '(mode-line ((t :box (:line-width 2 :color "grey75" :style nil))))
+ '(mode-line-active ((t :box (:line-width 2 :color "grey75" :style nil))))
  '(mode-line-highlight ((t :box (:color "black"))))
- '(mode-line-inactive ((t :background "white" :overline "#eeeefe" :box (:line-width 2 :color "white" :style nil))))
+ '(mode-line-inactive ((t :box (:line-width 2 :color "grey90" :style nil))))
  '(org-level-1 ((t (:inherit outline-1 :height 1.6))))
  '(org-level-2 ((t (:inherit outline-2 :height 1.3))))
  '(org-level-3 ((t (:inherit outline-3 :height 1.2))))
@@ -356,4 +383,5 @@
  '(window-divider ((t (:background "white" :foreground "white"))))
  '(window-divider-first-pixel ((t (:background "white" :foreground "white"))))
  '(window-divider-last-pixel ((t (:background "white" :foreground "white")))))
+
 

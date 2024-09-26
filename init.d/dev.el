@@ -70,6 +70,12 @@
 (use-package php-mode
   :ensure t)
 
+(use-package lua-mode
+  :ensure t)
+
+(use-package go-mode
+  :ensure t)
+
 ;; Emacs ships with a lot of popular programming language modes. If it's not
 ;; built in, you're almost certain to find a mode for the language you're
 ;; looking for with a quick Internet search.
@@ -110,11 +116,23 @@
   ;;(add-to-list 'eglot-server-programs '(php-mode "intelephense" "--stdio"))
   )
 
+
 (defun init-php-mode ()
   (eglot-ensure))
 
 (defun init-python-mode ()
   (eglot-ensure))
+
+(defun init-lua-mode ()
+  (eglot-ensure))
+
+(defun init-go-mode ()
+  (eglot-ensure))
+
+(add-hook 'lua-mode-hook 'eglot-ensure)
+(add-hook 'python-mode-hook 'eglot-ensure)
+(add-hook 'go-mode-hook 'eglot-ensure)
+
 
 (with-eval-after-load 'php-mode
   ;; If phpactor command is not installed as global, remove next ;; and write the full path
@@ -124,3 +142,21 @@
 (with-eval-after-load 'python-mode
   (add-hook 'python-mode-hook #'init-python-mode))
 
+(defun eglot-format-buffer-before-save ()
+  (add-hook 'before-save-hook #'eglot-format-buffer -10 t))
+(add-hook 'go-mode-hook #'eglot-format-buffer-before-save)
+
+(setq-default eglot-workspace-configuration
+    '((:gopls .
+        ((staticcheck . t)
+         (matcher . "CaseSensitive")))))
+
+
+(defun project-find-go-module (dir)
+  (when-let ((root (locate-dominating-file dir "go.mod")))
+    (cons 'go-module root)))
+
+(cl-defmethod project-root ((project (head go-module)))
+  (cdr project))
+
+(add-hook 'project-find-functions #'project-find-go-module)

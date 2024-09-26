@@ -46,8 +46,6 @@
 (setq org-directory "~/Documents/org/") ; Non-absolute paths for agenda and
                                         ; capture templates will look here.
 
-(setq org-agenda-files '("inbox.org" "work.org" "notes.org"))
-
 ;; Default tags
 (setq org-tag-alist '(
                       ;; locale
@@ -68,10 +66,20 @@
                       ("reading")))
 
 ;; Org-refile: where should org-refile look?
-(setq org-refile-targets '(("work.org" :maxlevel . 1) ("inbox.org" :maxlevel . 1)))
+
+(setq project-files (file-expand-wildcards (concat org-directory "Project-*.org")))
+
+(setq org-refile-targets `(("work.org" :maxlevel . 1)
+                           ("inbox.org" :maxlevel . 2)
+                           (,project-files :maxlevel . 1)))
+
+(setq org-agenda-files (append project-files '("inbox.org" "work.org" "notes.org")))
 
 ;;; Phase 3 variables
 (setq org-startup-indented t)
+
+(setq org-use-fast-todo-selection 'expert)
+
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;

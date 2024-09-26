@@ -19,8 +19,7 @@
 (use-package plstore
   :ensure t)
 
-(setq org-agenda-files
-      (-union
-       org-agenda-files
-       `("cal-dean.org" "cal-pandt.org")))
+
+(unless (boundp 'org-agenda-files) (setq org-agenda-files ()))
+(append org-agenda-files `("cal-dean.org" "cal-pandt.org"))
 

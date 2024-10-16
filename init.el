@@ -311,18 +311,25 @@
 
 (spacious-padding-mode 1)
 
-(use-package heaven-and-hell
+;; (use-package heaven-and-hell
+;;   :ensure t
+;;   :config
+;;   (setq heaven-and-hell-theme-type 'dark) ;; Omit to use light by default
+;;   (setq heaven-and-hell-themes
+;;         '((light . modus-vivendi)
+;;           (dark . modus-operandi))) ;; Themes can be the list: (dark . (tsdh-dark wombat))
+;;   ;; Optional, load themes without asking for confirmation.
+;;   (setq heaven-and-hell-load-theme-no-confirm t)
+;;   :hook (after-init . heaven-and-hell-init-hook)
+;;   :bind (("C-c <f6>" . heaven-and-hell-load-default-theme)
+;;          ("<f6>" . heaven-and-hell-toggle-theme)))
+
+(use-package auto-dark
   :ensure t
-  :config
-  (setq heaven-and-hell-theme-type 'dark) ;; Omit to use light by default
-  (setq heaven-and-hell-themes
-        '((light . tsdh-light)
-          (dark . tsdh-dark))) ;; Themes can be the list: (dark . (tsdh-dark wombat))
-  ;; Optional, load themes without asking for confirmation.
-  (setq heaven-and-hell-load-theme-no-confirm t)
-  :hook (after-init . heaven-and-hell-init-hook)
-  :bind (("C-c <f6>" . heaven-and-hell-load-default-theme)
-         ("<f6>" . heaven-and-hell-toggle-theme)))
+  :init (auto-dark-mode)
+  :custom
+  (auto-dark-themes '((modus-vivendi) (modus-operandi))))
+
 
 ;; Dimmer
 ;; (use-package dimmer
@@ -332,6 +339,10 @@
 ;;   :init
 ;;   (dimmer-mode t))
 
+(load-file (expand-file-name "init.d/textsize.el" user-emacs-directory))
+(use-package textsize
+  :init (textsize-mode))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; UI/UX enhancements mostly focused on minibuffer and autocompletion interfaces
 ;; These ones are *strongly* recommended!
@@ -340,10 +351,6 @@
 (load-file (expand-file-name "init.d/dev.el" user-emacs-directory))
 (load-file (expand-file-name "init.d/org.el" user-emacs-directory))
 (load-file (expand-file-name "init.d/org-gcal.el" user-emacs-directory))
-(load-file (expand-file-name "init.d/textsize.el" user-emacs-directory))
-
-(use-package textsize
-  :init (textsize-mode))
 
 
 (custom-set-variables
@@ -351,10 +358,9 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(custom-enabled-themes '(tsdh-dark))
  '(delete-selection-mode nil)
  '(package-selected-packages
-   '(go-mode smudge password-generator dimmer org-jira terraform-doc terraform-mode luarocks lua-mode eglot-luau ox-slack heaven-and-hell ox-latex oauth2 org-caldav auto-sudoedit jinx casual-avy oauth2-auto org-gcal ob-sql-mode ob-sql ox-tufte ox-odt ox-epub ox-gfm ob-restclient docker php-mode json-mode yaml-mode forge magit tree-sitter-langs tree-sitter wgrep orderless kind-icon cape corfu-terminal corfu marginalia vertico embark-consult embark consult avy which-key exec-path-from-shell)))
+   '(auto-dark eat vterm go-mode smudge password-generator dimmer org-jira terraform-doc terraform-mode luarocks lua-mode eglot-luau ox-slack heaven-and-hell ox-latex oauth2 org-caldav auto-sudoedit jinx casual-avy oauth2-auto org-gcal ob-sql-mode ob-sql ox-tufte ox-odt ox-epub ox-gfm ob-restclient docker php-mode json-mode yaml-mode forge magit tree-sitter-langs tree-sitter wgrep orderless kind-icon cape corfu-terminal corfu marginalia vertico embark-consult embark consult avy which-key exec-path-from-shell)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
